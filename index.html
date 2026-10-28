@@ -1,0 +1,1284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Agora Marketplace</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one phone-sized app column; screens swap inside it. Tokens follow the Agora Figma file. */
+:root{
+  --blue:#005AE6; --blue-600:#004CC4; --blue-50:#E6EFFD;
+  --navy:#0B3C91; --navy-deep:#072A6B;
+  --ink:#0F1729; --muted:#6B7280; --faint:#9AA3B2;
+  --bg:#F3F5F8; --card:#FFFFFF; --line:#E4E8EF;
+  --green:#22C55E; --green-ink:#15803D; --green-50:#E7F7ED;
+  --amber:#F59E0B; --amber-ink:#B45309; --amber-50:#FEF5DF;
+  --red:#EF4444; --red-50:#FDECEC;
+  --font:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#DCE3EE;color:var(--ink);font-family:var(--font);font-size:15px;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.shell{height:100%;display:flex;align-items:center;justify-content:center}
+#app{position:relative;width:100%;max-width:430px;height:100%;background:var(--bg);overflow:hidden}
+@media (min-width:600px) and (min-height:760px){
+  #app{height:min(874px,calc(100% - 40px));border-radius:36px;box-shadow:0 30px 80px rgba(7,42,107,.28),0 0 0 10px #0E1626}
+}
+.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:20px 24px;
+  animation:enter .32s cubic-bezier(.2,.8,.2,1)}
+.screen.back-anim{animation:enterBack .32s cubic-bezier(.2,.8,.2,1)}
+.screen.fade{animation:fadeIn .5s ease}
+.screen.still{animation:none}
+.screen > *,.welcome > *,.onb > *{flex-shrink:0}
+.welcome .mid,.onb .stage{flex-shrink:1}
+@keyframes enter{from{transform:translateX(28px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes enterBack{from{transform:translateX(-28px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ---------- Hero / pattern ---------- */
+.hero{overflow:hidden;background:radial-gradient(120% 70% at 50% 38%,#1550B8 0%,var(--navy) 45%,var(--navy-deep) 100%);color:#fff;padding:0;isolation:isolate}
+.pattern{position:absolute;inset:-130px;background-size:130px 130px;animation:drift 38s linear infinite;z-index:-1;pointer-events:none;transition:transform .6s ease-out}
+.pattern.b{animation:drift 38s linear infinite reverse,twinkle 7s ease-in-out infinite;background-size:130px 130px;background-position:65px 65px}
+@keyframes drift{from{background-position:0 0}to{background-position:130px -130px}}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:1}}
+.hero-glow{position:absolute;left:50%;top:36%;width:340px;height:340px;margin:-170px 0 0 -170px;border-radius:50%;
+  background:radial-gradient(circle,rgba(70,140,255,.45),rgba(70,140,255,0) 65%);z-index:-1;animation:breathe 5s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(.9);opacity:.7}50%{transform:scale(1.12);opacity:1}}
+.sweep{position:absolute;inset:0;z-index:-1;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.07) 50%,transparent 65%);background-size:250% 100%;animation:sweep 6s ease-in-out infinite}
+@keyframes sweep{0%{background-position:120% 0}60%,100%{background-position:-120% 0}}
+
+.logo-wrap{position:relative;width:96px;height:104px;margin:0 auto}
+.logo-wrap .ring{position:absolute;left:50%;top:58%;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;border:2px solid rgba(120,175,255,.55);animation:ring 2.8s ease-out infinite}
+.logo-wrap .ring:nth-child(2){animation-delay:1.4s}
+@keyframes ring{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.1);opacity:0}}
+.logo-drop{animation:drop 1s cubic-bezier(.34,1.56,.64,1) both;position:relative}
+@keyframes drop{0%{transform:translateY(-70px) scale(.55) rotate(-8deg);opacity:0}60%{opacity:1}100%{transform:none;opacity:1}}
+.logo-float{animation:float 4s ease-in-out 1s infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.check-draw{stroke-dasharray:30;stroke-dashoffset:30;animation:draw .55s ease-out .75s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+.rise{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{transform:translateY(22px);opacity:0}to{transform:none;opacity:1}}
+.word{display:inline-block;animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+
+.welcome{display:flex;flex-direction:column;height:100%;padding:max(56px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) 28px max(20px,env(safe-area-inset-left,0px))}
+.welcome .mid{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:22px}
+.welcome h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.welcome p{margin:0;font-size:14.5px;line-height:1.5;opacity:.88;max-width:300px}
+.chips-trust{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chips-trust span{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:6px 10px;border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(4px)}
+.chips-trust svg{width:14px;height:14px}
+.actions{display:flex;flex-direction:column;gap:16px}
+
+/* ---------- Buttons ---------- */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;border-radius:14px;background:var(--blue);color:#fff;font-size:17px;font-weight:500;transition:transform .12s ease,background .2s,box-shadow .2s;box-shadow:0 6px 16px rgba(0,90,230,.25)}
+.btn:hover{background:var(--blue-600)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;border:1.5px solid rgba(255,255,255,.35);box-shadow:none}
+.btn.ghost:hover{background:rgba(255,255,255,.08)}
+.btn.outline{background:var(--card);color:var(--blue);border:1.5px solid var(--blue);box-shadow:none}
+.btn.success{background:var(--green);box-shadow:0 6px 16px rgba(34,197,94,.3)}
+.btn.small{height:44px;font-size:15px;border-radius:12px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.btn svg{width:22px;height:22px}
+.link{color:var(--blue);font-weight:600}
+.textlink{color:var(--blue);font-weight:500;font-size:14px}
+
+/* ---------- Top bars ---------- */
+.topbar{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;min-height:44px;margin-bottom:16px}
+.topbar h2{margin:0;text-align:center;font-size:17px;font-weight:600}
+.iconbtn{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;position:relative}
+.iconbtn:hover{background:rgba(15,23,41,.05)}
+.iconbtn svg{width:24px;height:24px}
+.badge{position:absolute;top:3px;right:3px;min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;border:2px solid var(--bg)}
+.brandbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}
+.brand svg{width:28px;height:30px}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#FFB38A,#E5533C);display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px}
+
+/* ---------- Forms ---------- */
+.field{display:flex;flex-direction:column;gap:9px}
+.field label{font-size:15px;font-weight:500}
+.input{position:relative}
+.input input,.input select,.input textarea{width:100%;height:50px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:0 14px;font-size:15px;outline:none;transition:border .2s,box-shadow .2s;appearance:none}
+.input textarea{height:110px;padding:14px;resize:none}
+.input input:focus,.input select:focus,.input textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-50)}
+.input .trail{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);display:grid;place-items:center}
+.input .trail svg{width:20px;height:20px}
+.form{display:flex;flex-direction:column;gap:20px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.err{color:var(--red);font-size:13px;min-height:0}
+
+.intro{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin:10px 0 30px}
+.intro h1{margin:6px 0 0;font-size:24px;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+.intro p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.5;max-width:320px}
+.intro .icon-lg{width:56px;height:56px;color:var(--blue)}
+.mini-logo svg{width:62px;height:68px}
+
+.social{display:flex;align-items:center;justify-content:space-between;width:100%;height:64px;padding:0 20px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:15.5px;font-weight:500;transition:border .2s,transform .12s}
+.social:hover{border-color:var(--blue)}
+.social:active{transform:scale(.99)}
+.social .l{display:flex;align-items:center;gap:16px}
+.social svg{width:28px;height:28px}
+.social .chev{width:20px;height:20px;color:var(--muted)}
+.divider{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:14px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.center-note{text-align:center;color:var(--muted);font-size:14px}
+.fine{text-align:center;color:var(--muted);font-size:12.5px;line-height:1.5}
+
+.check{display:inline-flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;user-select:none}
+.check .box{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--faint);display:grid;place-items:center;transition:all .2s}
+.check .box svg{width:14px;height:14px;color:#fff;opacity:0}
+.check.on .box{background:var(--blue);border-color:var(--blue)}
+.check.on .box svg{opacity:1}
+
+/* ---------- Onboarding carousel ---------- */
+.onb{display:flex;flex-direction:column;height:100%;padding:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) 28px max(20px,env(safe-area-inset-left,0px))}
+.onb .skip{align-self:flex-end;color:#fff;font-weight:600;font-size:16px;padding:10px 4px}
+.onb .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;text-align:center;touch-action:pan-y}
+.onb .art{width:300px;max-width:100%;height:220px;display:grid;place-items:center}
+.onb .art svg{width:100%;height:100%}
+.onb h1{font-size:24px;margin:0 0 10px;font-weight:700}
+.onb p{margin:0;font-size:14.5px;line-height:1.5;opacity:.88;max-width:300px}
+.dots{display:flex;gap:10px;justify-content:center;margin:26px 0 34px}
+.dots i{width:10px;height:10px;border-radius:99px;background:rgba(255,255,255,.35);transition:all .35s}
+.dots i.on{width:28px;background:#fff}
+.bob{animation:float 3.4s ease-in-out infinite}
+.bob2{animation:float 4.2s ease-in-out .6s infinite}
+.spin{transform-origin:150px 108px;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pop{animation:pop .6s cubic-bezier(.34,1.56,.64,1) .3s both;transform-box:fill-box;transform-origin:center}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.shackle{animation:shackle 2.6s ease-in-out infinite}
+@keyframes shackle{0%,55%,100%{transform:translateY(0)}70%{transform:translateY(-6px)}85%{transform:translateY(0)}}
+
+/* ---------- Home ---------- */
+.search{display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--faint);font-size:14px;width:100%;text-align:left}
+.search svg{width:20px;height:20px}
+.ordercard{background:var(--card);border-radius:18px;padding:18px;margin-top:16px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 0 var(--line)}
+.oc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.oc-head small{display:block;font-size:13px;color:var(--muted)}
+.oc-head b{font-size:14px;font-weight:600;letter-spacing:.02em}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:9px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill svg{width:14px;height:14px}
+.pill.green{background:var(--green-50);color:var(--green-ink)}
+.pill.amber{background:var(--amber-50);color:var(--amber-ink)}
+.pill.blue{background:var(--blue-50);color:var(--blue)}
+.pill.red{background:var(--red-50);color:var(--red)}
+.pill.grey{background:#EEF0F4;color:var(--muted)}
+.oc-item{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:14px}
+.oc-item .meta{flex:1;min-width:0}
+.oc-item .meta b{display:block;font-weight:500;font-size:14.5px}
+.oc-item .meta span{font-size:13px;color:var(--muted)}
+.oc-item .amt{font-weight:600;font-variant-numeric:tabular-nums}
+.note{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:12px;font-size:13px;line-height:1.4}
+.note svg{width:18px;height:18px;flex:none;margin-top:1px}
+.note.amber{background:var(--amber-50);color:var(--amber-ink)}
+.note.green{background:var(--green-50);color:var(--green-ink)}
+.note.blue{background:var(--blue-50);color:var(--blue)}
+.note b{display:block;font-weight:600}
+.note span{color:var(--ink);opacity:.75}
+.progress{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.progress i{height:4px;border-radius:9px;background:var(--blue-50)}
+.progress i.on{background:var(--blue)}
+
+.banner{position:relative;overflow:hidden;margin-top:16px;border-radius:16px;height:122px;background:#15181F;color:#fff;padding:20px;display:flex;flex-direction:column;justify-content:center}
+.banner h3{margin:0 0 6px;font-size:21px;font-weight:600;position:relative;z-index:1}
+.banner p{margin:0;font-size:12.5px;opacity:.85;position:relative;z-index:1}
+.banner .tag{position:absolute;background:#C8102E;color:#FFD9DF;font-weight:800;font-size:11px;letter-spacing:.08em;padding:3px 7px;border-radius:2px;opacity:.85;animation:tag 4s ease-in-out infinite}
+@keyframes tag{0%,100%{translate:0 0}50%{translate:0 -4px}}
+.cats{display:flex;gap:10px;overflow-x:auto;margin:18px calc(-1*max(20px,env(safe-area-inset-left,0px))) 0;padding:2px max(20px,env(safe-area-inset-left,0px));scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:10px;background:var(--card);font-size:15px;font-weight:500;transition:all .2s}
+.cat svg{width:22px;height:22px}
+.cat.on{background:var(--blue);color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.pcard{background:var(--card);border-radius:16px;padding:10px;text-align:center;display:flex;flex-direction:column;gap:8px;transition:transform .15s,box-shadow .2s;animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.pcard:hover{box-shadow:0 8px 24px rgba(15,23,41,.08)}
+.pcard:active{transform:scale(.98)}
+.pcard .nm{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcard .pr{display:flex;justify-content:space-between;align-items:center;padding:0 4px;font-size:14px}
+.pcard .pr b{font-weight:600;font-variant-numeric:tabular-nums}
+.pcard .sl{font-size:13px;color:var(--muted)}
+.rate{display:inline-flex;align-items:center;gap:3px;font-size:13px}
+.rate svg{width:12px;height:12px;color:var(--amber)}
+.escrow-chip{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--green-50);color:var(--green-ink);font-size:12px;font-weight:500;padding:5px;border-radius:8px}
+.escrow-chip svg{width:15px;height:15px;color:var(--green)}
+.art{border-radius:12px;display:grid;place-items:center;overflow:hidden;aspect-ratio:1.08;max-width:100%}
+.art svg{width:72%;height:72%}
+
+/* ---------- Product ---------- */
+.hero-img{border-radius:18px;aspect-ratio:1.22;max-width:100%}
+.hero-img svg{width:62%;height:62%}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.thumbs button{border-radius:10px;overflow:hidden;border:2px solid transparent;transition:border .2s}
+.thumbs button.on{border-color:var(--blue)}
+.thumbs .art{aspect-ratio:1.2;border-radius:8px}
+.pd-title{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-top:20px}
+.pd-title h1{margin:0;font-size:22px;font-weight:700;line-height:1.2}
+.pd-title .price{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.subrow{display:flex;gap:10px;align-items:center;margin-top:8px;font-size:13px;color:var(--muted)}
+.small-note{font-size:12.5px;margin-top:10px}
+.sizes{display:flex;gap:10px;margin-top:12px}
+.sizes button{min-width:46px;height:32px;padding:0 14px;border-radius:8px;background:#C9DAF8;color:#fff;font-weight:600;font-size:15px;transition:all .2s}
+.sizes button.on{background:var(--blue)}
+.sellerrow{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:12px;padding:12px 14px;margin-top:20px}
+.sellerrow .ic{width:32px;height:32px;color:var(--blue)}
+.sellerrow b{display:block;font-size:14.5px;font-weight:600}
+.sellerrow span{font-size:12.5px;color:var(--muted)}
+.escrow-box{display:flex;gap:12px;background:var(--green-50);border-radius:14px;padding:18px 16px;margin-top:16px}
+.escrow-box svg{width:26px;height:26px;color:var(--green);flex:none;margin-top:6px}
+.escrow-box b{color:var(--green);font-weight:600;font-size:15.5px}
+.escrow-box p{margin:4px 0 0;font-size:13px;color:var(--muted);line-height:1.45}
+.about{margin-top:18px}
+.about b{font-size:14.5px;font-weight:600}
+.about p{margin:6px 0 0;color:var(--muted);font-size:13.5px;line-height:1.5}
+.sticky-cta{position:sticky;bottom:-24px;margin:auto calc(-1*max(20px,env(safe-area-inset-left,0px))) -24px;padding:16px max(20px,env(safe-area-inset-left,0px)) max(24px,env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg) 70%,rgba(243,245,248,0));display:flex;flex-direction:column;gap:12px}
+.spacer{flex:1;min-height:24px}
+
+/* ---------- Cart ---------- */
+.citem{display:flex;gap:14px;background:var(--card);border-radius:14px;padding:11px;position:relative;animation:rise .4s ease both}
+.citem .art{width:94px;aspect-ratio:1.08;flex:none}
+.citem .info{flex:1;display:flex;flex-direction:column;gap:2px;padding-top:10px;min-width:0}
+.citem .info b{font-weight:500;font-size:14.5px}
+.citem .info span{font-size:13px;color:var(--muted)}
+.qty{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;margin-top:auto;align-self:flex-start;padding:2px}
+.qty button{width:26px;height:24px;display:grid;place-items:center;border-radius:6px}
+.qty button:hover{background:var(--bg)}
+.qty button svg{width:14px;height:14px}
+.qty output{min-width:16px;text-align:center;font-size:14px;font-variant-numeric:tabular-nums}
+.citem .trash{position:absolute;right:12px;top:14px;color:var(--muted)}
+.citem .trash svg{width:22px;height:22px}
+.citem .amt{position:absolute;right:14px;bottom:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.sumrows{display:flex;flex-direction:column;gap:12px;font-variant-numeric:tabular-nums}
+.sumrows div{display:flex;justify-content:space-between;font-size:15px}
+.sumrows .total{font-size:18px;font-weight:700}
+.panel{background:var(--card);border-radius:16px;padding:18px 20px}
+.list-gap{display:flex;flex-direction:column;gap:14px}
+
+/* ---------- Checkout ---------- */
+.stepper{display:flex;align-items:flex-start;justify-content:space-between;margin:4px 6px 28px}
+.step{display:flex;flex-direction:column;align-items:center;gap:8px;width:62px;font-size:13.5px}
+.step i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:14px;font-weight:600;border:1.5px solid var(--faint);color:var(--muted);background:var(--card);transition:all .3s}
+.step.on i,.step.done i{background:var(--blue);border-color:var(--blue);color:#fff}
+.step i svg{width:14px;height:14px}
+.bar{flex:1;height:3px;margin-top:13px;border-radius:9px;background:var(--line);position:relative;overflow:hidden}
+.bar.on::after{content:"";position:absolute;inset:0;background:var(--blue);animation:fill .5s ease both}
+@keyframes fill{from{transform:translateX(-100%)}to{transform:none}}
+.sect{font-size:18px;font-weight:600;margin:6px 0 16px}
+.radio-card{display:flex;align-items:center;gap:16px;width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px;text-align:left;transition:border .2s,background .2s}
+.radio-card.on{border-color:var(--blue);background:#F7FAFF}
+.radio-card .dot{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--faint);display:grid;place-items:center;flex:none}
+.radio-card.on .dot{border-color:var(--blue)}
+.radio-card.on .dot::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--blue)}
+.radio-card .ic{width:28px;height:28px;color:var(--blue);flex:none}
+.radio-card .t{flex:1}
+.radio-card .t b{display:block;font-weight:600;font-size:15px}
+.radio-card .t span{font-size:13px;color:var(--muted)}
+.radio-card .p{font-weight:600;font-variant-numeric:tabular-nums}
+.addr{display:flex;gap:14px;align-items:flex-start}
+.addr svg{width:24px;height:24px;color:var(--blue);flex:none}
+.addr b{font-weight:600}
+.addr p{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.55}
+.money{background:var(--green-50);border-radius:16px;padding:18px 20px}
+.money h4{margin:0 0 12px;color:var(--green);display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
+.money h4 svg{width:16px;height:16px}
+.money ul{list-style:none;margin:0;padding:0 0 0 24px;display:flex;flex-direction:column;gap:9px}
+.money li{position:relative;font-size:13.5px;line-height:1.4}
+.money li svg{position:absolute;left:-22px;top:1px;width:15px;height:15px}
+.acct{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.acct:last-child{border:0}
+.acct small{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}
+.acct b{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.copy{display:flex;align-items:center;gap:6px;color:var(--blue);font-size:13px;font-weight:600}
+.copy svg{width:18px;height:18px}
+
+/* ---------- Status screens ---------- */
+.status{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;margin:40px 0 34px;position:relative}
+.status h1{margin:8px 0 0;font-size:24px;font-weight:700}
+.status p{margin:0;color:var(--muted);line-height:1.5;max-width:310px;font-size:14.5px}
+.badge-ic{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;animation:pop .55s cubic-bezier(.34,1.56,.64,1) both}
+.badge-ic svg{width:32px;height:32px}
+.badge-ic.green{background:var(--green);color:#fff;box-shadow:0 0 0 10px var(--green-50)}
+.badge-ic.amber{background:var(--amber-50);color:var(--amber)}
+.badge-ic.red{background:var(--red-50);color:var(--red)}
+.badge-ic.blue{background:var(--blue-50);color:var(--blue)}
+.confetti{position:absolute;left:50%;top:30px;width:0;height:0;pointer-events:none}
+.confetti i{position:absolute;width:7px;height:11px;border-radius:2px;opacity:0;animation:burst 1.2s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes burst{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+
+/* ---------- Tracking ---------- */
+.track{background:var(--card);border-radius:18px;padding:20px}
+.tl{display:flex;flex-direction:column;margin-top:22px}
+.tl .st{display:flex;gap:18px;position:relative;padding-bottom:30px}
+.tl .st:last-child{padding-bottom:0}
+.tl .st::before{content:"";position:absolute;left:11px;top:24px;bottom:0;width:2px;background:var(--line)}
+.tl .st.done::before{background:var(--green)}
+.tl .st:last-child::before{display:none}
+.tl .dot{width:24px;height:24px;border-radius:50%;background:#EEF0F4;display:grid;place-items:center;flex:none;position:relative;z-index:1;transition:background .3s}
+.tl .done .dot{background:var(--green);color:#fff}
+.tl .now .dot{background:var(--blue-50);box-shadow:0 0 0 0 rgba(0,90,230,.4);animation:pulse 1.6s infinite}
+.tl .now .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,90,230,.35)}100%{box-shadow:0 0 0 12px rgba(0,90,230,0)}}
+.tl .dot svg{width:12px;height:12px}
+.tl b{display:block;font-weight:500;font-size:15px}
+.tl span{font-size:13.5px;color:var(--muted)}
+.demo{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--muted);border:1px dashed var(--faint);border-radius:10px;padding:9px;width:100%;background:transparent}
+.demo:hover{color:var(--blue);border-color:var(--blue)}
+.demo svg{width:15px;height:15px}
+.photo-box{border-radius:18px;background:#E9EDF3;aspect-ratio:1.35;max-width:100%;display:grid;place-items:center;overflow:hidden;border:2px dashed #C6CEDB;color:var(--muted);text-align:center;cursor:pointer}
+.photo-box img{width:100%;height:100%;object-fit:cover}
+.photo-box svg{width:44px;height:44px;color:var(--blue)}
+.stars{display:flex;gap:12px;justify-content:center}
+.stars button svg{width:36px;height:36px;color:#D5DAE3;transition:color .15s,transform .15s}
+.stars button.on svg{color:var(--amber)}
+.stars button:active svg{transform:scale(1.2)}
+
+/* ---------- Profile / lists ---------- */
+.prof{display:flex;flex-direction:column;align-items:center;gap:8px;margin:6px 0 24px}
+.prof .avatar{width:96px;height:96px;font-size:32px;border-radius:24px}
+.prof b{font-size:17px;font-weight:600}
+.prof span{color:var(--muted);font-size:14px}
+.menu{display:flex;flex-direction:column;gap:12px}
+.menu button{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:12px;height:56px;padding:0 16px;font-size:15.5px;font-weight:500;width:100%;text-align:left;transition:background .2s}
+.menu button:hover{background:#FBFCFE}
+.menu button > svg:first-child{width:22px;height:22px;color:var(--blue)}
+.menu button .chev{margin-left:auto;width:18px;height:18px;color:var(--faint)}
+.sellcard{background:var(--blue-50);border-radius:16px;padding:18px 20px;margin-top:24px}
+.sellcard b{font-size:16px;font-weight:600}
+.sellcard p{margin:6px 0 14px;color:var(--muted);font-size:14px;line-height:1.45}
+.sellcard button{display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:#fff;border-radius:10px;padding:11px 14px;font-weight:500}
+.sellcard button svg{width:20px;height:20px}
+.tabs{display:flex;gap:10px;overflow-x:auto;margin-bottom:20px;scrollbar-width:none}
+.tabs button{flex:none;height:38px;padding:0 14px;border-radius:10px;background:var(--card);font-size:14.5px;font-weight:500}
+.tabs button.on{background:var(--blue);color:#fff}
+.orow{background:var(--card);border-radius:16px;padding:18px;display:grid;grid-template-columns:86px 1fr;gap:6px 16px;animation:rise .4s ease both}
+.orow .art{grid-row:span 2;aspect-ratio:1.2;width:86px}
+.orow .t b{display:block;font-weight:600;font-size:15px}
+.orow .t span{display:block;color:var(--muted);font-size:13.5px;line-height:1.6}
+.orow .bt{grid-column:2;display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.orow .bt b{font-variant-numeric:tabular-nums}
+.orow .bt button{background:var(--blue-50);color:var(--blue);font-size:13.5px;font-weight:600;padding:9px 12px;border-radius:9px}
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:30px 10px}
+.empty svg{width:64px;height:64px;color:var(--blue)}
+.empty b{font-size:18px;font-weight:600}
+.empty p{margin:0 0 10px;color:var(--muted);line-height:1.5;font-size:14px;max-width:300px}
+.addrcard{background:var(--card);border-radius:16px;padding:16px 18px;display:flex;gap:16px;align-items:flex-start}
+.addrcard .hm{width:44px;height:44px;border-radius:12px;background:var(--blue-50);color:var(--blue);display:grid;place-items:center;flex:none}
+.addrcard .hm svg{width:24px;height:24px}
+.addrcard .tx{flex:1}
+.addrcard .tx b{font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.addrcard .tx p{margin:4px 0 0;color:var(--muted);font-size:14px;line-height:1.5}
+.steps4{display:flex;flex-direction:column;margin:26px 0;padding-left:8px}
+.steps4 .st{display:flex;gap:18px;position:relative;padding-bottom:26px}
+.steps4 .st:last-child{padding-bottom:0}
+.steps4 .st::before{content:"";position:absolute;left:11px;top:26px;bottom:2px;width:2px;background:var(--green)}
+.steps4 .st:last-child::before{display:none}
+.steps4 .n{width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700;flex:none}
+.steps4 b{display:block;font-weight:600}
+.steps4 span{font-size:14px;color:var(--muted)}
+.toggle{width:51px;height:31px;border-radius:99px;background:#D5DAE3;position:relative;transition:background .25s;flex:none}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:transform .25s}
+.toggle.on{background:var(--green)}
+.toggle.on::after{transform:translateX(20px)}
+.setrow{display:flex;align-items:flex-start;gap:14px;background:var(--card);border-radius:14px;padding:18px}
+.setrow svg{width:22px;height:22px;color:var(--blue);flex:none}
+.setrow .tx{flex:1}
+.setrow b{display:block;font-weight:600;font-size:15px}
+.setrow span{font-size:13.5px;color:var(--muted);line-height:1.45}
+
+/* ---------- Seller ---------- */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0 28px}
+.stat{background:var(--card);border-radius:12px;padding:12px;text-align:center;transition:transform .15s}
+.stat:active{transform:scale(.97)}
+.stat b{display:block;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;color:var(--muted)}
+.stat.g b{color:var(--green)}
+.stat.b b{color:var(--blue)}
+.greet h1{margin:0;font-size:24px;font-weight:700}
+.verified{display:inline-flex;align-items:center;gap:5px;color:var(--green);font-size:13px;margin-top:6px}
+.verified svg{width:15px;height:15px}
+.sechead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sechead b{font-size:17px;font-weight:600}
+.srow{background:var(--card);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px;animation:rise .4s ease both}
+.srow .art{width:72px;aspect-ratio:1.25;flex:none}
+.srow .tx{flex:1;min-width:0}
+.srow .tx span{display:block;color:var(--muted);font-size:13.5px;line-height:1.6}
+.srow .tx b{font-variant-numeric:tabular-nums}
+.bigsum{background:var(--blue);color:#fff;border-radius:16px;padding:20px;display:flex;align-items:center;gap:14px}
+.bigsum svg{width:28px;height:28px}
+.bigsum .tx{flex:1}
+.bigsum small{display:block;opacity:.8;font-size:13px}
+.bigsum b{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.upload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;height:180px;border-radius:14px;border:1.5px dashed #BFC8D6;background:var(--card);color:var(--muted);cursor:pointer;transition:border .2s;overflow:hidden}
+.upload:hover{border-color:var(--blue)}
+.upload svg{width:40px;height:40px;color:var(--blue)}
+.upload img{width:100%;height:100%;object-fit:cover}
+.imgs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.imgs label,.imgs div{aspect-ratio:1;border-radius:10px;background:var(--card);border:1.5px dashed #BFC8D6;display:grid;place-items:center;overflow:hidden;cursor:pointer;color:var(--blue)}
+.imgs img{width:100%;height:100%;object-fit:cover}
+.imgs svg{width:22px;height:22px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- Search ---------- */
+.searchbar{display:flex;align-items:center;gap:8px;margin-bottom:22px}
+.searchbar .input{flex:1}
+.searchbar input{padding-left:42px!important;height:46px!important}
+.searchbar .lead{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--faint)}
+.searchbar .lead svg{width:20px;height:20px}
+.recent{display:flex;flex-direction:column;gap:4px;margin:12px 0 26px}
+.recent div{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+.recent button.q{font-size:15px;text-align:left;flex:1}
+.recent svg{width:16px;height:16px;color:var(--muted)}
+.ctiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 12px;margin:14px 0 26px}
+.ctiles button{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12.5px}
+.ctiles .art{width:100%;aspect-ratio:1.1;border-radius:12px}
+.ctiles .art svg{width:66%;height:66%}
+
+/* ---------- Toast / overlay / sheet ---------- */
+.toast{position:absolute;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 16px;border-radius:12px;font-size:14px;display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.2,.8,.2,1);z-index:50;max-width:calc(100% - 40px);white-space:nowrap}
+.toast svg{width:18px;height:18px;color:var(--green)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.overlay{position:absolute;inset:0;background:rgba(15,23,41,.45);z-index:40;display:grid;place-items:center;animation:fadeIn .2s}
+.processing{background:var(--card);border-radius:20px;padding:28px 26px;text-align:center;width:min(300px,86%);display:flex;flex-direction:column;gap:12px;align-items:center}
+.spinner{width:44px;height:44px;border-radius:50%;border:4px solid var(--blue-50);border-top-color:var(--blue);animation:spin2 .8s linear infinite}
+@keyframes spin2{to{transform:rotate(360deg)}}
+.processing b{font-size:16px}
+.processing span{color:var(--muted);font-size:13.5px;line-height:1.4}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:24px 24px 0 0;padding:22px max(20px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px));z-index:41;animation:sheet .35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;gap:14px}
+@keyframes sheet{from{transform:translateY(100%)}to{transform:none}}
+.sheet .grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:-8px auto 4px}
+.sheet h3{margin:0;font-size:18px}
+.sheet p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.otp{display:flex;gap:12px;justify-content:center}
+.otp input{width:58px;height:62px;text-align:center;font-size:24px;font-weight:600;border:1px solid var(--line);border-radius:14px;background:var(--card);outline:none}
+.otp input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-50)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .check-draw{stroke-dashoffset:0}
+}
+</style>
+</head>
+<body>
+<div class="shell"><div id="app" aria-live="polite"></div></div>
+
+<script>
+(function(){
+const app=document.getElementById('app');
+const N=n=>'₦'+Number(n).toLocaleString('en-NG');
+
+/* ---------- Icons ---------- */
+const I={
+back:'<path d="M15 18l-6-6 6-6"/>',
+chev:'<path d="M9 6l6 6-6 6"/>',
+down:'<path d="M6 9l6 6 6-6"/>',
+cart:'<path d="M3 4h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L21 8H6.2"/><circle cx="9.5" cy="20" r="1.2"/><circle cx="17.5" cy="20" r="1.2"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+shield:'<path d="M12 2.5l8 3v6.2c0 4.7-3.3 8.4-8 9.8-4.7-1.4-8-5.1-8-9.8V5.5z" fill="currentColor" stroke="none"/><path d="M8.5 12.2l2.4 2.4 4.6-4.8" stroke="#fff" stroke-width="2.2"/>',
+lock:'<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+trash:'<path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v5M14 11v5"/>',
+plus:'<path d="M12 5v14M5 12h14"/>',
+minus:'<path d="M5 12h14"/>',
+truck:'<path d="M2.5 6.5h11v9h-11zM13.5 9.5h4l3 3v3h-7z"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
+bolt:'<path d="M13 2.5L5 13.5h6l-1 8 8-11h-6z" fill="currentColor" stroke="none"/>',
+card:'<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/>',
+bank:'<path d="M3 9.5L12 4l9 5.5M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>',
+copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/>',
+pin:'<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+pkg:'<path d="M12 2.8l8.5 4.6v9.2L12 21.2l-8.5-4.6V7.4z"/><path d="M3.8 7.6L12 12l8.2-4.4M12 12v9"/>',
+gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v2.6M12 18.9v2.6M4.2 4.2l1.9 1.9M17.9 17.9l1.9 1.9M2.5 12h2.6M18.9 12h2.6M4.2 19.8l1.9-1.9M17.9 6.1l1.9-1.9"/>',
+user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.2-6 8-6s7 2 8 6"/>',
+bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/>',
+doc:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+privacy:'<path d="M12 2.5l8 3v6.2c0 4.7-3.3 8.4-8 9.8-4.7-1.4-8-5.1-8-9.8V5.5z"/><path d="M12 8v5M12 16h.01"/>',
+logout:'<path d="M14 4h4.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H14M10 16l-4-4 4-4M6 12h10"/>',
+store:'<path d="M3.5 9l1.5-5h14l1.5 5M3.5 9h17M3.5 9a2.8 2.8 0 0 0 5.6 0 2.8 2.8 0 0 0 5.8 0 2.8 2.8 0 0 0 5.6 0M5 11.5V20h14v-8.5M10 20v-5h4v5"/>',
+camera:'<path d="M4 7.5h3.5L9 5h6l1.5 2.5H20a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8.5a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.6"/>',
+upload:'<path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/>',
+id:'<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><circle cx="8.5" cy="11" r="2.2"/><path d="M5 16.2c.6-1.6 2-2.4 3.5-2.4s2.9.8 3.5 2.4M14.5 10h4M14.5 13.5h3"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+err:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/>',
+star:'<path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" fill="currentColor" stroke="none"/>',
+phone:'<path d="M5 3.5h3.5l1.5 4.5-2.2 1.4a11 11 0 0 0 4.8 4.8L14 12l4.5 1.5V17a2 2 0 0 1-2 2A13.5 13.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/>',
+home:'<path d="M3.5 11L12 4l8.5 7M5.5 9.5V20h13V9.5M10 20v-5.5h4V20"/>',
+edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+wallet:'<path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h12V8"/><path d="M3.5 7.5h16a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z"/><path d="M15.5 13.5h2"/>',
+eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+eyeoff:'<path d="M3 3l18 18M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.1 3.9M6.6 6.6A17.4 17.4 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.3-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+grid:'<rect x="4" y="4" width="7" height="7" rx="1.5" fill="currentColor" stroke="none"/><rect x="13" y="4" width="7" height="7" rx="1.5" fill="currentColor" stroke="none"/><rect x="4" y="13" width="7" height="7" rx="1.5" fill="currentColor" stroke="none"/><rect x="13" y="13" width="7" height="7" rx="1.5" fill="currentColor" stroke="none"/>',
+laptop:'<rect x="4.5" y="5" width="15" height="10" rx="1.5"/><path d="M2.5 18.5h19"/>',
+headph:'<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.5" fill="currentColor"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.5" fill="currentColor"/>',
+bag:'<path d="M5 8h14l-1 12H6z" fill="currentColor"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/>',
+shirt:'<path d="M8.5 3.5L4 6l1.8 4.2L8 9.2V20.5h8V9.2l2.2 1L20 6l-4.5-2.5a3.5 3.5 0 0 1-7 0z"/>',
+smile:'<circle cx="12" cy="12" r="10" fill="currentColor" stroke="none"/><path d="M8 14.5c1 1.4 2.4 2 4 2s3-.6 4-2" stroke="#fff"/><circle cx="9" cy="10" r="1.2" fill="#fff" stroke="none"/><circle cx="15" cy="10" r="1.2" fill="#fff" stroke="none"/>',
+x:'<path d="M6 6l12 12M18 6L6 18"/>',
+info:'<circle cx="12" cy="12" r="9.5" fill="currentColor" stroke="none"/><path d="M12 11v6M12 7.5h.01" stroke="#fff" stroke-width="2.2"/>',
+play:'<path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/>',
+google:'<path fill="#4285F4" stroke="none" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3z"/><path fill="#34A853" stroke="none" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z"/><path fill="#FBBC05" stroke="none" d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 0 0 0 9.2z"/><path fill="#EA4335" stroke="none" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0 0 3.1 7.4L6.4 10C7.2 7.7 9.4 5.9 12 5.9z"/>',
+apple:'<path fill="currentColor" stroke="none" d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8s-1.8-.8-3-.8c-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.3c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.6zM14.2 5.5c.6-.8 1.1-1.8 1-2.9-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.7-1.3z"/>'
+};
+const ic=(n,cls='')=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+
+const LOGO=(anim)=>`<svg viewBox="0 0 98 106" aria-hidden="true">
+<path d="M33 30V24a16 16 0 0 1 32 0v6" fill="none" stroke="#2F7BFF" stroke-width="7" stroke-linecap="round"/>
+<path d="M12 30h74l-6 70a6 6 0 0 1-6 5.5H24a6 6 0 0 1-6-5.5z" fill="#1E6BF0"/>
+<path d="M12 30h74l-1.2 13H13.2z" fill="#3B86FF" opacity=".55"/>
+<path d="M49 46l20 7v14c0 11-8.6 19.6-20 23-11.4-3.4-20-12-20-23V53z" fill="#0B0F1A"/>
+<path class="${anim?'check-draw':''}" d="M40 67.5l6.5 6.5L59 61" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+/* ---------- Product art ---------- */
+const ART={
+headphones:(c)=>`<path d="M22 60V50a28 28 0 0 1 56 0v10" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round"/><rect x="14" y="54" width="18" height="30" rx="7" fill="${c}"/><rect x="68" y="54" width="18" height="30" rx="7" fill="${c}"/><rect x="18" y="60" width="6" height="18" rx="3" fill="#fff" opacity=".25"/>`,
+jacket:(c)=>`<path d="M36 14l-18 8-8 52h14l2-28v48h48V46l2 28h14l-8-52-18-8c-2 8-8 12-14 12S38 22 36 14z" fill="${c}"/><path d="M50 26v68" stroke="#3A2A20" stroke-width="2" opacity=".5"/><path d="M36 14c2 10 8 14 14 14s12-4 14-14" fill="none" stroke="#2A1E18" stroke-width="5" opacity=".55"/><rect x="66" y="56" width="10" height="3" rx="1.5" fill="#2A1E18" opacity=".4"/>`,
+tote:(c)=>`<path d="M38 36V28a12 12 0 0 1 24 0v8" fill="none" stroke="#5B3A20" stroke-width="4"/><path d="M20 38h60l-6 50H26z" fill="${c}"/><path d="M20 38h60l-1 8H21z" fill="#000" opacity=".12"/><circle cx="50" cy="56" r="3" fill="#E7C27D"/>`,
+handbag:(c)=>`<path d="M36 40V32a14 14 0 0 1 28 0v8" fill="none" stroke="#7A1010" stroke-width="5"/><rect x="18" y="38" width="64" height="46" rx="10" fill="${c}"/><path d="M18 52h64" stroke="#000" opacity=".15" stroke-width="3"/><rect x="44" y="48" width="12" height="9" rx="2" fill="#F2D27A"/>`,
+phone:(c)=>`<rect x="30" y="10" width="40" height="80" rx="9" fill="#1D2433"/><rect x="34" y="16" width="32" height="68" rx="5" fill="${c}"/><circle cx="50" cy="13.5" r="1.6" fill="#55607A"/><path d="M34 60c10-8 22-8 32 0v19a5 5 0 0 1-5 5H39a5 5 0 0 1-5-5z" fill="#fff" opacity=".18"/>`,
+watch:(c)=>`<rect x="38" y="8" width="24" height="26" rx="5" fill="#2B3445"/><rect x="38" y="66" width="24" height="26" rx="5" fill="#2B3445"/><rect x="28" y="28" width="44" height="44" rx="12" fill="#1D2433"/><rect x="33" y="33" width="34" height="34" rx="8" fill="${c}"/><path d="M50 40v10l6 4" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="72" y="44" width="4" height="10" rx="2" fill="#2B3445"/>`,
+sweater:(c)=>`<path d="M36 14l-22 10-6 50h14l4-30v46h48V44l4 30h14l-6-50-22-10c-2 6-8 9-14 9s-12-3-14-9z" fill="${c}"/><path d="M26 86h48" stroke="#000" opacity=".1" stroke-width="6"/><path d="M36 14c2 6 8 9 14 9s12-3 14-9" fill="none" stroke="#000" opacity=".12" stroke-width="4"/>`,
+power:(c)=>`<rect x="26" y="14" width="48" height="74" rx="10" fill="#1D2433"/><rect x="31" y="19" width="38" height="64" rx="7" fill="${c}"/><path d="M53 32L42 52h9l-3 16 12-21h-9z" fill="#fff"/><rect x="44" y="9" width="12" height="6" rx="2" fill="#2B3445"/>`,
+sneaker:(c)=>`<path d="M10 66c0-6 3-10 8-12l14-6 10-14c6 2 10 8 16 12l14 6c10 3 18 6 18 14v6H10z" fill="${c}"/><path d="M10 72h80v6a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4z" fill="#F5F5F5"/><path d="M40 42l8 6M44 37l8 6" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>`
+};
+const PRODUCTS=[
+ {id:'p1',name:'Wireless Bluetooth Headphones',short:'Wireless Bluetooth',price:45000,cat:'Electronics',seller:'Chidera Electronics',rating:4.8,stock:12,art:'headphones',c:'#1D2433',bg:'#E6D6C3',sales:200,about:'Over-ear headphones with 30-hour battery life, active noise cancelling and a fold-flat design for commutes across Lagos.'},
+ {id:'p2',name:'Volt Runner',short:'Volt Runner',price:20000,cat:'Fashion',seller:'Chidera Electronics',rating:4.8,stock:12,art:'jacket',c:'#C9724F',bg:'#E7E8EC',sizes:['S','M','L','XL'],sales:200,about:'Stylish and comfortable, this versatile piece is perfect for everyday wear and special occasions. Made with quality fabric, it offers a great fit, a modern look, and lasting comfort.'},
+ {id:'p3',name:'Leather Tote Bag',short:'Leather Tote',price:32000,cat:'Bags',seller:'Ìlú Leatherworks',rating:4.7,stock:8,art:'tote',c:'#9A5A2E',bg:'#EFE3D6',sales:140,about:'Hand-stitched full-grain leather tote from Aba artisans, with an inner zip pocket and brass hardware.'},
+ {id:'p4',name:'Top-Handle Bag',short:'Top-Handle Bag',price:27500,cat:'Bags',seller:'Ìlú Leatherworks',rating:4.9,stock:5,art:'handbag',c:'#D62F2F',bg:'#F4E1DC',sales:140,about:'Structured top-handle bag with a detachable strap. Fits a phone, wallet and power bank.'},
+ {id:'p5',name:'Smartphone 128GB',short:'Smartphone 128GB',price:310000,cat:'Phones',seller:'Ikeja Mobile Hub',rating:4.6,stock:20,art:'phone',c:'#E8B79A',bg:'#E4E7EE',sales:320,about:'6.5" display, dual SIM, 5000mAh battery and 128GB storage. Sealed in box with one-year seller warranty.'},
+ {id:'p6',name:'Knit Sweater',short:'Knit Sweater',price:15000,cat:'Fashion',seller:'Lekki Threads',rating:4.5,stock:16,art:'sweater',c:'#8A6A9E',bg:'#ECE7F1',sizes:['S','M','L','XL'],sales:85,about:'Soft cotton-blend knit for harmattan mornings and air-conditioned offices.'},
+ {id:'p7',name:'Smart Watch',short:'Smart Watch',price:52000,cat:'Electronics',seller:'Chidera Electronics',rating:4.7,stock:9,art:'watch',c:'#2F7BFF',bg:'#DDE6F5',sales:200,about:'Heart rate, sleep and step tracking with a 7-day battery and water resistance.'},
+ {id:'p8',name:'Power Bank 20000mAh',short:'Power Bank',price:18000,cat:'Phones',seller:'Ikeja Mobile Hub',rating:4.8,stock:30,art:'power',c:'#22C55E',bg:'#E3F1E8',sales:320,about:'Charges a phone four times over. Fast charging on both USB-C and USB-A ports — handy during NEPA outages.'},
+ {id:'p9',name:'Canvas Sneakers',short:'Canvas Sneakers',price:24000,cat:'Fashion',seller:'Lekki Threads',rating:4.6,stock:14,art:'sneaker',c:'#C67B2E',bg:'#F1E4CC',sizes:['40','41','42','43'],sales:85,about:'Everyday canvas sneakers with a cushioned insole and gum rubber sole.'},
+ {id:'p10',name:'Studio Earbuds',short:'Studio Earbuds',price:21000,cat:'Electronics',seller:'Chidera Electronics',rating:4.4,stock:25,art:'headphones',c:'#F5F5F5',bg:'#2B3445',sales:200,about:'Wireless earbuds with charging case and touch controls.'}
+];
+const P=id=>PRODUCTS.find(p=>p.id===id);
+const art=(p,cls='art',tint,st='')=>`<div class="${cls}" style="background:${tint||p.bg};${st}"><svg viewBox="0 0 100 100" aria-hidden="true">${ART[p.art](p.c)}</svg></div>`;
+
+/* ---------- State ---------- */
+const S={
+  user:{name:'Boluwatife Kuye',first:'Boluwatife',email:'Kuyebolu101@gmail.com',phone:'08130612867'},
+  role:'buyer', cart:[], cat:'All', delivery:'standard', pay:'card',
+  ship:{name:'Boluwatife Kuye',phone:'08130612867',address:'21 Ekololu Street, Surulere',city:'Lagos',state:'Lagos',notes:''},
+  order:null, orders:[
+    {id:'AGR-8Q2D-7L40',pid:'p6',total:15000,date:'12 Oct 2026',status:'completed'},
+    {id:'AGR-3M1X-9K22',pid:'p3',total:32000,date:'4 Oct 2026',status:'cancelled'}
+  ],
+  recent:['Wireless headphones','Smart watch','Sneakers','Casual shirt'],
+  store:null, verify:'none', sellerProducts:[], twofa:false, onbIdx:0, rating:0, photo:null, idDoc:null, prodImgs:[],
+  addresses:[{label:'Home',line:'21 Ekololu Street, Surulere',line2:'Off Ojuelegba Road, Lagos',def:true},{label:'Office',line:'14 Adeola Odeku Street',line2:'Victoria Island, Lagos',def:false}]
+};
+const cartCount=()=>S.cart.reduce((a,c)=>a+c.qty,0);
+const subtotal=()=>S.cart.reduce((a,c)=>a+P(c.pid).price*c.qty,0);
+const fee=()=>S.delivery==='express'?5000:3000;
+
+/* ---------- Router ---------- */
+let stack=[];
+function go(name,opt={}){
+  if(opt.replace) stack.pop();
+  if(opt.reset) stack=[];
+  stack.push(name); render(name,opt.dir||'fwd');
+}
+function back(){ if(stack.length>1){stack.pop(); render(stack[stack.length-1],'back');} }
+function render(name,dir){
+  closeOverlay();
+  const html=V[name]();
+  const el=document.createElement('section');
+  el.className='screen'+(dir==='back'?' back-anim':dir==='fade'?' fade':dir==='none'?' still':'');
+  if(['splash','welcome','onb'].includes(name)) el.classList.add('hero');
+  el.innerHTML=html; el.dataset.view=name;
+  app.querySelectorAll('.screen').forEach(s=>s.remove());
+  app.prepend(el);
+  if(el.classList.contains('hero')) mountPattern(el);
+  (A[name]||(()=>{}))(el);
+}
+let toastT;
+function toast(msg,icon='check'){
+  let t=app.querySelector('.toast');
+  if(!t){t=document.createElement('div');t.className='toast';app.appendChild(t);}
+  t.innerHTML=ic(icon)+'<span>'+msg+'</span>'; t.classList.add('on');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2200);
+}
+function overlay(inner,sheet){
+  closeOverlay();
+  const o=document.createElement('div'); o.className='overlay'; o.dataset.ov='1';
+  if(!sheet) o.innerHTML=inner;
+  app.appendChild(o);
+  if(sheet){const s=document.createElement('div');s.className='sheet';s.dataset.ov='1';s.innerHTML='<div class="grab"></div>'+inner;app.appendChild(s);o.onclick=closeOverlay;}
+}
+function closeOverlay(){app.querySelectorAll('[data-ov]').forEach(n=>n.remove());}
+
+/* ---------- Hero pattern (animated) ---------- */
+function tileSVG(alt){
+  const s='rgba(255,255,255,'+(alt?'.16':'.085')+')';
+  const g=(x,y,path,r=0)=>`<g transform="translate(${x} ${y}) rotate(${r} 12 12)" fill="none" stroke="${s}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${path}</g>`;
+  const icons=alt
+   ?[g(14,74,I.pkg,-10),g(84,18,I.search,8)]
+   :[g(10,12,I.lock,-8),g(76,8,'<path d="M12 2.5l8 3v6.2c0 4.7-3.3 8.4-8 9.8-4.7-1.4-8-5.1-8-9.8V5.5z"/><path d="M8.5 12.2l2.4 2.4 4.6-4.8"/>',6),g(44,62,'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',0),g(94,80,'<path d="M12 2l2.4 2.1 3.2-.4.7 3.1 2.8 1.6-1.2 3 1.2 3-2.8 1.6-.7 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.7-3.1-2.8-1.6 1.2-3-1.2-3 2.8-1.6.7-3.1 3.2.4z"/><path d="M8.7 12.2l2.2 2.2 4.4-4.6"/>',12)];
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="130" height="130" viewBox="0 0 130 130">${icons.join('')}</svg>`;
+}
+const TILE_A='url("data:image/svg+xml;utf8,'+encodeURIComponent(tileSVG(false))+'")';
+const TILE_B='url("data:image/svg+xml;utf8,'+encodeURIComponent(tileSVG(true))+'")';
+function mountPattern(el){
+  const a=document.createElement('div');a.className='pattern';a.style.backgroundImage=TILE_A;
+  const b=document.createElement('div');b.className='pattern b';b.style.backgroundImage=TILE_B;
+  const glow=document.createElement('div');glow.className='hero-glow';
+  const sw=document.createElement('div');sw.className='sweep';
+  el.prepend(sw,glow,b,a);
+  el.addEventListener('pointermove',e=>{
+    const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    a.style.transform=`translate(${x*-14}px,${y*-14}px)`; b.style.transform=`translate(${x*-26}px,${y*-26}px)`;
+    glow.style.translate=`${x*30}px ${y*30}px`;
+  });
+}
+
+/* ---------- Shared bits ---------- */
+const top=(title,right='')=>`<div class="topbar"><button class="iconbtn" data-back aria-label="Back">${ic('back')}</button><h2>${title}</h2><div>${right}</div></div>`;
+const cartBtn=()=>`<button class="iconbtn" data-go="cart" aria-label="Cart">${ic('cart')}${cartCount()?`<span class="badge">${cartCount()}</span>`:''}</button>`;
+const stepper=n=>{
+  const st=(i,l)=>`<div class="step ${i<n?'done':i===n?'on':''}"><i>${i<n?ic('check'):i}</i>${l}</div>`;
+  return `<div class="stepper">${st(1,'Delivery')}<div class="bar ${n>1?'on':''}"></div>${st(2,'Review')}<div class="bar ${n>2?'on':''}"></div>${st(3,'Payment')}</div>`;
+};
+const statusPill=s=>({
+  awaiting:`<span class="pill amber">${ic('clock')}Awaiting payment</span>`,
+  held:`<span class="pill green">${ic('shield')}Funds held</span>`,
+  dispatched:`<span class="pill blue">${ic('truck')}Dispatched</span>`,
+  delivered:`<span class="pill blue">${ic('pkg')}Delivered</span>`,
+  released:`<span class="pill green">${ic('check')}Completed</span>`,
+  failed:`<span class="pill red">${ic('err')}Failed</span>`
+}[s]);
+const STAGE={awaiting:1,held:2,dispatched:3,delivered:4,released:5};
+function orderCard(o,btn=''){
+  const p=P(o.items[0].pid), more=o.items.length>1?` +${o.items.length-1} more`:'';
+  return `<div class="ordercard">
+    <div class="oc-head"><div><small>Order</small><b>${o.id}</b></div>${statusPill(o.status)}</div>
+    <div class="oc-item">${art(p,'art',null,'width:64px;aspect-ratio:1.15')}<div class="meta"><b>${p.short}${more}</b><span>${p.seller}</span></div><span class="amt">${N(o.total)}</span></div>
+    ${o.status==='awaiting'?`<div class="note amber">${ic('shield')}<div><b>Not yet protected</b><span>Complete your payment to protect your money</span></div></div>`:''}
+    ${o.status==='held'?`<div class="note green">${ic('lock')}<div><b>Agora is holding ${N(o.total)}</b><span>The seller has 48 hours to dispatch</span></div></div>`:''}
+    ${o.status!=='failed'?`<div class="progress">${[1,2,3,4,5].map(i=>`<i class="${i<=STAGE[o.status]?'on':''}"></i>`).join('')}</div>`:''}
+    ${btn}
+  </div>`;
+}
+function confetti(){
+  const cols=['#005AE6','#22C55E','#F59E0B','#2F7BFF','#EF4444'];
+  return `<div class="confetti">${Array.from({length:22},(_,i)=>{const a=(i/22)*Math.PI*2,d=70+Math.random()*70;return `<i style="background:${cols[i%5]};--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d-20}px;--r:${Math.random()*540}deg;animation-delay:${.15+Math.random()*.15}s"></i>`}).join('')}</div>`;
+}
+const field=(id,label,val='',opts={})=>`<div class="field"><label for="${id}">${label}</label><div class="input">${opts.area?`<textarea id="${id}" placeholder="${opts.ph||''}">${val}</textarea>`:`<input id="${id}" type="${opts.type||'text'}" value="${val}" placeholder="${opts.ph||''}" ${opts.attrs||''}>`}${opts.pw?`<button type="button" class="trail" data-act="pw" aria-label="Show password">${ic('eyeoff')}</button>`:''}${opts.trail||''}</div></div>`;
+
+/* ---------- Views ---------- */
+const V={
+splash:()=>`<div class="welcome" style="justify-content:center"><div class="mid"><div class="logo-wrap" style="transform:scale(1.3)"><span class="ring"></span><span class="ring"></span><div class="logo-drop">${LOGO(true)}</div></div></div></div>`,
+
+welcome:()=>`<div class="welcome">
+  <div class="mid">
+    <div class="logo-wrap"><span class="ring"></span><span class="ring"></span><div class="logo-drop"><div class="logo-float">${LOGO(true)}</div></div></div>
+    <h1>${['Agora','Marketplace'].map((w,i)=>`<span class="word" style="animation-delay:${.55+i*.12}s">${w}</span>`).join(' ')}</h1>
+    <p class="rise" style="animation-delay:.85s">Shop safe. Your money is held until your order arrives.</p>
+    <div class="chips-trust rise" style="animation-delay:1.05s"><span>${ic('lock')}Escrow payments</span><span>${ic('check')}Verified sellers</span><span>${ic('pkg')}Easy returns</span></div>
+  </div>
+  <div class="actions">
+    <button class="btn rise" style="animation-delay:1.25s" data-act="buy">I want to buy on Agora</button>
+    <button class="btn ghost rise" style="animation-delay:1.4s" data-act="sell">I want to sell on Agora</button>
+  </div>
+</div>`,
+
+create:()=>`${top('')}
+  <div class="intro"><div class="mini-logo">${LOGO(false)}</div><h1>Create your account</h1><p>Join Agora and start shopping with peace of mind.</p></div>
+  <div class="list-gap">
+    <button class="social" data-act="oauth">${'<span class="l">'+ic('google')+'Continue with Google</span>'}${ic('chev','chev')}</button>
+    <button class="social" data-act="oauth">${'<span class="l">'+ic('apple')+'Continue with Apple</span>'}${ic('chev','chev')}</button>
+    <div class="divider">or</div>
+    <button class="social" data-go="signup">${'<span class="l">'+ic('doc')+'Sign up with email</span>'}${ic('chev','chev')}</button>
+  </div>
+  <p class="center-note" style="margin-top:30px">Already have an account? <button class="link" data-go="signin">Log in</button></p>`,
+
+signup:()=>`${top('')}
+  <div class="intro" style="margin-top:0"><h1>Sign up with your email</h1><p>Enter your details to get started.</p></div>
+  <form class="form" id="f-signup" novalidate>
+    ${field('su-name','Full Name',S.user.name)}
+    ${field('su-email','Email Address',S.user.email,{type:'email'})}
+    ${field('su-pw','Password','',{type:'password',ph:'Create a password',pw:1})}
+    <div class="err" id="su-err"></div>
+    <button class="btn" type="submit">Create account</button>
+    <p class="fine">By creating an account you agree to our <span class="link">Terms of Service</span> and <span class="link">Privacy Policy</span>.</p>
+  </form>`,
+
+onb:()=>{
+  const slides=[
+   {t:'Secure Payments',p:'Your payment is held safely until you confirm that your order has arrived and is as described.',a:ILL.secure},
+   {t:'Verified Sellers',p:'All sellers on Agora are verified, so you can shop with confidence and peace of mind.',a:ILL.verified},
+   {t:'Easy Returns',p:'If something is not right, we have your back with a simple and transparent return process.',a:ILL.returns}];
+  const s=slides[S.onbIdx];
+  return `<div class="onb"><button class="skip" data-go="allset">Skip</button>
+   <div class="stage" id="stage"><div class="art rise">${s.a}</div><div class="rise" style="animation-delay:.12s"><h1>${s.t}</h1><p>${s.p}</p></div></div>
+   <div class="dots">${slides.map((_,i)=>`<i class="${i===S.onbIdx?'on':''}"></i>`).join('')}</div>
+   <button class="btn" data-act="onbnext">${S.onbIdx<2?'Continue':'Get started'}</button></div>`;
+},
+
+allset:()=>`<div class="status" style="margin-top:90px">${confetti()}<div class="badge-ic green">${ic('check')}</div><h1>You're all set!</h1><p>Welcome to Agora. Let's get you shopping safely.</p></div>
+  <button class="btn" data-act="start">Start Shopping</button>`,
+
+signin:()=>`${top('')}
+  <div class="intro" style="margin-top:0"><div class="mini-logo">${LOGO(false)}</div><h1>Welcome Back!</h1><p>Sign in to your account to continue shopping safely.</p></div>
+  <form class="form" id="f-signin" novalidate>
+    ${field('si-email','Email Address',S.user.email,{type:'email'})}
+    ${field('si-pw','Password','',{type:'password',ph:'Enter your password',pw:1})}
+    <div style="display:flex;justify-content:space-between;align-items:center"><span class="check on" data-act="tick" role="checkbox" aria-checked="true" tabindex="0"><span class="box">${ic('check')}</span>Remember me</span><button type="button" class="textlink" data-go="forgot">Forgot password?</button></div>
+    <div class="err" id="si-err"></div>
+    <button class="btn" type="submit">Sign In</button>
+    <div class="divider">Or</div>
+    <button type="button" class="btn outline" data-act="oauthin">${ic('google')}Continue with Google</button>
+  </form>
+  <p class="center-note" style="margin-top:22px">Don't have an account? <button class="link" data-go="create">Sign up</button></p>`,
+
+forgot:()=>`${top('')}
+  <div class="intro" style="margin-top:0"><div class="mini-logo">${LOGO(false)}</div><h1>Forgot your password?</h1><p>Enter the email address linked to your account and we will send you a code.</p></div>
+  <form class="form" id="f-forgot" novalidate>${field('fp-email','Email Address',S.user.email,{type:'email'})}<button class="btn" type="submit">Send Code</button></form>`,
+
+otp:()=>`${top('')}
+  <div class="intro" style="margin-top:0"><div class="badge-ic blue">${ic('lock')}</div><h1>Enter the code</h1><p>We sent a 4-digit code to ${S.user.email}. Any 4 digits work in this prototype.</p></div>
+  <div class="otp">${[0,1,2,3].map(i=>`<input id="otp${i}" inputmode="numeric" maxlength="1" aria-label="Digit ${i+1}">`).join('')}</div>
+  <p class="center-note" style="margin:22px 0">Didn't get it? <button class="link" data-act="resend">Resend code</button></p>
+  <button class="btn" data-act="verifyotp">Verify</button>`,
+
+newpw:()=>`${top('')}
+  <div class="intro" style="margin-top:0"><div class="mini-logo">${LOGO(false)}</div><h1>Create New Password</h1><p>Your new password must be different from your previous password and at least 8 characters long.</p></div>
+  <form class="form" id="f-newpw" novalidate>
+    ${field('np1','New Password','',{type:'password',ph:'Enter new password',pw:1})}
+    ${field('np2','Confirm Password','',{type:'password',ph:'Confirm new password',pw:1})}
+    <div class="err" id="np-err"></div>
+    <button class="btn" type="submit">Reset Password</button>
+  </form>`,
+
+resetdone:()=>`<div class="status" style="margin-top:90px">${confetti()}<div class="badge-ic green">${ic('check')}</div><h1>Password reset</h1><p>Your password has been updated. Sign in with your new password.</p></div>
+  <button class="btn" data-act="tosignin">Back to Sign In</button>`,
+
+home:()=>{
+  const cats=[['All','grid'],['Electronics','laptop'],['Phones','headph'],['Bags','bag'],['Fashion','shirt']];
+  const list=PRODUCTS.filter(p=>S.cat==='All'||p.cat===S.cat);
+  return `<div class="brandbar"><div class="brand">${LOGO(false)}Agora</div><div style="display:flex;align-items:center;gap:6px">${cartBtn()}<button class="avatar" data-go="profile" aria-label="Profile">BK</button></div></div>
+  <button class="search" data-go="search">${ic('search')}Search for shoes, bags, clothes...</button>
+  ${S.order&&S.order.status!=='released'?`<div data-go="${S.order.status==='awaiting'?'pending':S.order.status==='delivered'?'arrived':'track'}" style="cursor:pointer">${orderCard(S.order)}</div>`:''}
+  <div class="banner"><h3>Black Friday, protected</h3><p>Every purchase is held in escrow</p>
+   ${[[58,8,-18],[74,52,14],[88,16,22],[64,74,-8],[46,40,10],[92,70,-20]].map(([x,y,r],i)=>`<span class="tag" style="left:${x}%;top:${y}%;rotate:${r}deg;animation-delay:${i*.4}s">SALE</span>`).join('')}</div>
+  <div class="cats" role="tablist">${cats.map(([c,i])=>`<button class="cat ${S.cat===c?'on':''}" data-cat="${c}" role="tab" aria-selected="${S.cat===c}">${ic(i)}${c}</button>`).join('')}</div>
+  <div class="grid">${list.map((p,i)=>pcard(p,i)).join('')}</div>`;
+},
+
+search:()=>`<div class="searchbar"><button class="iconbtn" data-back aria-label="Back">${ic('back')}</button><div class="input"><span class="lead">${ic('search')}</span><input id="q" placeholder="Search for shoes, bags, clothes..." autocomplete="off"></div></div>
+  <div id="sres"></div>
+  <div id="sdef">
+  ${S.recent.length?`<div style="display:flex;justify-content:space-between"><b>Recent Searches</b><button class="textlink" data-act="clearrecent">Clear all</button></div>
+  <div class="recent">${S.recent.map((r,i)=>`<div><button class="q" data-q="${r}">${r}</button><button data-rm="${i}" aria-label="Remove">${ic('x')}</button></div>`).join('')}</div>`:''}
+  <b>Browse by category</b>
+  <div class="ctiles">${[['Fashion','p2'],['Footwear','p9'],['Bags','p4'],['Electronics','p1'],['Phones','p5'],['Watches','p7'],['Power','p8'],['Knitwear','p6']].map(([n,id])=>`<button data-q="${n}">${art(P(id))}${n}</button>`).join('')}</div>
+  <b>Trending now</b>
+  <div class="grid" style="margin-top:14px">${[P('p7'),P('p4')].map(pcard).join('')}</div></div>`,
+
+product:()=>{
+  const p=P(S.pid); const tints=[p.bg,'#E3E6EC','#ECE7DF','#E2E9F4'];
+  return `${top('Details',cartBtn())}
+  <div id="hero-img">${art(p,'art hero-img',tints[S.thumb||0])}</div>
+  <div class="thumbs">${tints.map((t,i)=>`<button class="${(S.thumb||0)===i?'on':''}" data-thumb="${i}" aria-label="View ${i+1}">${art(p,'art',t)}</button>`).join('')}</div>
+  <div class="pd-title"><h1>${p.name}</h1><span class="price">${N(p.price)}</span></div>
+  <div class="subrow"><span class="rate" style="color:var(--ink)">${ic('star')}${p.rating}</span><span>${p.stock} in stock</span></div>
+  <div class="small-note">Price includes everything. No fee added at checkout.</div>
+  ${p.sizes?`<div class="sizes" role="radiogroup" aria-label="Size">${p.sizes.map(s=>`<button class="${S.size===s?'on':''}" data-size="${s}" role="radio" aria-checked="${S.size===s}">${s}</button>`).join('')}</div>`:''}
+  <div class="sellerrow">${ic('store','ic')}<div><b>${p.seller}</b><span>Verified seller with over ${p.sales} sales</span></div></div>
+  <div class="escrow-box">${ic('shield')}<div><b>Protected by Agora escrow</b><p>We hold your ${N(p.price)} until you confirm this arrived as described. If the seller does not dispatch within 48 hours, you are refunded automatically.</p></div></div>
+  <div class="about"><b>About this item</b><p>${p.about}</p></div>
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" id="addbtn" data-act="add">Add to Cart</button></div>`;
+},
+
+cart:()=>{
+  if(!S.cart.length) return `${top('Your Cart')}<div class="empty" style="margin-top:40px">${ic('cart')}<b>Your cart is empty</b><p>Everything you add is protected by Agora escrow until it arrives.</p><button class="btn small" data-act="tohome" style="width:auto;padding:0 22px">Browse the marketplace</button></div>`;
+  return `${top('Your Cart',cartBtn())}
+  <div class="list-gap">${S.cart.map((c,i)=>{const p=P(c.pid);return `<div class="citem">${art(p)}<div class="info"><b>${p.short}${c.size?' '+c.size:''}</b><span>Qty ${c.qty}</span><div class="qty"><button data-dec="${i}" aria-label="Decrease">${ic('minus')}</button><output>${c.qty}</output><button data-inc="${i}" aria-label="Increase">${ic('plus')}</button></div></div><button class="trash" data-del="${i}" aria-label="Remove">${ic('trash')}</button><span class="amt">${N(p.price*c.qty)}</span></div>`}).join('')}</div>
+  <div class="note green" style="margin-top:22px;padding:14px">${ic('shield')}<span style="opacity:1">All items are verified by buyers before funds are released.</span></div>
+  <div class="sumrows" style="margin-top:24px"><div><span>Subtotal</span><span>${N(subtotal())}</span></div><div class="total"><span>Total</span><span>${N(subtotal())}</span></div></div>
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-go="checkout">Proceed to Checkout</button></div>`;
+},
+
+checkout:()=>`${top('Checkout')}${stepper(1)}
+  <div class="sect">Shipping Details</div>
+  <form class="form" id="f-ship" novalidate>
+    ${field('sh-name','Full Name',S.ship.name)}
+    ${field('sh-phone','Phone Number',S.ship.phone,{type:'tel'})}
+    ${field('sh-addr','Address',S.ship.address)}
+    <div class="row2">${field('sh-city','City',S.ship.city)}
+      <div class="field"><label for="sh-state">State</label><div class="input"><select id="sh-state">${['Lagos','Ogun','Oyo','Abuja (FCT)','Rivers','Kano','Enugu'].map(s=>`<option ${S.ship.state===s?'selected':''}>${s}</option>`).join('')}</select><span class="trail">${ic('down')}</span></div></div></div>
+    ${field('sh-notes','Additional notes (optional)',S.ship.notes,{ph:'Gate code, landmark, best time to call'})}
+    <div class="sect" style="margin-top:8px">Delivery Method</div>
+    <div class="list-gap">
+      <button type="button" class="radio-card ${S.delivery==='standard'?'on':''}" data-del-m="standard"><span class="dot"></span>${ic('truck','ic')}<span class="t"><b>Standard Delivery</b><span>2–5 business days</span></span><span class="p">₦3,000</span></button>
+      <button type="button" class="radio-card ${S.delivery==='express'?'on':''}" data-del-m="express"><span class="dot"></span>${ic('bolt','ic')}<span class="t"><b>Express Delivery</b><span>1–2 business days</span></span><span class="p">₦5,000</span></button>
+    </div>
+    <div class="err" id="sh-err"></div>
+    <button class="btn" type="submit" style="margin-top:10px">Continue to review</button>
+  </form>`,
+
+review:()=>`${top('Checkout')}${stepper(2)}
+  <div class="panel addr">${ic('pin')}<div style="flex:1"><div style="display:flex;justify-content:space-between"><b>${S.ship.name}</b><button class="link" data-back>Change</button></div><p>${S.ship.address}, ${S.ship.city}.<br>${S.ship.phone}</p></div></div>
+  <div class="panel sumrows" style="margin-top:16px"><div><span>Items (${cartCount()})</span><b>${N(subtotal())}</b></div><div><span>Delivery</span><b>${N(fee())}</b></div><div class="total"><span>Total Pay</span><span>${N(subtotal()+fee())}</span></div></div>
+  <div class="money" style="margin-top:26px"><h4>${ic('lock')}What happens to your money</h4><ul>
+   <li>${ic('check')}Agora holds it. The seller cannot touch it.</li>
+   <li>${ic('check')}No dispatch within 48 hours means an automatic refund.</li>
+   <li>${ic('check')}After delivery you have 72 hours to confirm or report a problem.</li>
+   <li>${ic('check')}Only then is the seller paid.</li></ul></div>
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-go="payment">Pay ${N(subtotal()+fee())} into escrow</button></div>`,
+
+payment:()=>{
+  const tot=subtotal()+fee();
+  return `${top('Checkout')}${stepper(3)}
+  <div class="panel"><b>Payment</b><p style="margin:8px 0 16px;color:var(--muted);font-size:13.5px;line-height:1.5">Funds route to a licensed custodian account. Agora instructs the release, it never holds your money directly.</p>
+   <div class="list-gap">
+    <button class="radio-card ${S.pay==='card'?'on':''}" data-pay="card"><span class="dot"></span>${ic('card','ic')}<span class="t"><b>Card</b><span>Visa, Mastercard, Verve</span></span></button>
+    <button class="radio-card ${S.pay==='transfer'?'on':''}" data-pay="transfer"><span class="dot"></span>${ic('bank','ic')}<span class="t"><b>Bank transfer</b><span>A one-time account number</span></span></button>
+   </div></div>
+  ${S.pay==='card'?`<div class="sect" style="margin-top:24px">Card Details</div>
+   <form class="form" id="f-card" novalidate>
+    ${field('cc-num','Card Number','',{ph:'0000 0000 0000 0000',attrs:'inputmode="numeric" maxlength="19" autocomplete="off"'})}
+    <div class="row2">${field('cc-exp','Expiry Date','',{ph:'MM/YY',attrs:'inputmode="numeric" maxlength="5"'})}${field('cc-cvv','CVV','',{ph:'123',attrs:'inputmode="numeric" maxlength="3"'})}</div>
+    ${field('cc-name','Cardholder Name',S.user.name)}
+    <div class="err" id="cc-err"></div>
+   </form>`:`<div class="panel" style="margin-top:20px"><b>Account Details</b><p style="margin:6px 0 4px;color:var(--muted);font-size:13px">Transfer exactly ${N(tot)} to this account. It expires in 30 minutes.</p>
+    <div class="acct"><div><small>Account Number</small><b id="acctno">1503902382</b></div><button class="copy" data-copy="1503902382">${ic('copy')}Copy</button></div>
+    <div class="acct"><div><small>Account Name</small><b>Agora Marketplace</b></div></div>
+    <div class="acct"><div><small>Bank Name</small><b>Paystack-Titan</b></div><button class="copy" data-copy="Paystack-Titan">${ic('copy')}Copy</button></div></div>`}
+  <div style="margin-top:24px"><b>Order Summary</b><div class="sumrows" style="margin-top:14px"><div><span>Items</span><span>${N(subtotal())}</span></div><div><span>Delivery</span><span>${N(fee())}</span></div><div class="total"><span>Total Pay</span><span>${N(tot)}</span></div></div></div>
+  <div class="spacer"></div>
+  <div class="sticky-cta">${S.pay==='card'?`<button class="btn" data-act="paycard">${ic('lock')}Pay ${N(tot)}</button>`:`<button class="btn" data-act="paytransfer">I have made the transfer</button>`}
+   <button class="demo" data-act="payfail">${ic('play')}Prototype: simulate a failed payment</button></div>`;
+},
+
+success:()=>`<div class="status">${confetti()}<div class="badge-ic green">${ic('check')}</div><h1>Order Confirmed</h1><p>Agora is holding ${N(S.order.total)}. Nobody is paid until you confirm your items arrived as described.</p></div>
+  ${orderCard(S.order)}
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-go="track">Track order</button><button class="btn outline" data-act="tohome">Continue shopping</button></div>`,
+
+pending:()=>`<div class="status"><div class="badge-ic amber">${ic('clock')}</div><h1>Order Pending</h1><p>We are waiting to receive your transfer of ${N(S.order.total)}. Once it lands, Agora holds it until you confirm delivery.</p></div>
+  ${orderCard(S.order)}
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-act="confirmtransfer">Check payment status</button><button class="btn outline" data-act="tohome">Back to home</button></div>`,
+
+failed:()=>`<div class="status"><div class="badge-ic red">${ic('err')}</div><h1>Transaction Failed</h1><p>We could not complete your payment. You have not been charged. Check your card details or try bank transfer.</p></div>
+  ${orderCard(S.failOrder)}
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-act="retry">Try again</button><button class="btn outline" data-act="dismissfail">Dismiss</button></div>`,
+
+track:()=>{
+  const o=S.order; const st=STAGE[o.status];
+  const steps=[['Money held by Agora',o.heldAt],['Dispatched by seller',o.dispAt||'Seller has 48 hours to dispatch'],['Delivered',o.delAt||'Estimated 2–5 business days'],['Released to the seller','After you confirm delivery']];
+  const p=P(o.items[0].pid);
+  return `${top('Track order')}
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px"><div><b style="font-size:20px">Order</b><div style="color:var(--muted);font-size:13.5px;margin-top:6px">${o.id}</div></div><b style="font-variant-numeric:tabular-nums">${N(o.total)}</b></div>
+  <div class="track">
+   <div class="oc-head"><div><small style="color:var(--muted)">Order</small><b style="font-size:14px">${o.id}</b></div>${statusPill(o.status)}</div>
+   <div class="oc-item" style="margin-top:14px">${art(p,'art',null,'width:86px;aspect-ratio:1.2')}<div class="meta"><b>${p.short}</b><span>${p.seller}</span></div><span class="amt">${N(o.total)}</span></div>
+   <div class="tl">${steps.map(([t,s],i)=>{const n=i+2;const cls=n<=st?'done':n===st+1?'now':'';return `<div class="st ${cls}"><span class="dot">${n<=st?ic('check'):''}</span><div><b>${t}</b><span>${s}</span></div></div>`}).join('')}</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="sticky-cta">
+   ${o.status==='dispatched'?`<button class="btn" data-act="rider">${ic('phone')}Contact Rider</button>`:''}
+   ${o.status==='held'?`<button class="demo" data-act="simdispatch">${ic('play')}Prototype: seller dispatches the order</button>`:''}
+   ${o.status==='dispatched'?`<button class="demo" data-act="simdeliver">${ic('play')}Prototype: rider delivers the order</button>`:''}
+   ${o.status==='delivered'?`<button class="btn" data-go="arrived">Confirm Delivery</button>`:''}
+  </div>`;
+},
+
+arrived:()=>{const p=P(S.order.items[0].pid);return `${top('')}
+  <div class="intro" style="margin-top:0"><div style="width:240px;height:170px">${ILL.arrived}</div><h1>Your order is here!</h1><p>Please confirm that you've received your item in good condition before we release the payment to the seller.</p></div>
+  <div class="oc-item" style="border:0;background:var(--card);border-radius:16px;padding:14px">${art(p,'art',null,'width:86px;aspect-ratio:1.2')}<div class="meta"><b>${p.short}</b><span>${p.seller}</span></div><span class="amt">${N(S.order.total)}</span></div>
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-go="confirm">Confirm Delivery</button><button class="btn outline" data-act="problem">Report a problem</button></div>`},
+
+confirm:()=>`${top('Confirm your order')}
+  <p class="center-note" style="margin:-6px 0 18px">Take a photo of the item to confirm delivery</p>
+  <label class="photo-box" for="ph-in">${S.photo?`<img src="${S.photo}" alt="Your delivery photo">`:`<div>${ic('camera')}<p style="margin:8px 0 0">Tap to take or upload a photo</p></div>`}</label>
+  <input type="file" id="ph-in" accept="image/*" capture="environment" class="vh">
+  ${S.photo?`<label for="ph-in" class="btn outline" style="margin-top:18px;cursor:pointer">${ic('camera')}Retake photo</label>`:''}
+  <p class="center-note" style="margin-top:18px">This helps us keep your order safe and ensures the seller gets paid.</p>
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-act="confirmed" ${S.photo?'':'disabled'}>Continue</button><button class="demo" data-act="skipphoto">${ic('play')}Prototype: use a sample photo</button></div>`,
+
+delivered:()=>{const p=P(S.order.items[0].pid);return `<div class="status">${confetti()}<div class="badge-ic green">${ic('check')}</div><h1>Order Delivered</h1><p>You've confirmed that you received your item. ${N(S.order.total)} will be released to the seller.</p></div>
+  <div class="oc-item" style="border:0;background:var(--card);border-radius:16px;padding:14px">${art(p,'art',null,'width:86px;aspect-ratio:1.2')}<div class="meta"><b>${p.short}</b><span>${p.seller}</span></div><span class="amt">${N(S.order.total)}</span></div>
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-go="rate">Rate your experience</button><button class="btn outline" data-go="orders">View order details</button></div>`},
+
+rate:()=>`${top('')}
+  <div class="intro" style="margin-top:0"><div class="badge-ic blue" style="color:var(--amber);background:var(--amber-50)">${ic('smile')}</div><h1>How was your experience?</h1><p>Your feedback helps us improve and support our sellers.</p></div>
+  <div class="stars">${[1,2,3,4,5].map(i=>`<button data-star="${i}" class="${i<=S.rating?'on':''}" aria-label="${i} star">${ic('star')}</button>`).join('')}</div>
+  <p class="center-note" style="margin:12px 0 26px" id="ratelbl">${['Tap a star to rate','Poor','Fair','Good','Very good','Excellent'][S.rating]}</p>
+  ${field('rv','Leave a review (optional)','',{area:1,ph:'Tell us about your experience'})}
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-act="submitrate" ${S.rating?'':'disabled'}>Submit</button></div>`,
+
+profile:()=>`${top('Profile')}
+  <div class="prof"><div class="avatar">BK</div><b>${S.user.name}</b><span>${S.user.email}</span></div>
+  <div class="menu">
+   <button data-go="orders">${ic('pkg')}Orders${ic('chev','chev')}</button>
+   <button data-go="addresses">${ic('pin')}Delivery address${ic('chev','chev')}</button>
+   <button data-go="escrow">${ic('shield')}How escrow works${ic('chev','chev')}</button>
+   <button data-go="settings">${ic('gear')}Settings${ic('chev','chev')}</button>
+  </div>
+  <div class="sellcard">${S.store?`<b>Selling on Agora</b><p>You have a store. Switch to seller view to manage orders and payouts.</p><button data-act="toseller">${ic('store')}Open seller dashboard</button>`:`<b>Sell on Agora</b><p>Open a verified store. Buyers pay into escrow, so they trust you from the first order.</p><button data-act="sell2">${ic('store')}Start selling</button>`}</div>`,
+
+orders:()=>{
+  const all=[...(S.order?[{id:S.order.id,pid:S.order.items[0].pid,total:S.order.total,date:'28 Oct 2026',status:S.order.status==='released'?'completed':'progress',live:1}]:[]),...S.orders];
+  const tab=S.otab||'All';
+  const map={All:()=>true,'In progress':o=>o.status==='progress','Completed':o=>o.status==='completed','Cancelled':o=>o.status==='cancelled'};
+  const list=all.filter(map[tab]);
+  const lbl={progress:'<span style="color:var(--blue)">In progress</span>',completed:'<span style="color:var(--green)">Completed</span>',cancelled:'<span style="color:var(--red)">Cancelled</span>'};
+  return `${top('Orders')}
+  <div class="tabs">${Object.keys(map).map(t=>`<button class="${tab===t?'on':''}" data-otab="${t}">${t}</button>`).join('')}</div>
+  ${list.length?`<div class="list-gap">${list.map(o=>{const p=P(o.pid);return `<div class="orow">${art(p)}<div class="t"><b>${p.short}</b><span>Order ID: ${o.id}</span><span>${o.date}</span><span style="font-size:13px">${lbl[o.status]}</span></div><div class="bt"><b>${N(o.total)}</b><button ${o.live?'data-act="trackcur"':'data-act="pastorder"'}>${o.status==='progress'?'Track order':'View details'}</button></div></div>`}).join('')}</div>`
+  :`<div class="empty">${ic('pkg')}<b>No orders here</b><p>When you buy something, this is where you follow the money and the package.</p><button class="btn small" data-act="tohome" style="width:auto;padding:0 22px">Browse the marketplace</button></div>`}`;
+},
+
+addresses:()=>`${top('Delivery address')}
+  <p style="color:var(--muted);margin:0 0 20px;line-height:1.5">Manage your saved addresses for faster checkout.</p>
+  <div class="list-gap">${S.addresses.map((a,i)=>`<div class="addrcard"><span class="hm">${ic(a.label==='Home'?'home':'store')}</span><div class="tx"><b>${a.label}${a.def?'<span class="pill green" style="padding:4px 8px">Default</span>':''}</b><p>${a.line}<br>${a.line2}</p>${a.def?'':`<button class="textlink" data-defaddr="${i}" style="margin-top:6px">Set as default</button>`}</div><button class="iconbtn" data-act="editaddr" aria-label="Edit">${ic('edit')}</button></div>`).join('')}</div>
+  <button class="btn outline" style="margin-top:24px" data-act="addaddr">${ic('plus')}Add new address</button>`,
+
+escrow:()=>`${top('How escrow works')}
+  <div class="intro" style="margin:0 0 6px"><span style="color:var(--green)">${ic('shield','icon-lg')}</span><h1 style="font-size:20px">Your purchase is protected</h1><p>Agora's escrow keeps your money safe until you receive and confirm your item.</p></div>
+  <div class="steps4">
+   <div class="st"><span class="n">1</span><div><b>Pay securely</b><span>Your funds are held safely by Agora.</span></div></div>
+   <div class="st"><span class="n">2</span><div><b>Seller ships your order</b><span>Track delivery updates in real time.</span></div></div>
+   <div class="st"><span class="n">3</span><div><b>Confirm your item</b><span>Inspect your purchase on arrival.</span></div></div>
+   <div class="st"><span class="n">4</span><div><b>Funds are released</b><span>The seller gets paid after confirmation.</span></div></div>
+  </div>
+  <div class="note blue" style="padding:16px">${ic('info')}<div><b>Having any issues?</b><span>Contact support before confirming delivery.</span></div></div>
+  <button class="btn" style="margin-top:16px" data-act="support">Contact support</button>`,
+
+settings:()=>`${top('Settings')}
+  <div style="display:flex;align-items:center;gap:14px;justify-content:center;margin:0 0 26px"><div class="avatar" style="width:52px;height:52px;border-radius:14px;font-size:18px">BK</div><div><b>${S.user.name}</b><div style="color:var(--muted);font-size:14px">${S.user.email}</div></div></div>
+  <div class="menu">
+   <button data-go="personal">${ic('user')}Personal information${ic('chev','chev')}</button>
+   <button data-go="security">${ic('lock')}Password &amp; security${ic('chev','chev')}</button>
+   <button data-act="soon">${ic('bell')}Notifications${ic('chev','chev')}</button>
+   <button data-act="soon">${ic('card')}Payment methods${ic('chev','chev')}</button>
+   <button data-act="soon">${ic('privacy')}Privacy${ic('chev','chev')}</button>
+  </div>
+  <div class="menu" style="margin-top:22px">
+   <button data-go="escrow">${ic('help')}Help &amp; support${ic('chev','chev')}</button>
+   <button data-act="soon">${ic('doc')}Terms &amp; conditions${ic('chev','chev')}</button>
+  </div>
+  <button class="btn outline" style="margin-top:26px;color:var(--red);border-color:var(--red)" data-act="logout">${ic('logout')}Log Out</button>`,
+
+personal:()=>`${top('Personal information')}
+  <div style="display:flex;justify-content:center;margin:4px 0 24px"><div class="avatar" style="width:76px;height:76px;border-radius:50%;font-size:24px;position:relative">BK<span style="position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;background:var(--blue);display:grid;place-items:center;border:3px solid var(--bg)">${ic('camera')}</span></div></div>
+  <form class="form" id="f-personal" novalidate>
+   ${field('pi-name','Full Name',S.user.name)}${field('pi-email','Email address',S.user.email,{type:'email'})}${field('pi-phone','Phone number','07056423703',{type:'tel'})}${field('pi-loc','Location','Lagos, Nigeria')}
+   <button class="btn" type="submit" style="margin-top:8px">Save changes</button></form>`,
+
+security:()=>`${top('Password &amp; security')}
+  <div class="list-gap">
+   <button class="setrow" data-go="newpw2" style="text-align:left">${ic('lock')}<div class="tx"><b>Change your password</b><span>Update your password regularly to keep your account secure.</span></div>${ic('chev')}</button>
+   <div class="setrow">${ic('shield')}<div class="tx"><b>Two-factor authentication</b><span>Ask for a code from your phone each time you sign in on a new device.</span></div><button class="toggle ${S.twofa?'on':''}" data-act="twofa" role="switch" aria-checked="${S.twofa}" aria-label="Two-factor authentication"></button></div>
+  </div>`,
+newpw2:()=>V.newpw(),
+
+/* ---------- Seller ---------- */
+verifyid:()=>`${top('Verify your identity')}
+  <div class="intro"><span>${ic('id','icon-lg')}</span><h1>Let's verify your identity</h1><p>This helps keep your account secure and builds trust with buyers.</p></div>
+  <div class="form">
+   <div class="field"><label for="idtype">Choose your ID type</label><div class="input"><select id="idtype"><option>NIN</option><option>International Passport</option><option>Driver's Licence</option><option>Voter's Card</option></select><span class="trail">${ic('down')}</span></div></div>
+   <label class="upload" for="id-in">${S.idDoc?`<img src="${S.idDoc}" alt="Your ID document">`:`${ic('upload')}<span style="font-weight:500;color:var(--ink)">Tap to upload</span><span style="font-size:12.5px">JPG, PNG or PDF, up to 5MB</span>`}</label>
+   <input type="file" id="id-in" accept="image/*,application/pdf" class="vh">
+  </div>
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-act="idnext" ${S.idDoc?'':'disabled'}>Continue</button><button class="demo" data-act="sampleid">${ic('play')}Prototype: use a sample ID</button></div>`,
+
+store:()=>`${top('Create your store')}
+  <div class="intro"><span>${ic('store','icon-lg')}</span><h1>Set up your store</h1><p>Give your store a name and a short description so customers know what you sell.</p></div>
+  <form class="form" id="f-store" novalidate>
+   ${field('st-name','Store Name','Kuye Store')}
+   ${field('st-desc','Description','',{area:1,ph:'Tell your customers about your store'})}
+   <div class="err" id="st-err"></div>
+   <button class="btn" type="submit">Next</button></form>`,
+
+addprod:()=>`${top('Add your products')}
+  <div class="intro" style="margin-top:0"><span>${ic('camera','icon-lg')}</span><h1 style="font-size:20px">Upload product images</h1><p>You can add up to five images.</p></div>
+  <div class="imgs">${[0,1,2,3,4].map(i=>S.prodImgs[i]?`<div><img src="${S.prodImgs[i]}" alt="Product image ${i+1}"></div>`:i===S.prodImgs.length?`<label for="pi-in" aria-label="Add image">${ic('plus')}</label>`:`<div style="cursor:default;opacity:.5"></div>`).join('')}</div>
+  <input type="file" id="pi-in" accept="image/*" multiple class="vh">
+  <form class="form" id="f-prod" novalidate style="margin-top:24px">
+   ${field('pr-name','Product Name','Wireless earbuds')}
+   <div class="field"><label for="pr-cat">Category</label><div class="input"><select id="pr-cat"><option value="">Select category</option><option selected>Electronics</option><option>Phones</option><option>Bags</option><option>Fashion</option></select><span class="trail">${ic('down')}</span></div></div>
+   ${field('pr-price','Price (₦)','25,000',{attrs:'inputmode="numeric"'})}
+   <div class="err" id="pr-err"></div>
+   <button class="btn" type="submit">Add product</button></form>`,
+
+vpending:()=>`<div class="status" style="margin-top:70px"><div class="badge-ic amber">${ic('clock')}</div><h1>Verification pending</h1><p>Your identity document has been received and is being reviewed.</p></div>
+  <div class="setrow" style="justify-content:center">${ic('clock')}<div class="tx" style="flex:none"><b>Estimated time</b><span>Up to 24 hours</span></div></div>
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="demo" data-act="approve">${ic('play')}Prototype: approve verification now</button></div>`,
+
+vdone:()=>`<div class="status" style="margin-top:70px">${confetti()}<div class="badge-ic green">${ic('check')}</div><h1>Identity verified</h1><p>Your ID has been verified. Buyers will see the verified badge on ${S.store?.name||'your store'}.</p></div>
+  <button class="btn" data-act="toseller">Start selling</button>`,
+
+seller:()=>{
+  const has=S.sellerHas!==false;
+  const rows=[['p1','AG0123458','12 Oct 2026',45000,'Delivered'],['p2','AG0123459','14 Oct 2026',20000,'In escrow'],['p7','AG0123462','19 Oct 2026',52000,'Delivered'],['p10','AG0123470','24 Oct 2026',21000,'Dispatched']];
+  const pill={Delivered:'green','In escrow':'amber',Dispatched:'blue'};
+  return `<div class="brandbar"><div class="brand">${LOGO(false)}Agora</div><div style="display:flex;align-items:center;gap:6px"><button class="iconbtn" data-act="tobuyer" aria-label="Switch to buying">${ic('cart')}</button><button class="avatar" data-go="profile" aria-label="Profile">BK</button></div></div>
+  <div class="greet"><h1>Good evening, ${S.user.first} 👋</h1><span class="verified">${ic('check')}Verified seller · ${S.store?.name||'Kuye Store'}</span></div>
+  <div class="stats">
+   <button class="stat g" data-go="paidout"><b>${has?'₦245,000':'₦0'}</b><span>Paid out</span></button>
+   <button class="stat b" data-go="held"><b>${has?'₦72,000':'₦0'}</b><span>Held in escrow</span></button>
+   <div class="stat"><b>${has?20+S.sellerProducts.length:S.sellerProducts.length}</b><span>Products live</span></div>
+  </div>
+  <div class="sechead"><b>Recent Orders</b>${has?'<button class="textlink">View all</button>':''}</div>
+  ${has?`<div class="list-gap">${rows.map(([pid,id,d,a,s])=>`<div class="srow">${art(P(pid))}<div class="tx"><span>Order ID: #${id}</span><span>${d}</span><b>${N(a)}</b></div><span class="pill ${pill[s]}">${s}</span></div>`).join('')}</div>`
+  :`<div class="empty">${ic('pkg')}<b>No orders yet</b><p>Share your store link. Buyers who see escrow protection convert better than buyers who do not.</p><button class="btn small" data-copy="agora.ng/kuye-store" style="width:auto;padding:0 22px">${ic('copy')}Copy store link</button></div>`}
+  <button class="demo" style="margin-top:20px" data-act="toggleseller">${ic('play')}Prototype: show ${has?'a new store with no orders':'a store with orders'}</button>`;
+},
+
+paidout:()=>`${top('Paid out')}
+  <div class="bigsum">${ic('wallet')}<div class="tx"><small>Total paid out</small><b id="po-amt">₦245,000</b></div><button data-act="hideamt" aria-label="Hide amount">${ic('eye')}</button></div>
+  <div class="stats" style="margin:16px 0 26px"><div class="stat"><span>Last 7 days</span><b>₦72,000</b></div><div class="stat"><span>Last 30 days</span><b>₦245,000</b></div><div class="stat"><span>Total orders</span><b>20</b></div></div>
+  <div class="sechead"><b>Recent payouts</b></div>
+  <div class="list-gap">${[[72000,'24 Oct 2026, 2:45 PM'],[45000,'19 Oct 2026, 11:10 AM'],[86000,'12 Oct 2026, 4:30 PM'],[42000,'5 Oct 2026, 9:05 AM']].map(([a,d])=>`<div class="srow"><span style="width:44px;height:44px;border-radius:12px;background:var(--blue-50);color:var(--blue);display:grid;place-items:center;flex:none">${ic('bank')}</span><div class="tx"><b style="font-weight:600">Payout to bank</b><span>GTBank, ***1234</span><span>${d}</span></div><div style="text-align:right;display:flex;flex-direction:column;gap:8px;align-items:flex-end"><span class="pill green">Completed</span><b style="font-variant-numeric:tabular-nums">${N(a)}</b></div></div>`).join('')}</div>`,
+
+held:()=>`${top('Held in escrow')}
+  <div class="bigsum">${ic('lock')}<div class="tx"><small>Total in escrow</small><b>₦72,000</b></div></div>
+  <div class="note green" style="margin:16px 0 26px;padding:16px">${ic('shield')}<div><b>Escrow keeps everyone safe</b><span>Funds are released to you once the buyer confirms they've received the item in good condition.</span></div></div>
+  <div class="sechead"><b>Orders with funds in escrow</b></div>
+  <div class="list-gap">${[['p2','AGO1234','24 Oct 2026, 2:45 PM',20000],['p7','AGO1241','26 Oct 2026, 10:12 AM',52000]].map(([pid,id,d,a])=>`<div class="srow">${art(P(pid))}<div class="tx"><b style="font-weight:600">${P(pid).short}</b><span>Order #${id}</span><span>${d}</span></div><div style="text-align:right;display:flex;flex-direction:column;gap:8px;align-items:flex-end"><span class="pill amber">In escrow</span><b style="font-variant-numeric:tabular-nums">${N(a)}</b></div></div>`).join('')}</div>`
+};
+
+function pcard(p,i=0){
+  return `<button class="pcard" data-pid="${p.id}" style="animation-delay:${Math.min(i,8)*.04}s">${art(p)}<span class="nm">${p.short}</span><span class="pr"><b>${N(p.price)}</b><span class="rate">${ic('star')}${p.rating}</span></span><span class="sl">${p.seller}</span><span class="escrow-chip">${ic('shield')}Escrow protected</span></button>`;
+}
+
+/* ---------- Onboarding illustrations ---------- */
+const ILL={
+secure:`<svg viewBox="0 0 300 220"><ellipse cx="150" cy="206" rx="120" ry="8" fill="#000" opacity=".18"/>
+ <g class="bob"><rect x="70" y="40" width="190" height="122" rx="10" fill="#E9EEF7"/><rect x="78" y="48" width="174" height="106" rx="5" fill="#fff"/><rect x="150" y="162" width="30" height="24" fill="#C9D3E4"/><rect x="128" y="184" width="74" height="8" rx="4" fill="#C9D3E4"/>
+ <path d="M165 66l34 12v24c0 20-14 34-34 40-20-6-34-20-34-40V78z" fill="#DCE8FF"/>
+ <g class="shackle"><path d="M152 100V90a13 13 0 0 1 26 0v10" fill="none" stroke="#0B3C91" stroke-width="6" stroke-linecap="round"/></g>
+ <rect x="145" y="98" width="40" height="32" rx="6" fill="#005AE6"/><circle cx="165" cy="111" r="4" fill="#0B3C91"/><rect x="163" y="113" width="4" height="9" rx="2" fill="#0B3C91"/></g>
+ <g class="bob2"><rect x="30" y="68" width="30" height="96" rx="8" fill="#1E6BF0"/><circle cx="45" cy="56" r="14" fill="#8A5A3B"/><rect x="34" y="160" width="9" height="40" rx="3" fill="#0F1729"/><rect x="47" y="160" width="9" height="40" rx="3" fill="#0F1729"/><rect x="34" y="52" width="22" height="6" rx="3" fill="#0F1729"/></g>
+ <circle cx="236" cy="30" r="5" fill="#fff" opacity=".7" class="pop"/><circle cx="100" cy="24" r="3" fill="#fff" opacity=".6" class="pop"/></svg>`,
+verified:`<svg viewBox="0 0 300 220"><ellipse cx="150" cy="206" rx="120" ry="8" fill="#000" opacity=".18"/>
+ <g class="bob"><rect x="150" y="20" width="96" height="176" rx="16" fill="#0F1729"/><rect x="157" y="30" width="82" height="156" rx="10" fill="#fff"/>
+ <circle cx="198" cy="72" r="22" fill="#DCE8FF"/><circle cx="198" cy="66" r="9" fill="#005AE6"/><path d="M182 86c3-8 9-11 16-11s13 3 16 11" fill="#005AE6"/>
+ <rect x="174" y="108" width="48" height="7" rx="3.5" fill="#E4E8EF"/><rect x="180" y="122" width="36" height="6" rx="3" fill="#E4E8EF"/>
+ <rect x="172" y="142" width="52" height="22" rx="8" fill="#E7F7ED"/><path d="M186 153l5 5 9-10" stroke="#22C55E" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+ <g class="pop"><circle cx="232" cy="46" r="17" fill="#22C55E"/><path d="M224 46l6 6 10-11" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+ <g class="bob2"><rect x="62" y="80" width="42" height="80" rx="12" fill="#2F7BFF"/><circle cx="83" cy="62" r="17" fill="#6B3F26"/><path d="M66 58c2-12 12-18 22-14 6 2 10 8 12 14-8-4-22-4-34 0z" fill="#0F1729"/><rect x="66" y="156" width="12" height="40" rx="4" fill="#0F1729"/><rect x="88" y="156" width="12" height="40" rx="4" fill="#0F1729"/><path d="M104 96l38-16" stroke="#2F7BFF" stroke-width="11" stroke-linecap="round"/></g></svg>`,
+returns:`<svg viewBox="0 0 300 220"><ellipse cx="150" cy="206" rx="120" ry="8" fill="#000" opacity=".18"/>
+ <g class="spin" opacity=".9"><path d="M150 30a78 78 0 0 1 74 54" fill="none" stroke="#7FB0FF" stroke-width="7" stroke-linecap="round"/><path d="M216 70l9 16 15-10" fill="none" stroke="#7FB0FF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M150 186a78 78 0 0 1-74-54" fill="none" stroke="#7FB0FF" stroke-width="7" stroke-linecap="round"/><path d="M84 146l-9-16-15 10" fill="none" stroke="#7FB0FF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+ <g class="bob"><path d="M150 64l52 22v54l-52 22-52-22V86z" fill="#E8C792"/><path d="M98 86l52 22 52-22-52-22z" fill="#F4DCB0"/><path d="M150 108v54l52-22V86z" fill="#D4AD72"/><path d="M124 75l52 22v16l-12-5v-14l-52-22z" fill="#fff" opacity=".7"/></g>
+ <g class="pop"><rect x="196" y="140" width="64" height="40" rx="10" fill="#fff"/><path d="M212 160l8 8 14-15" stroke="#22C55E" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="238" y="152" width="14" height="5" rx="2.5" fill="#E4E8EF"/><rect x="238" y="162" width="10" height="5" rx="2.5" fill="#E4E8EF"/></g></svg>`,
+arrived:`<svg viewBox="0 0 240 170" style="width:100%;height:100%"><ellipse cx="120" cy="160" rx="100" ry="7" fill="#0F1729" opacity=".08"/>
+ <g class="bob"><path d="M120 40l56 24v58l-56 24-56-24V64z" fill="#E8C792"/><path d="M64 64l56 24 56-24-56-24z" fill="#F4DCB0"/><path d="M120 88v58l56-24V64z" fill="#D4AD72"/><rect x="88" y="54" width="64" height="10" rx="3" fill="#005AE6" opacity=".8" transform="rotate(23 120 59)"/></g>
+ <g class="pop"><circle cx="186" cy="40" r="20" fill="#22C55E"/><path d="M177 40l7 7 11-12" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+ <circle cx="40" cy="44" r="5" fill="#2F7BFF" class="pop"/><circle cx="58" cy="22" r="3" fill="#F59E0B" class="pop"/><circle cx="210" cy="100" r="4" fill="#F59E0B" class="pop"/></svg>`
+};
+
+/* ---------- Actions after render ---------- */
+const A={
+splash:()=>{ setTimeout(()=>{ if(stack[stack.length-1]==='splash') go('welcome',{replace:true,dir:'fade'}); },2100); },
+onb:(el)=>{
+  const st=el.querySelector('#stage'); let x0=null;
+  st.addEventListener('pointerdown',e=>x0=e.clientX);
+  st.addEventListener('pointerup',e=>{ if(x0===null) return; const dx=e.clientX-x0; x0=null;
+    if(dx<-40) next(); else if(dx>40&&S.onbIdx>0){S.onbIdx--; render('onb','back');} });
+  function next(){ if(S.onbIdx<2){S.onbIdx++; render('onb','fwd');} else go('allset',{replace:true}); }
+  el.querySelector('[data-act="onbnext"]').onclick=next;
+},
+signup:(el)=>form(el,'#f-signup',()=>{
+  const n=val('su-name'),e=val('su-email'),p=val('su-pw');
+  if(!n||!/.+@.+\..+/.test(e)) return err('su-err','Enter your full name and a valid email address.');
+  if(p.length<8) return err('su-err','Use at least 8 characters for your password.');
+  S.user.name=n; S.user.email=e; S.user.first=n.split(' ')[0];
+  afterAuth();
+}),
+signin:(el)=>form(el,'#f-signin',()=>{
+  if(!/.+@.+\..+/.test(val('si-email'))) return err('si-err','Enter a valid email address.');
+  if(!val('si-pw')) return err('si-err','Enter your password. Any password works in this prototype.');
+  go(S.role==='seller'?(S.store?'seller':'verifyid'):'home',{reset:true}); toast('Signed in');
+}),
+forgot:(el)=>form(el,'#f-forgot',()=>{ toast('Code sent to '+val('fp-email'),'check'); go('otp'); }),
+otp:(el)=>{
+  const ins=[...el.querySelectorAll('.otp input')]; ins[0].focus();
+  ins.forEach((inp,i)=>{
+    inp.addEventListener('input',()=>{inp.value=inp.value.replace(/\D/g,''); if(inp.value&&ins[i+1]) ins[i+1].focus(); if(ins.every(x=>x.value)) setTimeout(()=>go('newpw'),250);});
+    inp.addEventListener('keydown',e=>{ if(e.key==='Backspace'&&!inp.value&&ins[i-1]) ins[i-1].focus(); });
+  });
+},
+newpw:(el)=>form(el,'#f-newpw',()=>{
+  const a=val('np1'),b=val('np2');
+  if(a.length<8) return err('np-err','Use at least 8 characters.');
+  if(a!==b) return err('np-err','The two passwords do not match.');
+  if(stack.includes('security')){ back(); toast('Password updated'); } else go('resetdone',{reset:true});
+}),
+newpw2:(el)=>A.newpw(el),
+search:(el)=>{
+  const q=el.querySelector('#q'),res=el.querySelector('#sres'),def=el.querySelector('#sdef');
+  setTimeout(()=>q.focus(),300);
+  const run=()=>{const t=q.value.trim().toLowerCase();
+    if(!t){res.innerHTML='';def.hidden=false;return;}
+    def.hidden=true;
+    const alias={footwear:'sneaker',watches:'watch',power:'power',knitwear:'sweater'};
+    const words=(alias[t]||t).split(/\s+/).map(w=>w.replace(/s$/,''));const r=PRODUCTS.filter(p=>{const h=(p.name+' '+p.cat+' '+p.seller+' '+p.art).toLowerCase();return words.every(w=>h.includes(w));});
+    res.innerHTML=r.length?`<b>${r.length} result${r.length>1?'s':''}</b><div class="grid">${r.map(pcard).join('')}</div>`:`<div class="empty">${ic('search')}<b>No matches for "${q.value}"</b><p>Try a broader word like bags, phones or fashion.</p></div>`;
+  };
+  q.addEventListener('input',run);
+  q.addEventListener('keydown',e=>{ if(e.key==='Enter'&&q.value.trim()){ S.recent=[q.value.trim(),...S.recent.filter(x=>x!==q.value.trim())].slice(0,5);} });
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-q]'); if(b){q.value=b.dataset.q;run();}});
+},
+checkout:(el)=>form(el,'#f-ship',()=>{
+  S.ship={name:val('sh-name'),phone:val('sh-phone'),address:val('sh-addr'),city:val('sh-city'),state:val('sh-state'),notes:val('sh-notes')};
+  if(!S.ship.name||!S.ship.address||S.ship.phone.replace(/\D/g,'').length<10) return err('sh-err','Add your name, a delivery address and an 11-digit phone number.');
+  go('review');
+}),
+payment:(el)=>{
+  const num=el.querySelector('#cc-num'),exp=el.querySelector('#cc-exp');
+  if(num) num.addEventListener('input',()=>{num.value=num.value.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();});
+  if(exp) exp.addEventListener('input',()=>{let v=exp.value.replace(/\D/g,'').slice(0,4); if(v.length>2) v=v.slice(0,2)+'/'+v.slice(2); exp.value=v;});
+},
+confirm:(el)=>{
+  el.querySelector('#ph-in').addEventListener('change',e=>readImg(e.target.files[0],src=>{S.photo=src;render('confirm','none');}));
+},
+rate:(el)=>{},
+personal:(el)=>form(el,'#f-personal',()=>{S.user.name=val('pi-name');S.user.email=val('pi-email');back();toast('Changes saved');}),
+verifyid:(el)=>{ el.querySelector('#id-in').addEventListener('change',e=>{const f=e.target.files[0]; if(!f) return; if(f.type.startsWith('image/')) readImg(f,src=>{S.idDoc=src;render('verifyid','none');}); else {S.idDoc=sampleID(f.name);render('verifyid','none');}}); },
+store:(el)=>form(el,'#f-store',()=>{ if(!val('st-name')) return err('st-err','Give your store a name.'); S.store={name:val('st-name'),desc:val('st-desc')}; go('addprod'); }),
+addprod:(el)=>{
+  el.querySelector('#pi-in').addEventListener('change',e=>{[...e.target.files].slice(0,5-S.prodImgs.length).forEach(f=>readImg(f,src=>{S.prodImgs.push(src);render('addprod','none');}));});
+  form(el,'#f-prod',()=>{
+    if(!val('pr-name')||!val('pr-cat')||!val('pr-price')) return err('pr-err','Add a product name, category and price.');
+    S.sellerProducts.push({name:val('pr-name'),cat:val('pr-cat'),price:val('pr-price')});
+    toast(val('pr-name')+' added'); go('vpending',{reset:true});
+  });
+}
+};
+
+/* ---------- Helpers ---------- */
+const val=id=>(document.getElementById(id)?.value||'').trim();
+function err(id,msg){const e=document.getElementById(id); if(e){e.textContent=msg; e.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'none'}],{duration:220});}}
+function form(el,sel,fn){const f=el.querySelector(sel); if(f) f.addEventListener('submit',e=>{e.preventDefault();fn();});}
+function readImg(f,cb){ if(!f) return; const r=new FileReader(); r.onload=()=>{ const img=new Image(); img.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,900/Math.max(img.width,img.height)); c.width=img.width*s;c.height=img.height*s;c.getContext('2d').drawImage(img,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.82));}; img.src=r.result; }; r.readAsDataURL(f); }
+function sampleID(){ const c=document.createElement('canvas');c.width=600;c.height=380;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,600,380);g.addColorStop(0,'#0B6E4F');g.addColorStop(1,'#14936A');x.fillStyle=g;x.fillRect(0,0,600,380);
+  x.fillStyle='rgba(255,255,255,.92)';x.fillRect(30,90,150,190);x.fillStyle='#fff';x.font='bold 30px Inter, sans-serif';x.fillText('NATIONAL IDENTITY',30,60);
+  [[210,120,300],[210,165,240],[210,210,280],[210,255,180]].forEach(([a,b,w])=>{x.fillStyle='rgba(255,255,255,.75)';x.fillRect(a,b,w,16);});
+  x.fillStyle='#9AA3B2';x.beginPath();x.arc(105,165,38,0,7);x.fill();x.fillRect(60,210,90,60);
+  x.fillStyle='#F59E0B';x.font='bold 16px Inter, sans-serif';x.fillText('SAMPLE · PROTOTYPE',390,350);return c.toDataURL('image/jpeg',.8);}
+function samplePhoto(){ const c=document.createElement('canvas');c.width=800;c.height=600;const x=c.getContext('2d');
+  x.fillStyle='#CFC3B2';x.fillRect(0,0,800,600);x.fillStyle='#B9AB96';x.fillRect(0,420,800,180);
+  const p=P(S.order.items[0].pid); const img=new Image();
+  return new Promise(res=>{img.onload=()=>{x.fillStyle=p.bg;x.beginPath();x.roundRect(220,90,360,360,30);x.fill();x.drawImage(img,250,120,300,300);res(c.toDataURL('image/jpeg',.82));};
+    img.src='data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${ART[p.art](p.c)}</svg>`);});}
+function now(){const d=new Date();return d.getDate()+' '+d.toLocaleString('en',{month:'short'})+' at '+d.toLocaleTimeString('en',{hour:'numeric',minute:'2-digit'});}
+function newOrderId(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=n=>Array.from({length:n},()=>c[Math.random()*c.length|0]).join('');return 'AGR-'+r(4)+'-'+r(4);}
+function afterAuth(){ if(S.role==='seller'){ go('verifyid',{reset:true}); } else { S.onbIdx=0; go('onb',{reset:true}); } }
+function placeOrder(status){
+  S.order={id:newOrderId(),items:S.cart.map(c=>({...c})),total:subtotal()+fee(),status,heldAt:status==='held'?now():null};
+  S.cart=[];
+}
+function processing(msg,sub,cb){ overlay(`<div class="processing"><div class="spinner"></div><b>${msg}</b><span>${sub}</span></div>`); setTimeout(()=>{closeOverlay();cb();},1500); }
+
+/* ---------- Event delegation ---------- */
+app.addEventListener('click',async e=>{
+  const t=e.target.closest('button,[data-act],[data-go],[data-back]'); if(!t) return;
+  const d=t.dataset;
+  if('back' in d){ back(); return; }
+  if(d.go){ if(d.go==='newpw2'){go('newpw2');return;} go(d.go); return; }
+  if(d.pid){ S.pid=d.pid; S.thumb=0; S.size=P(d.pid).sizes?.[3]||P(d.pid).sizes?.[0]||null; go('product'); return; }
+  if(d.cat){ S.cat=d.cat; const sc=app.querySelector('.screen').scrollTop; render('home','none'); app.querySelector('.screen').scrollTop=sc; return; }
+  if(d.thumb){ S.thumb=+d.thumb; const p=P(S.pid); const tints=[p.bg,'#E3E6EC','#ECE7DF','#E2E9F4']; app.querySelector('#hero-img').innerHTML=art(p,'art hero-img',tints[S.thumb]); app.querySelectorAll('.thumbs button').forEach((b,i)=>b.classList.toggle('on',i===S.thumb)); return; }
+  if(d.size){ S.size=d.size; app.querySelectorAll('.sizes button').forEach(b=>{b.classList.toggle('on',b.dataset.size===d.size);b.setAttribute('aria-checked',b.dataset.size===d.size);}); return; }
+  if(d.inc){ S.cart[+d.inc].qty++; render('cart','none'); return; }
+  if(d.dec){ const c=S.cart[+d.dec]; if(c.qty>1) c.qty--; else S.cart.splice(+d.dec,1); render('cart','none'); return; }
+  if(d.del){ const c=S.cart.splice(+d.del,1)[0]; render('cart','none'); toast(P(c.pid).short+' removed','trash'); return; }
+  if(d.delM){ S.delivery=d.delM; app.querySelectorAll('[data-del-m]').forEach(b=>b.classList.toggle('on',b.dataset.delM===S.delivery)); return; }
+  if(d.pay){ S.pay=d.pay; render('payment','none'); return; }
+  if(d.copy){ try{await navigator.clipboard.writeText(d.copy);toast('Copied '+d.copy,'copy');}catch(_){toast(d.copy,'copy');} return; }
+  if(d.star){ S.rating=+d.star; app.querySelectorAll('[data-star]').forEach(b=>b.classList.toggle('on',+b.dataset.star<=S.rating)); app.querySelector('#ratelbl').textContent=['','Poor','Fair','Good','Very good','Excellent'][S.rating]; app.querySelector('[data-act="submitrate"]').disabled=false; return; }
+  if(d.otab){ S.otab=d.otab; render('orders','none'); return; }
+  if(d.rm){ S.recent.splice(+d.rm,1); render('search','none'); return; }
+  if(d.defaddr){ S.addresses.forEach((a,i)=>a.def=i===+d.defaddr); render('addresses','none'); toast('Default address updated'); return; }
+  const a=d.act; if(!a) return;
+  switch(a){
+    case 'buy': S.role='buyer'; go('create'); break;
+    case 'sell': S.role='seller'; go('create'); break;
+    case 'sell2': S.role='seller'; go('verifyid'); break;
+    case 'oauth': processing('Connecting…','Signing you in securely',afterAuth); break;
+    case 'oauthin': processing('Connecting…','Signing you in securely',()=>go('home',{reset:true})); break;
+    case 'start': go('home',{reset:true}); break;
+    case 'tick': t.classList.toggle('on'); t.setAttribute('aria-checked',t.classList.contains('on')); break;
+    case 'pw': { const inp=t.parentElement.querySelector('input'); const show=inp.type==='password'; inp.type=show?'text':'password'; t.innerHTML=ic(show?'eye':'eyeoff'); break; }
+    case 'resend': toast('A new code is on its way'); break;
+    case 'verifyotp': go('newpw'); break;
+    case 'tosignin': go('signin',{reset:true}); break;
+    case 'add': {
+      const p=P(S.pid); const ex=S.cart.find(c=>c.pid===p.id&&c.size===S.size);
+      if(ex) ex.qty++; else S.cart.push({pid:p.id,size:S.size,qty:1});
+      t.classList.add('success'); t.innerHTML=ic('check')+'Added to Cart';
+      const bar=app.querySelector('.topbar div:last-child'); bar.innerHTML=cartBtn(); bar.querySelector('.badge').animate([{transform:'scale(1.6)'},{transform:'scale(1)'}],{duration:350,easing:'cubic-bezier(.34,1.56,.64,1)'});
+      setTimeout(()=>{ if(!t.isConnected) return; t.classList.remove('success'); t.dataset.act=''; t.dataset.go='cart'; t.innerHTML='Go to cart'; },1100);
+      break; }
+    case 'tohome': go('home',{reset:true}); break;
+    case 'paycard': {
+      const n=val('cc-num').replace(/\s/g,''),ex=val('cc-exp'),cv=val('cc-cvv');
+      if(n.length<16||!/^\d\d\/\d\d$/.test(ex)||cv.length<3) return err('cc-err','Enter the 16-digit card number, expiry as MM/YY and the 3-digit CVV.');
+      processing('Securing your payment…','Funds go into escrow, not to the seller',()=>{placeOrder('held');go('success',{reset:true});});
+      break; }
+    case 'paytransfer': processing('Looking for your transfer…','This usually takes under a minute',()=>{placeOrder('awaiting');go('pending',{reset:true});}); break;
+    case 'confirmtransfer': processing('Checking with the bank…','Matching your transfer to this order',()=>{S.order.status='held';S.order.heldAt=now();go('success',{reset:true});}); break;
+    case 'payfail': S.failOrder={id:newOrderId(),items:S.cart.map(c=>({...c})),total:subtotal()+fee(),status:'failed'}; processing('Securing your payment…','Funds go into escrow, not to the seller',()=>go('failed')); break;
+    case 'retry': back(); break;
+    case 'dismissfail': go('cart',{reset:true}); stack=['home','cart']; break;
+    case 'trackcur': go(S.order.status==='awaiting'?'pending':S.order.status==='delivered'?'arrived':'track'); break;
+    case 'pastorder': toast('Order details open here in the full app','info'); break;
+    case 'simdispatch': S.order.status='dispatched'; S.order.dispAt=now(); render('track','none'); toast('Seller dispatched your order','truck'); break;
+    case 'simdeliver': S.order.status='delivered'; S.order.delAt=now(); go('arrived'); break;
+    case 'rider': overlay(`<h3>Contact your rider</h3><p>Tunde A. is on a bike, about 25 minutes away. Agora masks both numbers.</p><div class="acct"><div><small>Rider line</small><b>0700 AGORA 01</b></div><button class="copy" data-copy="070024672 01">${ic('copy')}Copy</button></div><button class="btn" data-act="closeov">Done</button>`,true); break;
+    case 'closeov': closeOverlay(); break;
+    case 'problem': overlay(`<h3>Report a problem</h3><p>Your ${N(S.order.total)} stays in escrow while we look into it. The seller is not paid until this is resolved.</p><div class="list-gap">${['Item is damaged','Wrong item or size','Item not as described','Missing items'].map(x=>`<button class="radio-card" data-act="reported"><span class="t"><b>${x}</b></span>${ic('chev')}</button>`).join('')}</div>`,true); break;
+    case 'reported': closeOverlay(); toast('Report sent. Funds stay frozen.','shield'); break;
+    case 'skipphoto': S.photo=await samplePhoto(); render('confirm','none'); break;
+    case 'confirmed': S.order.status='released'; S.orders.unshift({id:S.order.id,pid:S.order.items[0].pid,total:S.order.total,date:'28 Oct 2026',status:'completed'}); go('delivered',{reset:true}); S.order.status='released'; stack=['home','delivered']; break;
+    case 'submitrate': toast('Thanks for rating '+P(S.order.items[0].pid).seller); S.rating=0; S.photo=null; S.order=null; go('home',{reset:true}); break;
+    case 'clearrecent': S.recent=[]; render('search','none'); break;
+    case 'editaddr': toast('Address editing opens here in the full app','info'); break;
+    case 'addaddr': overlay(`<h3>Add new address</h3><div class="form">${field('na-label','Label','Office')}${field('na-line','Address','')}<button class="btn" data-act="saveaddr">Save address</button></div>`,true); break;
+    case 'saveaddr': { const l=val('na-line'); if(!l){toast('Enter an address first','err');break;} S.addresses.push({label:val('na-label')||'Other',line:l,line2:'Lagos',def:false}); closeOverlay(); render('addresses','none'); toast('Address saved'); break; }
+    case 'support': overlay(`<h3>Contact support</h3><p>Agora support replies within 15 minutes, 7am to 10pm daily.</p><div class="acct"><div><small>Email</small><b style="font-size:15px">help@agora.ng</b></div><button class="copy" data-copy="help@agora.ng">${ic('copy')}Copy</button></div><button class="btn" data-act="closeov">Done</button>`,true); break;
+    case 'soon': toast('This section opens here in the full app','info'); break;
+    case 'logout': S.order=null; S.cart=[]; go('welcome',{reset:true,dir:'fade'}); break;
+    case 'twofa': S.twofa=!S.twofa; t.classList.toggle('on',S.twofa); t.setAttribute('aria-checked',S.twofa); toast(S.twofa?'Two-factor authentication on':'Two-factor authentication off',S.twofa?'shield':'info'); break;
+    case 'sampleid': S.idDoc=sampleID(); render('verifyid','none'); break;
+    case 'idnext': go('store'); break;
+    case 'approve': S.verify='done'; go('vdone',{reset:true}); break;
+    case 'toseller': S.role='seller'; if(!S.store) S.store={name:'Kuye Store'}; go('seller',{reset:true}); break;
+    case 'tobuyer': S.role='buyer'; go('home',{reset:true}); break;
+    case 'toggleseller': S.sellerHas=S.sellerHas===false; render('seller','none'); break;
+    case 'hideamt': { const b=app.querySelector('#po-amt'); const h=b.textContent.includes('•'); b.textContent=h?'₦245,000':'₦ • • • • •'; t.innerHTML=ic(h?'eye':'eyeoff'); break; }
+  }
+});
+
+go('splash');
+})();
+</script>
+</body>
+</html>
