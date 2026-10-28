@@ -6,7 +6,15 @@ Built from the Agora Figma file. It's a single `index.html` with no build step a
 
 ## Run it
 
-Open `index.html` in a browser, or turn on GitHub Pages (Settings → Pages → Deploy from branch `main`, folder `/root`).
+- **Web:** https://jamesodigie.github.io/Agoramarketplace/ (or open `index.html` locally).
+- **Install from the browser:** open the web link on your phone, then use *Add to Home Screen* (Chrome or Safari). It opens full screen like an app and works offline.
+- **Android APK:** every push to `main` builds a new APK. Download **Agora.apk** from the latest release on your Android phone: https://github.com/Jamesodigie/Agoramarketplace/releases/latest. When the phone asks, allow your browser to install unknown apps.
+
+## How the APK is built
+
+`.github/workflows/android-apk.yml` wraps `index.html` in a native Android shell with [Capacitor](https://capacitorjs.com), generates the icon and splash screen from `assets/`, builds with Gradle and publishes the APK to Releases.
+
+Every build is signed with the same key in `android-signing/`, so a new version installs over the old one. That key is a **debug key for testing only**. Before publishing on the Play Store, create a private release key and keep it out of the repo.
 
 ## What's in it
 

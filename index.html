@@ -2,7 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="theme-color" content="#0B3C91">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Agora">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>Agora Marketplace</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,10 +29,11 @@
   color-scheme:light;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:#DCE3EE;color:var(--ink);font-family:var(--font);font-size:15px;-webkit-font-smoothing:antialiased}
+html,body{height:100%;height:100dvh;overflow:hidden;overscroll-behavior:none}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:#DCE3EE;-webkit-tap-highlight-color:transparent;touch-action:manipulation;color:var(--ink);font-family:var(--font);font-size:15px;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer;border:0;background:none;padding:0}
+button{cursor:pointer;border:0;background:none;padding:0;-webkit-user-select:none;user-select:none}
 :focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .shell{height:100%;display:flex;align-items:center;justify-content:center}
 #app{position:relative;width:100%;max-width:430px;height:100%;background:var(--bg);overflow:hidden}
@@ -32,7 +41,7 @@ button{cursor:pointer;border:0;background:none;padding:0}
   #app{height:min(874px,calc(100% - 40px));border-radius:36px;box-shadow:0 30px 80px rgba(7,42,107,.28),0 0 0 10px #0E1626}
 }
 .screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;
-  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:20px 24px;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   animation:enter .32s cubic-bezier(.2,.8,.2,1)}
 .screen.back-anim{animation:enterBack .32s cubic-bezier(.2,.8,.2,1)}
 .screen.fade{animation:fadeIn .5s ease}
@@ -70,7 +79,7 @@ button{cursor:pointer;border:0;background:none;padding:0}
 @keyframes rise{from{transform:translateY(22px);opacity:0}to{transform:none;opacity:1}}
 .word{display:inline-block;animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
 
-.welcome{display:flex;flex-direction:column;height:100%;padding:max(56px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) 28px max(20px,env(safe-area-inset-left,0px))}
+.welcome{display:flex;flex-direction:column;height:100%;padding:calc(40px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
 .welcome .mid{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:22px}
 .welcome h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:0;text-wrap:balance}
 .welcome p{margin:0;font-size:14.5px;line-height:1.5;opacity:.88;max-width:300px}
@@ -81,7 +90,7 @@ button{cursor:pointer;border:0;background:none;padding:0}
 
 /* ---------- Buttons ---------- */
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;border-radius:14px;background:var(--blue);color:#fff;font-size:17px;font-weight:500;transition:transform .12s ease,background .2s,box-shadow .2s;box-shadow:0 6px 16px rgba(0,90,230,.25)}
-.btn:hover{background:var(--blue-600)}
+@media (hover:hover){.btn:hover{background:var(--blue-600)}}
 .btn:active{transform:scale(.98)}
 .btn.ghost{background:transparent;border:1.5px solid rgba(255,255,255,.35);box-shadow:none}
 .btn.ghost:hover{background:rgba(255,255,255,.08)}
@@ -109,7 +118,7 @@ button{cursor:pointer;border:0;background:none;padding:0}
 .field{display:flex;flex-direction:column;gap:9px}
 .field label{font-size:15px;font-weight:500}
 .input{position:relative}
-.input input,.input select,.input textarea{width:100%;height:50px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:0 14px;font-size:15px;outline:none;transition:border .2s,box-shadow .2s;appearance:none}
+.input input,.input select,.input textarea{width:100%;height:50px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:0 14px;font-size:16px;outline:none;transition:border .2s,box-shadow .2s;appearance:none}
 .input textarea{height:110px;padding:14px;resize:none}
 .input input:focus,.input select:focus,.input textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-50)}
 .input .trail{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);display:grid;place-items:center}
@@ -142,7 +151,7 @@ button{cursor:pointer;border:0;background:none;padding:0}
 .check.on .box svg{opacity:1}
 
 /* ---------- Onboarding carousel ---------- */
-.onb{display:flex;flex-direction:column;height:100%;padding:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) 28px max(20px,env(safe-area-inset-left,0px))}
+.onb{display:flex;flex-direction:column;height:100%;padding:calc(8px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
 .onb .skip{align-self:flex-end;color:#fff;font-weight:600;font-size:16px;padding:10px 4px}
 .onb .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;text-align:center;touch-action:pan-y}
 .onb .art{width:300px;max-width:100%;height:220px;display:grid;place-items:center}
@@ -203,7 +212,7 @@ button{cursor:pointer;border:0;background:none;padding:0}
 .cat.on{background:var(--blue);color:#fff}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
 .pcard{background:var(--card);border-radius:16px;padding:10px;text-align:center;display:flex;flex-direction:column;gap:8px;transition:transform .15s,box-shadow .2s;animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
-.pcard:hover{box-shadow:0 8px 24px rgba(15,23,41,.08)}
+@media (hover:hover){.pcard:hover{box-shadow:0 8px 24px rgba(15,23,41,.08)}}
 .pcard:active{transform:scale(.98)}
 .pcard .nm{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pcard .pr{display:flex;justify-content:space-between;align-items:center;padding:0 4px;font-size:14px}
@@ -242,7 +251,7 @@ button{cursor:pointer;border:0;background:none;padding:0}
 .about{margin-top:18px}
 .about b{font-size:14.5px;font-weight:600}
 .about p{margin:6px 0 0;color:var(--muted);font-size:13.5px;line-height:1.5}
-.sticky-cta{position:sticky;bottom:-24px;margin:auto calc(-1*max(20px,env(safe-area-inset-left,0px))) -24px;padding:16px max(20px,env(safe-area-inset-left,0px)) max(24px,env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg) 70%,rgba(243,245,248,0));display:flex;flex-direction:column;gap:12px}
+.sticky-cta{position:sticky;bottom:calc(-24px - env(safe-area-inset-bottom,0px));margin:auto calc(-1*max(20px,env(safe-area-inset-left,0px))) calc(-24px - env(safe-area-inset-bottom,0px));padding:16px max(20px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg) 70%,rgba(243,245,248,0));display:flex;flex-direction:column;gap:12px}
 .spacer{flex:1;min-height:24px}
 
 /* ---------- Cart ---------- */
@@ -463,6 +472,8 @@ button{cursor:pointer;border:0;background:none;padding:0}
 .otp input{width:58px;height:62px;text-align:center;font-size:24px;font-weight:600;border:1px solid var(--line);border-radius:14px;background:var(--card);outline:none}
 .otp input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-50)}
 
+@media (max-height:640px){.welcome .mid{gap:14px}.welcome h1{font-size:26px}.onb .art{height:170px}.onb .stage{gap:20px}.dots{margin:16px 0 20px}.status{margin:20px 0 22px}.intro{margin-bottom:20px}}
+@media (max-width:350px){.stats{gap:8px}.stat b{font-size:13px}.pd-title h1,.pd-title .price{font-size:19px}.otp input{width:50px}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   .check-draw{stroke-dashoffset:0}
@@ -1278,6 +1289,7 @@ app.addEventListener('click',async e=>{
 });
 
 go('splash');
+if('serviceWorker' in navigator && location.protocol==='https:' && location.hostname!=='localhost'){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 })();
 </script>
 </body>

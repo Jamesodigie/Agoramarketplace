@@ -1,0 +1,17 @@
+{
+  "name": "agora-marketplace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Agora Marketplace prototype, packaged as an Android app with Capacitor",
+  "scripts": {
+    "web": "node -e \"const fs=require('fs');fs.rmSync('www',{recursive:true,force:true});fs.mkdirSync('www/icons',{recursive:true});['index.html','manifest.webmanifest'].forEach(f=>fs.copyFileSync(f,'www/'+f));fs.readdirSync('icons').forEach(f=>fs.copyFileSync('icons/'+f,'www/icons/'+f));\""
+  },
+  "dependencies": {
+    "@capacitor/android": "6.1.2",
+    "@capacitor/core": "6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "3.0.5",
+    "@capacitor/cli": "6.1.2"
+  }
+}
