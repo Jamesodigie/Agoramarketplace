@@ -30,11 +30,23 @@ android {
         versionName = flutter.versionName
     }
 
+    // One fixed key for every build, so each new APK installs over the last one.
+    // Kept in the repo at android-signing/ (test key). Replace with a private upload key for the Play Store.
+    signingConfigs {
+        create("agora") {
+            storeFile = rootProject.file("../../android-signing/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("agora")
+        }
+        debug {
+            signingConfig = signingConfigs.getByName("agora")
         }
     }
 }

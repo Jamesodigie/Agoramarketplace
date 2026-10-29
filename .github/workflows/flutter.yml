@@ -151,7 +151,11 @@ jobs:
           git add logs
           git commit -m "CI log android run ${{ github.run_number }}" || true
           git push -f origin HEAD:ci-log-android
-      - run: cp app/build/app/outputs/flutter-apk/app-release.apk Agora.apk
+      - name: Check the APK is signed with the shared key
+        run: |
+          cp app/build/app/outputs/flutter-apk/app-release.apk Agora.apk
+          keytool -printcert -jarfile Agora.apk | tee cert.txt
+          grep -q "D8:B8:2B:80:20:59:B9:04:5C:DB:E3:7B:AE:86:DF:E9:BB:79:C6:30:2F:CA:A4:51:EC:A7:8B:53:16:3C:94:0F" cert.txt
       - uses: actions/upload-artifact@v4
         with:
           name: android
