@@ -1,0 +1,13 @@
+Analyzing app...                                                
+
+  error • 'Thumb' isn't a function • lib/screens/orders.dart:234:46 • invocation_of_non_function
+  error • The name 'Thumb' is defined in the libraries 'package:agora/widgets.dart' and 'package:flutter/src/material/slider_theme.dart (via package:flutter/material.dart)' • lib/screens/orders.dart:234:46 • ambiguous_import
+  error • 'Thumb' isn't a function • lib/screens/seller_onboarding.dart:235:47 • invocation_of_non_function
+  error • The name 'Thumb' is defined in the libraries 'package:agora/widgets.dart' and 'package:flutter/src/material/slider_theme.dart (via package:flutter/material.dart)' • lib/screens/seller_onboarding.dart:235:47 • ambiguous_import
+  error • 'Thumb' isn't a function • lib/screens/seller_onboarding.dart:553:52 • invocation_of_non_function
+  error • The name 'Thumb' is defined in the libraries 'package:agora/widgets.dart' and 'package:flutter/src/material/slider_theme.dart (via package:flutter/material.dart)' • lib/screens/seller_onboarding.dart:553:52 • ambiguous_import
+  error • 'Thumb' isn't a function • lib/screens/seller_onboarding.dart:977:83 • invocation_of_non_function
+  error • The name 'Thumb' is defined in the libraries 'package:agora/widgets.dart' and 'package:flutter/src/material/slider_theme.dart (via package:flutter/material.dart)' • lib/screens/seller_onboarding.dart:977:83 • ambiguous_import
+  error • The name 'MyApp' isn't a class • test/widget_test.dart:16:35 • creation_with_non_type
+
+9 issues found. (ran in 12.5s)
