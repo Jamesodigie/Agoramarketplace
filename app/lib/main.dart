@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'links.dart';
 import 'nav.dart';
+import 'screens/delivery_ui.dart';
 import 'screens/intro.dart';
 import 'screens/seller.dart';
 import 'screens/shop.dart';
@@ -21,6 +22,9 @@ void main() {
 /// Builds the page for a link. "/" is the normal app start;
 /// "/<handle>" opens that store, from the web or from an app link on the phone.
 Route<dynamic> routeFor(String? name, {bool initial = false}) {
+  if (Uri.tryParse(name ?? '')?.path == '/admin') {
+    return initial ? fadeRoute(const AdminScreen(entry: true)) : softRoute(const AdminScreen());
+  }
   final handle = handleFromPath(name);
   if (handle == null) {
     return initial ? fadeRoute(const SplashScreen()) : softRoute(const HomeScreen());

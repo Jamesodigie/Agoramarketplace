@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../data.dart';
+import '../delivery.dart';
 import '../icons.dart';
 import '../nav.dart';
 import '../state.dart';
 import '../theme.dart';
 import '../widgets.dart';
+import 'delivery_ui.dart';
 import 'shop.dart';
 
 class TrackScreen extends StatelessWidget {
@@ -21,34 +23,18 @@ class TrackScreen extends StatelessWidget {
           final p = o.first;
           final steps = [
             ('Money held by Agora', o.heldAt ?? 'Waiting for payment'),
-            ('Dispatched by seller', o.dispAt ?? 'Seller has 48 hours to dispatch'),
-            ('Delivered', o.delAt ?? 'Estimated 2–5 business days'),
+            ('Picked up by GIG Logistics', o.dispAt ?? 'Seller has 48 hours to hand it to GIG'),
+            ('Delivered', o.delAt ?? (o.shipment != null ? 'Arrives in ${o.shipment!.eta}' : 'Estimated 2–5 business days')),
             ('Released to the seller', 'After you confirm delivery'),
           ];
           return AppPage(
             title: 'Track order',
             bottom: Column(mainAxisSize: MainAxisSize.min, children: [
-              if (o.status == 'dispatched') ...[
-                Btn('Contact rider', icon: 'phone', onTap: () => showSheet(context,
-                    title: 'Contact your rider',
-                    body: 'Tunde A. is on a bike, about 25 minutes away. Agora masks both numbers.',
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [const CopyRow('Rider line', '0700 AGORA 01', copy: '070024672 01'), const SizedBox(height: 16), Btn('Done', onTap: () => Navigator.of(context).pop())]))),
-                const SizedBox(height: 10),
-                DemoBtn('rider delivers the order', onTap: () {
-                  o
-                    ..status = 'delivered'
-                    ..delAt = nowLabel();
-                  app.touch();
-                  go(const ArrivedScreen());
-                }),
-              ],
-              if (o.status == 'held')
-                DemoBtn('seller dispatches the order', onTap: () {
-                  o
-                    ..status = 'dispatched'
-                    ..dispAt = nowLabel();
-                  app.touch();
-                  toast('Seller dispatched your order', icon: 'truck');
+              if (o.shipment != null && !o.shipment!.done && kApiBase.isEmpty)
+                DemoBtn('GIG scans the next update', onTap: () {
+                  DemoDelivery.advance(o.shipment!);
+                  syncOrderWithShipment(o);
+                  if (o.status == 'delivered') go(const ArrivedScreen());
                 }),
               if (o.status == 'delivered') Btn('Confirm delivery', onTap: () => go(const ArrivedScreen())),
             ]),
@@ -73,6 +59,21 @@ class TrackScreen extends StatelessWidget {
                     _TimelineStep(steps[i].$1, steps[i].$2, done: i + 2 <= st, now: i + 2 == st + 1, last: i == steps.length - 1).fadeUp(100 + i * 70),
                 ]),
               ).rise(),
+              if (o.status != 'awaiting' && o.status != 'failed') ...[
+                const SizedBox(height: 22),
+                SectionHead('Delivery', trailing: o.shipment == null ? null : TextBtn('Full tracking', onTap: () => go(ShipmentScreen(o.shipment!, viewer: 'buyer')))),
+                if (o.shipment == null)
+                  CardBox(
+                    child: Row(children: [
+                      const CarrierTile(),
+                      const SizedBox(width: 12),
+                      Expanded(child: Text('Booking your GIG pickup…', style: ts(14.5, w: w6))),
+                      const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+                    ]),
+                  ).rise(120)
+                else
+                  Pressable(onTap: () => go(ShipmentScreen(o.shipment!, viewer: 'buyer')), child: ShipmentTracker(o.shipment!)).rise(120),
+              ],
             ],
           );
         },

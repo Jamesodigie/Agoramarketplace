@@ -7,6 +7,7 @@ import '../widgets.dart';
 import 'auth.dart';
 import 'intro.dart';
 import 'orders.dart';
+import 'delivery_ui.dart';
 import 'seller.dart';
 import 'seller_onboarding.dart';
 
@@ -54,6 +55,7 @@ class ProfileScreen extends StatelessWidget {
             MenuItem('pin', 'Delivery address', onTap: () => go(const AddressesScreen())),
             MenuItem('shield', 'How escrow works', onTap: () => go(const EscrowScreen())),
             MenuItem('gear', 'Settings', onTap: () => go(const SettingsScreen())),
+            MenuItem('truck', 'Agora admin (staff only)', onTap: () => go(const AdminScreen())),
           ]).expand((w) => [w, const SizedBox(height: 12)]),
           const SizedBox(height: 12),
           Container(

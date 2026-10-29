@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../data.dart';
+import '../delivery.dart';
 import '../icons.dart';
 import '../nav.dart';
 import '../state.dart';
@@ -60,8 +61,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   late final name = TextEditingController(text: s.name), phone = TextEditingController(text: s.phone), addr = TextEditingController(text: s.address), city = TextEditingController(text: s.city), notes = TextEditingController(text: s.notes);
   late String state = s.state;
   String? err;
+  bool quoting = false;
 
-  Widget _method(String key, String icon, String t, String sub, int price) {
+  @override
+  void initState() {
+    super.initState();
+    _quote();
+  }
+
+  /// Asks GIG what delivery costs from the seller's state to the buyer's.
+  Future<void> _quote() async {
+    if (app.cart.isEmpty) return;
+    final seller = kSellers[app.cart.first.product.seller];
+    if (seller == null) return;
+    setState(() => quoting = true);
+    try {
+      final kg = app.cart.fold<double>(0, (a, c) => a + c.qty * 1.0);
+      app.quotes = await deliveryApi.quote(fromState: storeState(seller), toState: state, kg: kg, value: app.subtotal);
+    } catch (_) {
+      app.quotes = null;
+    }
+    if (mounted) setState(() => quoting = false);
+  }
+
+  DeliveryQuote? _q(String service) => app.quotes?.where((q) => q.service == service).firstOrNull;
+
+  Widget _method(String key, String icon, String t, String sub, int? price) {
     final on = app.delivery == key;
     return Pressable(
       onTap: () => setState(() => app.delivery = key),
@@ -75,7 +100,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           Ic(icon, size: 28, color: C.blue),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(t, style: ts(15, w: w6)), Text(sub, style: ts(13, c: C.muted))])),
-          Text(naira(price), style: ts(15, w: w6)),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: price == null || quoting
+                ? const SizedBox(key: ValueKey('q'), width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                : Text(naira(price), key: ValueKey(price), style: ts(15, w: w6)),
+          ),
         ]),
       ),
     );
@@ -110,16 +140,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Expanded(child: Field(label: 'City', ctrl: city)),
               const SizedBox(width: 14),
-              Expanded(child: SelectField(label: 'State', value: state, options: kStates, onChanged: (v) => setState(() => state = v))),
+              Expanded(child: SelectField(label: 'State', value: state, options: kStates, onChanged: (v) {
+                setState(() => state = v);
+                _quote();
+              })),
             ]),
             Field(label: 'Additional notes', optional: true, ctrl: notes, hint: 'Gate code, landmark, best time to call'),
           ]).expand((w) => [w, const SizedBox(height: 18)]),
           const SizedBox(height: 4),
-          Text('Delivery method', style: ts(18, w: w6)),
+          Row(children: [
+            Expanded(child: Text('Delivery', style: ts(18, w: w6))),
+            Ic('truck', size: 16, color: const Color(0xFF15803D)),
+            const SizedBox(width: 5),
+            Text('by GIG Logistics', style: ts(13, w: w6, c: const Color(0xFF15803D))),
+          ]),
           const SizedBox(height: 14),
-          _method('standard', 'truck', 'Standard delivery', '2–5 business days', 3000),
+          _method('home', 'truck', 'Home delivery', 'To your door · ${_q('home')?.eta ?? '…'}', _q('home')?.price),
           const SizedBox(height: 12),
-          _method('express', 'bolt', 'Express delivery', '1–2 business days', 5000),
+          _method('centre', 'building', 'Collect at a GIG centre', 'Pick up near you · ${_q('centre')?.eta ?? '…'}', _q('centre')?.price),
+          const SizedBox(height: 10),
+          Text('Track every step in the app. Your payment stays in escrow until you confirm delivery.', style: ts(13, c: C.muted, h: 1.45)),
           ErrText(err),
         ],
       );

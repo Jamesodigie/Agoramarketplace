@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'data.dart';
+import 'delivery.dart';
 
 /// A picked photo, or a built-in sample (for trying the prototype without real documents).
 class Upload {
@@ -29,6 +30,7 @@ class Order {
   final int total;
   String status; // awaiting | held | dispatched | delivered | released | failed
   String? heldAt, dispAt, delAt;
+  Shipment? shipment; // the GIG shipment, once booked
   Order({required this.id, required this.items, required this.total, required this.status, this.heldAt});
   Product get first => items.first.product;
 }
@@ -104,7 +106,8 @@ class AppState extends ChangeNotifier {
 
   final List<CartItem> cart = [];
   String cat = 'All';
-  String delivery = 'standard';
+  String delivery = 'home'; // GIG service: home | centre
+  List<DeliveryQuote>? quotes;
   String pay = 'card';
   final Ship ship = Ship(name: 'Boluwatife Kuye', phone: '08130612867', address: '21 Ekololu Street, Surulere', city: 'Lagos', state: 'Lagos');
   Order? order;
@@ -129,7 +132,7 @@ class AppState extends ChangeNotifier {
 
   int get cartCount => cart.fold(0, (a, c) => a + c.qty);
   int get subtotal => cart.fold(0, (a, c) => a + c.product.price * c.qty);
-  int get fee => delivery == 'express' ? 5000 : 3000;
+  int get fee => quotes?.firstWhere((q) => q.service == delivery, orElse: () => quotes!.first).price ?? (delivery == 'centre' ? 2300 : 3500);
 
   void touch() => notifyListeners();
 
@@ -151,7 +154,19 @@ class AppState extends ChangeNotifier {
       status: status,
       heldAt: status == 'held' ? nowLabel() : null,
     );
+    final seller = kSellers[cart.first.product.seller];
     cart.clear();
+    notifyListeners();
+    if (status == 'held' && seller != null) bookShipment(order!, seller);
+  }
+
+  /// Once the money is in escrow, book the GIG pickup from the seller.
+  Future<void> bookShipment(Order o, Seller seller) async {
+    try {
+      o.shipment = await deliveryApi.book(o, from: seller, to: ship, service: delivery);
+    } catch (_) {
+      // The backend retries bookings that fail; the order page shows "Booking pickup…".
+    }
     notifyListeners();
   }
 }

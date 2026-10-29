@@ -196,6 +196,18 @@ jobs:
           name: ios
           path: Agora-iOS-unsigned.ipa
 
+  backend:
+    name: Backend check (Supabase functions)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check functions
+        working-directory: backend/supabase/functions
+        run: deno check gig/index.ts gig-sync/index.ts pay/index.ts bachs-webhook/index.ts escrow/index.ts
+
   web:
     name: Web build
     needs: prepare

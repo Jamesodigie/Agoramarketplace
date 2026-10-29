@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../icons.dart';
 import '../links.dart';
+import '../delivery.dart';
+import 'delivery_ui.dart';
 import '../nav.dart';
 import '../state.dart';
 import '../theme.dart';
@@ -120,6 +122,14 @@ class SellerDashboard extends StatelessWidget {
                     Btn('Share store link', icon: 'share', small: true, expand: false, onTap: () => shareStore(context, app.sel.toSeller())),
                   ]),
                 ),
+              if (has) ...[
+                const SizedBox(height: 16),
+                SectionHead('Deliveries', trailing: Row(mainAxisSize: MainAxisSize.min, children: [Ic('truck', size: 15, color: const Color(0xFF15803D)), const SizedBox(width: 4), Text('GIG Logistics', style: ts(12.5, w: w6, c: const Color(0xFF15803D)))])),
+                for (final (i, sh) in kDemoShipments.where((x) => x.fromName == 'Kuye Gadgets').indexed) ...[
+                  ShipmentRow(sh, onTap: () => go(ShipmentScreen(sh, viewer: 'seller'))).rise(200 + i * 60),
+                  const SizedBox(height: 12),
+                ],
+              ],
               const SizedBox(height: 10),
               DemoBtn(has ? 'show a new store with no orders' : 'show a store with orders', onTap: () {
                 app.sellerHas = !has;
