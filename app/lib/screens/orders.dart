@@ -72,7 +72,7 @@ class TrackScreen extends StatelessWidget {
                     ]),
                   ).rise(120)
                 else
-                  Pressable(onTap: () => go(ShipmentScreen(o.shipment!, viewer: 'buyer')), child: ShipmentTracker(o.shipment!)).rise(120),
+                  ShipmentTracker(o.shipment!).rise(120),
               ],
             ],
           );

@@ -70,7 +70,7 @@ class ShipmentTracker extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('GIG Logistics', style: ts(15.5, w: w7)),
+              Text('GIG Logistics', style: ts(15.5, w: w7), maxLines: 1, softWrap: false, overflow: TextOverflow.fade),
               Text(s.serviceLabel, style: ts(13, c: C.muted)),
             ]),
           ),
@@ -105,7 +105,7 @@ class ShipmentTracker extends StatelessWidget {
         StageBar(s),
         const SizedBox(height: 10),
         Row(children: [
-          Expanded(child: Text(s.done ? (s.stage == 'delivered' ? 'Delivered ${timeLabel(s.events.last.at)}' : 'Shipment cancelled') : 'Arrives in ${s.eta}', style: ts(13.5, w: w6, c: stageColor(s.stage)))),
+          Expanded(child: Text(s.done ? (s.stage == 'delivered' ? 'Delivered ${timeLabel(s.events.last.at)}' : 'Shipment cancelled') : (s.issue ? 'Needs a new delivery time' : 'Arrives in ${s.eta}'), style: ts(13.5, w: w6, c: stageColor(s.stage)))),
           Text('Updated ${agoLabel(s.updated)}', style: ts(12.5, c: C.muted)),
         ]),
         if (showEvents) ...[
@@ -269,7 +269,7 @@ class _ShipmentScreenState extends State<ShipmentScreen> {
       bottom: Column(mainAxisSize: MainAxisSize.min, children: [
         if (admin) ..._adminActions(context),
         if (seller && s.stage == 'booked') Btn('Print waybill', icon: 'doc', kind: BtnKind.outline, onTap: () => toast('Waybill sent to your email for printing', icon: 'doc')),
-        if (!s.done && kApiBase.isEmpty) ...[const SizedBox(height: 10), DemoBtn('GIG scans the next update', onTap: _advance)],
+        if (!s.done && !s.issue && kApiBase.isEmpty) ...[const SizedBox(height: 10), DemoBtn('GIG scans the next update', onTap: _advance)],
       ]),
       children: [
         ShipmentTracker(s).rise(),
