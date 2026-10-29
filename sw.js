@@ -1,5 +1,5 @@
 // Agora offline cache: app shell first, network for everything else.
-const CACHE = 'agora-v2';
+const CACHE = 'agora-v3';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#0B3C91">
+<meta name="theme-color" content="#0060FD">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -478,6 +478,412 @@ button{cursor:pointer;border:0;background:none;padding:0;-webkit-user-select:non
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   .check-draw{stroke-dashoffset:0}
 }
+
+/* =================== v2: softer system, new intro, seller verification =================== */
+:root{
+  --brand:#0060FD; --bg:#F4F6FA; --line:#E7EBF2; --blue-100:#D6E4FF;
+  --spring:cubic-bezier(.34,1.36,.64,1); --ease:cubic-bezier(.22,1,.36,1);
+  --sh-1:0 1px 2px rgba(16,24,40,.04),0 6px 18px rgba(16,24,40,.05);
+  --sh-2:0 2px 6px rgba(16,24,40,.06),0 18px 40px rgba(16,24,40,.10);
+}
+.screen{animation:enter2 .5s var(--ease)}
+.screen.back-anim{animation:enterBack2 .5s var(--ease)}
+.screen.bare{padding:0}
+@keyframes enter2{from{transform:translateX(22px);opacity:0}to{transform:none;opacity:1}}
+@keyframes enterBack2{from{transform:translateX(-22px);opacity:0}to{transform:none;opacity:1}}
+
+/* soft surfaces + springy presses */
+.btn{border-radius:16px;transition:transform .35s var(--spring),background .25s,box-shadow .3s,opacity .3s}
+.btn:active{transform:scale(.97)}
+.input input,.input select,.input textarea{border-radius:14px;border-color:var(--line);transition:border-color .2s,box-shadow .3s}
+.input input:focus,.input select:focus,.input textarea:focus{box-shadow:0 0 0 4px rgba(0,96,253,.12)}
+.ordercard,.panel,.citem,.srow,.orow,.addrcard,.setrow,.track,.stat{border-radius:20px;box-shadow:var(--sh-1)}
+.pcard{border-radius:20px;box-shadow:var(--sh-1);transition:transform .35s var(--spring),box-shadow .3s}
+.menu button{border-radius:16px;box-shadow:var(--sh-1);transition:transform .35s var(--spring),background .2s}
+.radio-card,.social{border-radius:20px;transition:border-color .25s,background .25s,transform .35s var(--spring)}
+.pcard:active,.srow:active,.orow:active,.menu button:active,.radio-card:active,.social:active,.sellerrow:active,.cat:active,.stat:active,.role-card:active{transform:scale(.97)}
+.cat{border-radius:12px;transition:background .3s,color .3s,transform .35s var(--spring)}
+.search{border-radius:14px}
+.sheet{border-radius:28px 28px 0 0;animation:sheet .5s var(--spring)}
+.overlay{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.processing{border-radius:24px}
+.note{border-radius:14px}
+.banner{border-radius:20px}
+.art{border-radius:14px}
+.toast{border-radius:14px}
+
+/* logo tile */
+.logo-tile{display:block;overflow:hidden;border-radius:28%;box-shadow:0 6px 16px rgba(0,96,253,.22);flex:none}
+.logo-tile img{display:block;width:100%;height:100%}
+.brand .logo-tile{width:32px;height:32px;border-radius:10px}
+.mini-logo .logo-tile{width:64px;height:64px;border-radius:19px}
+
+/* shared motion utilities */
+@keyframes aDrop{from{opacity:0;transform:translateY(-22px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes aRise{from{opacity:0;transform:translateY(30px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes aPop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+@keyframes aFadeIn{to{opacity:1}}
+@keyframes aFadeOut{to{opacity:0}}
+@keyframes aFadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.a-drop{animation:aDrop .7s var(--spring) var(--d,0s) both}
+.a-rise{animation:aRise .75s var(--spring) var(--d,0s) both}
+.a-pop{animation:aPop .55s var(--spring) var(--d,0s) both}
+.a-fade{animation:aFadeUp .6s var(--ease) var(--d,0s) both}
+.stagger > *{animation:aRise .6s var(--spring) both}
+.stagger > *:nth-child(1){animation-delay:.06s}.stagger > *:nth-child(2){animation-delay:.11s}.stagger > *:nth-child(3){animation-delay:.16s}
+.stagger > *:nth-child(4){animation-delay:.21s}.stagger > *:nth-child(5){animation-delay:.26s}.stagger > *:nth-child(6){animation-delay:.31s}
+.stagger > *:nth-child(7){animation-delay:.36s}.stagger > *:nth-child(8){animation-delay:.41s}.stagger > *:nth-child(n+9){animation-delay:.46s}
+.screen.still .stagger > *,.screen.still .a-fade,.screen.still .a-rise,.screen.still .a-pop,.screen.still .sw-bar i.now::after,.screen.still .sh-badges span,.screen.still .map .pin{animation:none!important}
+
+/* ---------- Splash ---------- */
+.splash{position:absolute;inset:0;background:var(--brand);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.splash::before{content:"";position:absolute;width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.2),rgba(255,255,255,0) 60%);opacity:0;animation:aFadeIn 1.2s ease .2s forwards}
+.sp-mark{width:min(40vw,156px);aspect-ratio:1;position:relative;border-radius:28%;overflow:hidden;box-shadow:0 0 0 1.5px rgba(255,255,255,.22),0 24px 50px rgba(0,30,110,.35);animation:spIn 1.05s var(--spring) both}
+.sp-mark img{width:100%;height:100%;display:block}
+.sp-word{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-top:22px;position:relative;animation:aFadeUp .7s var(--ease) .7s both}
+.sp-ring{position:absolute;width:150px;height:150px;border-radius:50%;border:2px solid rgba(255,255,255,.35);opacity:0;animation:spRing 1.9s var(--ease) .45s forwards}
+.sp-ring.r2{animation-delay:.85s}
+@keyframes spIn{0%{opacity:0;transform:scale(.35) translateY(30px);filter:blur(8px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes spRing{0%{opacity:0;transform:scale(.6)}25%{opacity:1}100%{opacity:0;transform:scale(2.6)}}
+.splash.out .sp-mark{animation:spOut .5s var(--ease) forwards}
+.splash.out .sp-word{animation:aFadeOut .25s ease forwards}
+@keyframes spOut{to{opacity:0;transform:scale(.75) translateY(-50px)}}
+
+/* ---------- Intro (three animated slides) ---------- */
+.intro2{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;transition:background-color .7s var(--ease),color .5s ease;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.i-glow{position:absolute;left:50%;top:32%;width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.15),rgba(255,255,255,0) 62%);pointer-events:none;transition:opacity .6s}
+.i-stage{flex:1;min-height:0;position:relative;display:grid;place-items:center;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 6px}
+.i-stage{grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr)}
+.i-stage .slot{grid-area:1/1;display:block;width:100%;height:100%;min-height:0;min-width:0;position:relative}
+.slot.leave{animation:slotOut .45s var(--ease) forwards;pointer-events:none}
+.slot.leave.rev{animation-name:slotOutRev}
+@keyframes slotOut{to{opacity:0;transform:translateX(-70px) scale(.94)}}
+@keyframes slotOutRev{to{opacity:0;transform:translateX(70px) scale(.94)}}
+.mock-fit{transform-origin:0 0;position:absolute;left:0;top:0;width:max-content}
+.i-copy{padding:6px max(24px,env(safe-area-inset-left,0px)) 0;min-height:132px}
+.i-copy h1{margin:0 0 10px;font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.02em;text-wrap:balance}
+.i-copy p{margin:0;font-size:15px;line-height:1.55;opacity:.78;max-width:360px}
+.i-copy.swap h1{animation:aFadeUp .6s var(--ease) both}
+.i-copy.swap p{animation:aFadeUp .6s var(--ease) .08s both}
+.i-nav{display:flex;align-items:center;justify-content:space-between;padding:18px max(24px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px))}
+.i-skip{font-weight:600;font-size:15px;padding:12px 4px;transition:opacity .3s}
+.i-dots{display:flex;gap:6px;transition:opacity .3s}
+.i-dots i{width:7px;height:7px;border-radius:99px;background:currentColor;opacity:.35;transition:width .5s var(--spring),opacity .3s}
+.i-dots i.on{width:24px;opacity:1}
+.i-next{height:56px;width:56px;border-radius:28px;display:grid;place-items:center;font-weight:600;font-size:15.5px;overflow:hidden;white-space:nowrap;box-shadow:0 10px 24px rgba(0,0,0,.18);transition:width .55s var(--spring),border-radius .5s var(--ease),background-color .6s var(--ease),color .5s,transform .3s var(--spring)}
+.i-next:active{transform:scale(.93)}
+.i-next svg{width:22px;height:22px;grid-area:1/1;transition:opacity .25s,transform .4s var(--spring)}
+.i-next span{grid-area:1/1;opacity:0;transition:opacity .3s .15s}
+.i-next.wide{width:152px;border-radius:16px}
+.i-next.wide svg{opacity:0;transform:translateX(20px)}
+.i-next.wide span{opacity:1}
+.intro2.last .i-skip,.intro2.last .i-dots{opacity:0;pointer-events:none}
+
+/* mock-ups inside the slides */
+.mock{position:relative;width:320px;display:flex;flex-direction:column;gap:14px}
+.m1{padding-bottom:86px}.m2{padding-bottom:54px}
+.m-card{background:#fff;color:#0F1729;border-radius:22px;padding:16px;box-shadow:0 20px 50px rgba(3,20,60,.28);display:flex;flex-direction:column;gap:12px;position:relative}
+.m-search{display:flex;align-items:center;gap:8px;background:#fff;color:#0F1729;border-radius:99px;padding:8px 8px 8px 16px;font-size:13px;box-shadow:0 10px 30px rgba(3,20,60,.22)}
+.m-search > svg{width:16px;height:16px;color:#6B7280}
+.m-search b{font-weight:600;color:#0060FD;margin-left:auto}
+.m-filter{width:28px;height:28px;border-radius:50%;background:#0060FD;display:grid;place-items:center}
+.m-filter svg{width:14px;height:14px;color:#fff}
+.m-store{display:flex;align-items:center;gap:12px}
+.m-av{width:44px;height:44px;border-radius:14px;color:#fff;font-weight:700;font-size:15px;display:grid;place-items:center;flex:none}
+.m-av.sm{width:26px;height:26px;border-radius:9px;font-size:10px}
+.m-sn b{display:flex;align-items:center;gap:5px;font-size:15px;font-weight:600}
+.m-vb{display:inline-grid;color:#0060FD}.m-vb svg{width:17px;height:17px}
+.m-sn small{display:flex;align-items:center;gap:3px;color:#6B7280;font-size:12px;margin-top:3px}
+.m-sn small svg{width:12px;height:12px}
+.m-rate{display:flex;align-items:center;gap:2px;font-size:12px;color:#6B7280}
+.m-rate > span{margin-left:6px}
+.m-star{display:inline-grid;color:#DCE1EA;animation:mStar .45s var(--spring) var(--d) both}
+.m-star svg{width:14px;height:14px}
+@keyframes mStar{0%{color:#DCE1EA;transform:scale(1)}50%{transform:scale(1.35)}100%{color:#F59E0B;transform:scale(1)}}
+.m-tags{display:flex;flex-wrap:wrap;gap:6px}
+.m-tags span{display:inline-flex;align-items:center;gap:4px;background:#E9F8EF;color:#15803D;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:99px}
+.m-tags svg{width:12px;height:12px}
+.m-foot{display:flex;align-items:center;gap:10px;border-top:1px solid #EEF1F6;padding-top:12px}
+.m-thumb{width:42px!important;aspect-ratio:1!important;border-radius:10px!important;flex:none}
+.m-foot small{display:block;color:#6B7280;font-size:12px}
+.m-foot b{font-size:15px}
+.m-escrow{margin-left:auto;display:inline-flex;align-items:center;gap:4px;background:#E9F8EF;color:#15803D;font-size:11.5px;font-weight:600;padding:6px 9px;border-radius:9px}
+.m-escrow svg{width:13px;height:13px;color:#22C55E}
+.m-float{position:absolute;display:inline-flex;align-items:center;gap:8px;background:#fff;color:#0F1729;font-size:12px;font-weight:600;padding:7px 12px 7px 7px;border-radius:99px;box-shadow:0 12px 28px rgba(3,20,60,.25);white-space:nowrap;animation:aPop .6s var(--spring) var(--d) both,floaty 4.5s ease-in-out calc(var(--d) + .7s) infinite}
+.m-float i{display:inline-grid;color:#0060FD}.m-float i svg{width:15px;height:15px}
+.m-float .m-ic{width:26px;height:26px;border-radius:50%;background:#FEF5DF;color:#B45309;display:grid;place-items:center}
+.m-float .m-ic svg{width:14px;height:14px}
+.m-float b{color:#15803D}
+.f1{left:-10px;bottom:38px}.f2{right:-8px;bottom:0}.f3{right:-6px;bottom:0}
+.m-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.m-head > b{font-size:15px}
+.m-head small{display:block;color:#6B7280;font-size:11.5px}
+.m-head div b{font-size:14px;letter-spacing:.02em}
+.m-secure{display:inline-flex;gap:4px;align-items:center;font-size:11.5px;font-weight:600;color:#15803D;background:#E9F8EF;padding:5px 8px;border-radius:8px}
+.m-secure svg{width:12px;height:12px}
+.m-item{display:flex;align-items:center;gap:10px;padding:10px;background:#F5F7FB;border-radius:14px;font-size:13.5px}
+.m-item > div:not(.art){flex:1;min-width:0}
+.m-item b{white-space:nowrap}
+.m-item small{display:flex;align-items:center;gap:3px;color:#6B7280;font-size:12px}
+.m-item small svg{width:12px;height:12px;color:#0060FD}
+.m-line{display:flex;justify-content:space-between;font-size:13px;color:#6B7280}
+.m-line.tot{color:#0F1729;font-size:15px}
+.m-pay{position:relative;height:50px;border-radius:14px;background:#0060FD;color:#fff;display:grid;place-items:center;font-weight:600;font-size:14.5px;animation:mPress .35s ease 1.3s both}
+.m-pay-g{position:absolute;inset:0;border-radius:inherit;background:#22C55E;opacity:0;animation:aFadeIn .4s ease 1.5s forwards}
+.m-pay-a,.m-pay-b{grid-area:1/1;position:relative;display:inline-flex;align-items:center;gap:6px}
+.m-pay-a{animation:aFadeOut .25s ease 1.45s forwards}
+.m-pay-b{opacity:0;animation:aFadeUp .45s var(--spring) 1.6s forwards}
+.m-pay-b svg{width:16px;height:16px}
+.m-tap{position:absolute;left:64%;top:50%;width:26px;height:26px;margin:-13px;border-radius:50%;background:rgba(255,255,255,.6);opacity:0;animation:mTap .6s ease-out 1.15s both}
+.m-pay .confetti{top:50%}
+@keyframes mPress{0%,100%{transform:scale(1)}40%{transform:scale(.95)}}
+@keyframes mTap{0%{opacity:0;transform:scale(.3)}30%{opacity:1}100%{opacity:0;transform:scale(2.6)}}
+.m-hint{display:flex;gap:6px;align-items:center;justify-content:center;font-size:12px;color:#6B7280}
+.m-hint svg{width:14px;height:14px;color:#22C55E}
+.m-paid{align-self:center;display:inline-flex;align-items:center;gap:6px;background:#22C55E;color:#fff;font-weight:600;font-size:13px;padding:8px 14px;border-radius:99px;box-shadow:0 10px 24px rgba(34,197,94,.35);margin-bottom:-4px;position:relative;z-index:2}
+.m-paid svg{width:15px;height:15px}
+.m-st{display:grid}
+.m-st span{grid-area:1/1;display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:9px;justify-self:end}
+.m-st svg{width:12px;height:12px}
+.m-st .s1{background:#FEF5DF;color:#B45309;animation:aFadeOut .3s ease 2.2s forwards}
+.m-st .s2{background:#E9F8EF;color:#15803D;opacity:0;animation:aPop .5s var(--spring) 2.3s forwards}
+.m-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.m-steps li{display:flex;gap:12px;align-items:flex-start;position:relative;opacity:.4;animation:aFadeIn .4s ease var(--d) forwards}
+.m-steps li:not(:last-child)::after,.m-steps li:not(:last-child)::before{content:"";position:absolute;left:11px;top:26px;height:calc(100% - 12px);width:2px;background:#E7EBF2}
+.m-steps li:not(:last-child)::before{background:#22C55E;transform:scaleY(0);transform-origin:top;animation:aGrow .4s ease calc(var(--d) + .2s) forwards;z-index:1}
+@keyframes aGrow{to{transform:scaleY(1)}}
+.m-ck{width:24px;height:24px;border-radius:50%;background:#EEF1F6;color:transparent;display:grid;place-items:center;flex:none;animation:mCk .45s var(--spring) var(--d) forwards}
+.m-ck svg{width:13px;height:13px}
+@keyframes mCk{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1);background:#22C55E;color:#fff}}
+.m-steps b{display:block;font-size:13.5px;font-weight:600}
+.m-steps small{font-size:12px;color:#6B7280}
+.m-review{background:#0F1729;color:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 18px 40px rgba(15,23,41,.25)}
+.m-review p{margin:6px 0 4px;font-size:13.5px;line-height:1.4}
+.m-review small{opacity:.65;font-size:12px}
+.m-rs{display:flex;gap:2px}
+
+/* ---------- Role picker ---------- */
+.role{display:flex;flex-direction:column;gap:14px;padding-top:6px}
+.role-top{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;margin-bottom:14px}
+.role-top .logo-tile{width:36px;height:36px;border-radius:11px}
+.role h1{margin:0;font-size:28px;letter-spacing:-.02em;font-weight:700}
+.brandtxt{color:var(--blue)}
+.role-sub{margin:-6px 0 4px;color:var(--muted);font-size:15px}
+.role-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:16px;transition:border-color .3s,background .3s,transform .35s var(--spring),box-shadow .3s}
+.role-card.on{border-color:var(--blue);background:#F5F9FF;box-shadow:0 10px 26px rgba(0,96,253,.12)}
+.rc-ic{width:46px;height:46px;border-radius:14px;background:var(--blue-50);color:var(--blue);display:grid;place-items:center;flex:none;transition:background .3s,color .3s,transform .45s var(--spring)}
+.rc-ic svg{width:24px;height:24px}
+.role-card.on .rc-ic{background:var(--blue);color:#fff;transform:rotate(-6deg) scale(1.05)}
+.rc-t{flex:1}
+.rc-t b{display:block;font-size:16px;font-weight:600}
+.rc-t span{font-size:13.5px;color:var(--muted);line-height:1.4}
+.rc-radio{width:22px;height:22px;border-radius:50%;border:1.5px solid #C5CCD8;display:grid;place-items:center;flex:none;transition:border-color .3s}
+.rc-radio::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--blue);transform:scale(0);transition:transform .4s var(--spring)}
+.role-card.on .rc-radio{border-color:var(--blue)}
+.role-card.on .rc-radio::after{transform:scale(1)}
+.role-login{display:block;margin:0 auto;color:var(--blue);font-weight:600;font-size:14.5px;padding:10px}
+.why{background:#EAF8F0;border-radius:22px;padding:18px 18px 16px;margin-top:4px}
+.why h3{margin:0 0 8px;color:#15803D;font-size:18px}
+.why p{margin:0 0 14px;color:#3C4A40;font-size:14px;line-height:1.55}
+.why-tags{display:flex;flex-wrap:wrap;gap:16px}
+.why-tags span{display:inline-flex;align-items:center;gap:6px;color:#15803D;font-weight:600;font-size:13.5px}
+.why-tags svg{width:18px;height:18px;padding:2px;border:1.5px solid #22C55E;border-radius:50%}
+
+/* ---------- Seller wizard ---------- */
+.sw-top{margin-bottom:6px}
+.sw-prog{display:flex;flex-direction:column;gap:7px;padding:0 6px}
+.sw-prog span{font-size:12.5px;font-weight:600;color:var(--blue);text-align:center}
+.sw-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.sw-bar i{height:5px;border-radius:9px;background:#DFE6F2;overflow:hidden;position:relative}
+.sw-bar i.done{background:var(--blue)}
+.sw-bar i.now::after{content:"";position:absolute;inset:0;background:var(--blue);transform-origin:left;animation:barGrow .7s var(--ease) .15s both}
+@keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.sw-head{margin:12px 0 22px}
+.sw-head h1{margin:0 0 6px;font-size:25px;font-weight:700;letter-spacing:-.02em;text-wrap:balance}
+.sw-head p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.5}
+.hint{font-size:12.5px;color:var(--muted);margin:-8px 0 0;line-height:1.45}
+.opt{font-weight:400;color:var(--muted);font-size:13px}
+.lbl-row{display:flex;justify-content:space-between;align-items:baseline}
+.lbl-row small{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{height:38px;padding:0 14px;border-radius:99px;background:#fff;border:1.5px solid var(--line);font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:6px;transition:background .3s,border-color .3s,color .3s,transform .35s var(--spring)}
+.chip svg{width:15px;height:15px;display:none}
+.chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip.on svg{display:block}
+.chip:active{transform:scale(.94)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:#E8EDF5;border-radius:14px;padding:4px;position:relative}
+.seg::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:#fff;border-radius:11px;box-shadow:0 2px 8px rgba(16,24,40,.08);transition:transform .45s var(--spring)}
+.seg.r::before{transform:translateX(100%)}
+.seg button{height:42px;border-radius:11px;font-size:14px;font-weight:600;color:var(--muted);position:relative;z-index:1;transition:color .3s}
+.seg button.on{color:var(--ink)}
+.linkchip{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.linkchip b{color:var(--blue);font-weight:600}
+.linkchip .ok{color:var(--green-ink);display:inline-flex;align-items:center;gap:3px;font-weight:600}
+.linkchip svg{width:14px;height:14px}
+.pref{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px;pointer-events:none}
+.input.has-pref input{padding-left:var(--pl,58px)}
+.pw-meter{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:-12px}
+.pw-meter i{height:4px;border-radius:9px;background:#E3E8F0;transition:background .3s}
+.pw-meter.s1 i:nth-child(1){background:#EF4444}
+.pw-meter.s2 i:nth-child(-n+2){background:#F59E0B}
+.pw-meter.s3 i:nth-child(-n+3){background:#84CC16}
+.pw-meter.s4 i{background:#22C55E}
+.check.terms{align-items:flex-start;font-size:13.5px;line-height:1.45;color:var(--muted);gap:10px}
+.check.terms .box{flex:none;margin-top:1px}
+.upl{display:flex;align-items:center;gap:14px;background:#fff;border:1.5px dashed #C9D3E3;border-radius:18px;padding:14px;cursor:pointer;transition:border-color .25s,background .25s}
+.upl:hover{border-color:var(--blue)}
+.upl .ui{width:48px;height:48px;border-radius:14px;background:var(--blue-50);color:var(--blue);display:grid;place-items:center;flex:none;overflow:hidden}
+.upl .ui svg{width:22px;height:22px}
+.upl .ui img{width:100%;height:100%;object-fit:cover}
+.upl .ut{flex:1;min-width:0}
+.upl .ut b{display:block;font-size:14.5px;font-weight:600}
+.upl .ut span{font-size:12.5px;color:var(--muted);line-height:1.35}
+.upl .st{font-size:12.5px;font-weight:600;color:var(--blue);display:grid}
+.upl .st svg{width:22px;height:22px}
+.upl.done{border-style:solid;border-color:#BFE8CF;background:#F3FBF6}
+.upl.done .st{color:var(--green)}
+.logo-up{width:88px;height:88px;border-radius:26px;margin:0 auto;background:linear-gradient(135deg,#2F7BFF,#0047C2);color:#fff;display:grid;place-items:center;cursor:pointer;overflow:hidden;position:relative;box-shadow:0 10px 24px rgba(0,96,253,.25)}
+.logo-up img{width:100%;height:100%;object-fit:cover}
+.logo-up .ini{font-size:28px;font-weight:700}
+.logo-up small{position:absolute;right:-2px;bottom:-2px;width:30px;height:30px;border-radius:50%;background:#fff;color:var(--blue);display:grid;place-items:center;box-shadow:var(--sh-1)}
+.logo-up small svg{width:16px;height:16px}
+.logo-up-wrap{position:relative;width:88px;margin:0 auto}
+.logo-up-wrap .cam{position:absolute;right:-6px;bottom:-6px;width:32px;height:32px;border-radius:50%;background:#fff;color:var(--blue);display:grid;place-items:center;box-shadow:var(--sh-2);pointer-events:none}
+.logo-up-wrap .cam svg{width:17px;height:17px}
+.map{position:relative;height:160px;border-radius:20px;overflow:hidden;background:#E6EDF7}
+.map svg.mp{position:absolute;inset:0;width:100%;height:100%}
+.map .pin{position:absolute;left:50%;top:42%;transform:translate(-50%,-100%);color:var(--blue);animation:pinDrop .8s var(--spring) .3s both}
+.map .pin svg{width:40px;height:40px;filter:drop-shadow(0 6px 8px rgba(0,60,180,.3))}
+.map .pulse{position:absolute;left:50%;top:42%;width:16px;height:16px;margin:-8px;border-radius:50%;background:rgba(0,96,253,.3);animation:pulse2 2s ease-out 1s infinite}
+@keyframes pinDrop{from{opacity:0;transform:translate(-50%,-190%)}to{opacity:1;transform:translate(-50%,-100%)}}
+@keyframes pulse2{0%{transform:scale(.5);opacity:1}100%{transform:scale(4);opacity:0}}
+.map .lbl{position:absolute;left:12px;right:12px;bottom:12px;background:#fff;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh-1)}
+.map .lbl b{display:block;font-size:14px}
+.map .lbl span{color:var(--muted);font-size:12px}
+.map .lbl svg{width:20px;height:20px;color:var(--green);flex:none}
+.selfie{display:flex;align-items:center;gap:16px;background:#fff;border-radius:20px;padding:16px;border:1.5px solid var(--line);cursor:pointer;transition:border-color .25s}
+.selfie .ring{width:76px;height:76px;border-radius:50%;border:2.5px dashed #B9C6DA;display:grid;place-items:center;color:var(--blue);flex:none;overflow:hidden}
+.selfie .ring svg{width:36px;height:36px}
+.selfie .ring img{width:100%;height:100%;object-fit:cover}
+.selfie.done{border-color:#BFE8CF;background:#F3FBF6}
+.selfie.done .ring{border:3px solid var(--green)}
+.selfie .tx b{display:block;font-size:15px}
+.selfie .tx span{font-size:13px;color:var(--muted);line-height:1.4}
+.acct-res{display:flex;align-items:center;gap:12px;border-radius:16px;padding:14px;background:#F3FBF6;border:1px solid #BFE8CF;animation:aRise .5s var(--spring) both}
+.acct-res .av{width:40px;height:40px;border-radius:12px;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
+.acct-res .av svg{width:20px;height:20px}
+.acct-res b{display:block;font-size:15px;letter-spacing:.02em}
+.acct-res span{font-size:12.5px;color:var(--green-ink)}
+.acct-res.loading{background:#fff;border-color:var(--line)}
+.acct-res.loading .av{background:var(--blue-50)}
+.acct-res.loading span{color:var(--muted)}
+.mini-spin{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--blue-100);border-top-color:var(--blue);animation:spin2 .7s linear infinite}
+.btn > svg:last-child:not(:first-child){width:20px;height:20px}
+
+/* review */
+.rv{background:#fff;border-radius:20px;padding:14px 18px;box-shadow:var(--sh-1)}
+.rv-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.rv-h b{font-size:15.5px}
+.rv-r{display:flex;justify-content:space-between;gap:16px;padding:6px 0;font-size:13.5px}
+.rv-r span{color:var(--muted);flex:none}
+.rv-r b{font-weight:500;text-align:right;min-width:0;overflow-wrap:anywhere}
+.rv-preview > small{display:block;font-size:11.5px;color:var(--muted);margin:0 0 8px 4px;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+
+/* verification check */
+.vc-head{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;margin:14px 0 22px}
+.vc-head h1{margin:6px 0 0;font-size:23px;font-weight:700}
+.vc-head p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;max-width:320px}
+.vc-ring{width:92px;height:92px;position:relative;display:grid;place-items:center}
+.vc-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.vc-ring circle{fill:none;stroke-width:8}
+.vc-ring .bg{stroke:#E3EAF5}
+.vc-ring .fg{stroke:var(--blue);stroke-linecap:round;stroke-dasharray:239;stroke-dashoffset:239;transition:stroke-dashoffset .7s var(--ease),stroke .4s}
+.vc-n{font-weight:700;font-size:18px;font-variant-numeric:tabular-nums}
+.vc-list{background:#fff;border-radius:24px;padding:4px 16px;box-shadow:var(--sh-1)}
+.vc-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #EEF1F6;opacity:.55;transition:opacity .4s}
+.vc-row:last-child{border:0}
+.vc-row.run,.vc-row.ok,.vc-row.wait{opacity:1}
+.vc-ic{width:40px;height:40px;border-radius:12px;background:#F1F4F9;color:var(--muted);display:grid;place-items:center;flex:none;transition:background .4s,color .4s}
+.vc-ic svg{width:20px;height:20px}
+.vc-row.ok .vc-ic{background:var(--green-50);color:var(--green)}
+.vc-row.run .vc-ic,.vc-row.wait .vc-ic{background:var(--blue-50);color:var(--blue)}
+.vc-row > div{flex:1;min-width:0}
+.vc-row b{display:block;font-size:14.5px;font-weight:600}
+.vc-row > div span{font-size:12.5px;color:var(--muted)}
+.vc-st{display:grid;place-items:center;min-width:28px}
+.vc-st > *{grid-area:1/1;display:none}
+.vc-st .q{font-size:12px;color:var(--faint)}
+.vc-row:not(.run):not(.ok):not(.wait) .q{display:block}
+.vc-st .vc-spin{width:20px;height:20px;border-radius:50%;border:2.5px solid var(--blue-100);border-top-color:var(--blue);animation:spin2 .7s linear infinite;transform-origin:center}
+.vc-row.run:not(.ok) .vc-spin{display:block}
+.vc-st .ok{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;place-items:center;animation:aPop .5s var(--spring) both}
+.vc-st .ok svg{width:14px;height:14px}
+.vc-row.ok .ok{display:grid}
+.vc-st .wait{font-size:11.5px;font-weight:600;color:var(--amber-ink);background:var(--amber-50);padding:5px 8px;border-radius:8px;white-space:nowrap}
+.vc-row.wait:not(.ok) .wait{display:block}
+
+/* store header + trust page */
+.sh{background:#fff;border-radius:24px;overflow:hidden;box-shadow:var(--sh-1)}
+.sh-cover{height:84px;background-color:var(--c);background-image:radial-gradient(circle at 18% 10%,rgba(255,255,255,.38),rgba(255,255,255,0) 45%),radial-gradient(circle at 92% 130%,rgba(0,0,0,.2),rgba(0,0,0,0) 55%);position:relative;overflow:hidden}
+.sh-cover::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.25) 1.2px,transparent 1.4px);background-size:14px 14px}
+.sh-body{padding:0 18px 18px;margin-top:-32px;position:relative}
+.sh-logo{width:64px;height:64px;border-radius:20px;border:4px solid #fff;display:grid;place-items:center;color:#fff;font-weight:700;font-size:20px;overflow:hidden;box-shadow:0 8px 20px rgba(16,24,40,.15)}
+.sh-logo img{width:100%;height:100%;object-fit:cover}
+.sh-name{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.sh-name > b{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.vb{display:inline-grid;color:var(--blue)}.vb svg{width:20px;height:20px}
+.sh-meta{display:flex;align-items:flex-start;gap:5px;color:var(--muted);font-size:13px;line-height:1.4;margin-top:4px}
+.sh-meta span{min-width:0}
+.sh-meta svg{width:14px;height:14px;flex:none;margin-top:2px}
+.sh-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.sh-badges span{display:inline-flex;align-items:center;gap:4px;background:var(--green-50);color:var(--green-ink);font-size:12px;font-weight:600;padding:5px 9px;border-radius:99px;animation:aPop .5s var(--spring) var(--d,0s) both}
+.sh-badges span.pend{background:var(--amber-50);color:var(--amber-ink)}
+.sh-badges svg{width:12px;height:12px}
+.sp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.sp-stats div{background:#fff;border-radius:18px;padding:12px 8px;text-align:center;box-shadow:var(--sh-1)}
+.sp-stats b{display:flex;align-items:center;justify-content:center;gap:4px;font-size:16px;font-weight:700}
+.sp-stats b svg{width:15px;height:15px;color:var(--amber)}
+.sp-stats span{font-size:12px;color:var(--muted)}
+.trust{background:#fff;border-radius:24px;padding:18px;box-shadow:var(--sh-1)}
+.trust h3{margin:0 0 4px;display:flex;align-items:center;gap:8px;font-size:16px}
+.trust h3 svg{width:20px;height:20px;color:var(--green)}
+.tr{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #EEF1F6;animation:aFadeUp .5s var(--ease) var(--d) both}
+.tr:last-of-type{border-bottom:0}
+.tr-ic{width:38px;height:38px;border-radius:12px;background:var(--blue-50);color:var(--blue);display:grid;place-items:center;flex:none}
+.tr-ic svg{width:19px;height:19px}
+.tr > div{flex:1;min-width:0}
+.tr b{display:block;font-size:14.5px;font-weight:600}
+.tr > div span{font-size:12.5px;color:var(--muted);line-height:1.4}
+.tr-ck{width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;flex:none;animation:aPop .5s var(--spring) calc(var(--d) + .25s) both}
+.tr-ck svg{width:13px;height:13px}
+.tr.neu .tr-ck{background:#EEF1F6;color:var(--muted)}
+.tr.neu .tr-ic{background:#F1F3F7;color:var(--muted)}
+.tr-foot{margin:6px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.tr-foot .textlink{font-size:12.5px}
+.infolist{background:#fff;border-radius:22px;padding:4px 16px;margin-top:14px;box-shadow:var(--sh-1)}
+.infolist > div{display:flex;gap:12px;align-items:flex-start;padding:12px 0;font-size:13.5px;line-height:1.45;border-bottom:1px solid #EEF1F6}
+.infolist > div:last-child{border:0}
+.infolist svg{width:19px;height:19px;color:var(--blue);flex:none;margin-top:1px}
+.revs{display:flex;flex-direction:column;gap:12px}
+.rev{background:#fff;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--sh-1)}
+.rev-h{display:flex;align-items:center;gap:10px}
+.rev-av{width:36px;height:36px;border-radius:12px;background:var(--blue-50);color:var(--blue);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+.rev-h b{display:block;font-size:14px}.rev-h small{color:var(--muted);font-size:12px}
+.rev-s{margin-left:auto;display:flex;gap:1px}
+.rev-s svg{width:13px;height:13px}
+.rev p{margin:0;font-size:14px;line-height:1.5}
+.st-av,.sellerrow .st-av{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;flex:none}
+.sellerrow{width:100%;text-align:left;transition:transform .35s var(--spring)}
+.sellerrow .tx{flex:1;min-width:0}
+.sellerrow .tx b{display:flex;align-items:center;gap:5px}
+.sellerrow .tx b svg{width:16px;height:16px;color:var(--blue)}
+.sellerrow .tx span{display:block;line-height:1.4}
+.sellerrow .chev{width:18px;height:18px;color:var(--faint);flex:none}
+button.verified{padding:0}
+.verified svg:last-child{width:14px;height:14px;opacity:.6}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-delay:0s!important}}
+
 </style>
 </head>
 <body>
@@ -534,6 +940,14 @@ headph:'<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4.5" heig
 bag:'<path d="M5 8h14l-1 12H6z" fill="currentColor"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/>',
 shirt:'<path d="M8.5 3.5L4 6l1.8 4.2L8 9.2V20.5h8V9.2l2.2 1L20 6l-4.5-2.5a3.5 3.5 0 0 1-7 0z"/>',
 smile:'<circle cx="12" cy="12" r="10" fill="currentColor" stroke="none"/><path d="M8 14.5c1 1.4 2.4 2 4 2s3-.6 4-2" stroke="#fff"/><circle cx="9" cy="10" r="1.2" fill="#fff" stroke="none"/><circle cx="15" cy="10" r="1.2" fill="#fff" stroke="none"/>',
+arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+insta:'<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".9" fill="currentColor"/>',
+share:'<circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1"/>',
+building:'<path d="M4 21V5.5A1.5 1.5 0 0 1 5.5 4h8A1.5 1.5 0 0 1 15 5.5V21M15 10h3.5a1.5 1.5 0 0 1 1.5 1.5V21M2.5 21h19M8 8h3M8 12h3M8 16h3"/>',
+face:'<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/><path d="M8.5 14.5c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"/>',
+badge:'<path d="M12 2l2.4 2.1 3.2-.4.7 3.1 2.8 1.6-1.2 3 1.2 3-2.8 1.6-.7 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.7-3.1-2.8-1.6 1.2-3-1.2-3 2.8-1.6.7-3.1 3.2.4z" fill="currentColor" stroke="none"/><path d="M8.7 12.2l2.2 2.2 4.4-4.6" stroke="#fff" stroke-width="2.2"/>',
+msg:'<path d="M4 5.5h16v11H9l-5 4z"/><path d="M8 10h8M8 13h5"/>',
+return:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
 x:'<path d="M6 6l12 12M18 6L6 18"/>',
 info:'<circle cx="12" cy="12" r="9.5" fill="currentColor" stroke="none"/><path d="M12 11v6M12 7.5h.01" stroke="#fff" stroke-width="2.2"/>',
 play:'<path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/>',
@@ -542,13 +956,8 @@ apple:'<path fill="currentColor" stroke="none" d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1
 };
 const ic=(n,cls='')=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
 
-const LOGO=(anim)=>`<svg viewBox="0 0 98 106" aria-hidden="true">
-<path d="M33 30V24a16 16 0 0 1 32 0v6" fill="none" stroke="#2F7BFF" stroke-width="7" stroke-linecap="round"/>
-<path d="M12 30h74l-6 70a6 6 0 0 1-6 5.5H24a6 6 0 0 1-6-5.5z" fill="#1E6BF0"/>
-<path d="M12 30h74l-1.2 13H13.2z" fill="#3B86FF" opacity=".55"/>
-<path d="M49 46l20 7v14c0 11-8.6 19.6-20 23-11.4-3.4-20-12-20-23V53z" fill="#0B0F1A"/>
-<path class="${anim?'check-draw':''}" d="M40 67.5l6.5 6.5L59 61" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`;
+const LOGO_URI='data:image/jpeg;base64,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';
+const LOGO=()=>`<span class="logo-tile"><img src="${LOGO_URI}" alt=""></span>`;
 
 /* ---------- Product art ---------- */
 const ART={
@@ -588,6 +997,12 @@ const S={
   ],
   recent:['Wireless headphones','Smart watch','Sneakers','Casual shirt'],
   store:null, verify:'none', sellerProducts:[], twofa:false, onbIdx:0, rating:0, photo:null, idDoc:null, prodImgs:[],
+  rolePicked:false, viewSeller:null, swReturn:false, vcSeen:false,
+  sel:{name:'Boluwatife Kuye',phone:'813 061 2867',email:'Kuyebolu101@gmail.com',pw:'',agree:false,
+    store:'Kuye Gadgets',cats:['Electronics','Phones'],desc:'Original phones, chargers and audio accessories. Sealed boxes and a 6-month warranty on every gadget.',logo:null,
+    btype:'registered',bizname:'Kuye Gadgets Enterprises',cac:'BN 3204718',cacDoc:null,years:'1–3 years',ig:'kuyegadgets',web:'',
+    shop:'physical',street:'Shop 14, Otigba Plaza, 3 Otigba Street',area:'Computer Village',city:'Ikeja',state:'Lagos',landmark:'Opposite Zenith Bank',poa:null,shopPhoto:null,
+    idType:'NIN',idNum:'',idDoc:null,selfie:null,bank:'GTBank',acct:'',acctName:null},
   addresses:[{label:'Home',line:'21 Ekololu Street, Surulere',line2:'Off Ojuelegba Road, Lagos',def:true},{label:'Office',line:'14 Adeola Odeku Street',line2:'Victoria Island, Lagos',def:false}]
 };
 const cartCount=()=>S.cart.reduce((a,c)=>a+c.qty,0);
@@ -604,13 +1019,15 @@ function go(name,opt={}){
 function back(){ if(stack.length>1){stack.pop(); render(stack[stack.length-1],'back');} }
 function render(name,dir){
   closeOverlay();
+  const prev=app.querySelector('.screen'); const keep=(dir==='none'&&prev&&prev.dataset.view===name)?prev.scrollTop:0;
   const html=V[name]();
   const el=document.createElement('section');
   el.className='screen'+(dir==='back'?' back-anim':dir==='fade'?' fade':dir==='none'?' still':'');
-  if(['splash','welcome','onb'].includes(name)) el.classList.add('hero');
+  if(['splash','intro'].includes(name)) el.classList.add('bare');
   el.innerHTML=html; el.dataset.view=name;
   app.querySelectorAll('.screen').forEach(s=>s.remove());
-  app.prepend(el);
+  app.prepend(el); if(keep) el.scrollTop=keep;
+  const tm=document.querySelector('meta[name="theme-color"]'); if(tm) tm.content=['splash','intro'].includes(name)?'#0060FD':'#F4F6FA';
   if(el.classList.contains('hero')) mountPattern(el);
   (A[name]||(()=>{}))(el);
 }
@@ -681,28 +1098,147 @@ function orderCard(o,btn=''){
     ${btn}
   </div>`;
 }
-function confetti(){
+function confetti(d=0){
   const cols=['#005AE6','#22C55E','#F59E0B','#2F7BFF','#EF4444'];
-  return `<div class="confetti">${Array.from({length:22},(_,i)=>{const a=(i/22)*Math.PI*2,d=70+Math.random()*70;return `<i style="background:${cols[i%5]};--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d-20}px;--r:${Math.random()*540}deg;animation-delay:${.15+Math.random()*.15}s"></i>`}).join('')}</div>`;
+  return `<div class="confetti">${Array.from({length:22},(_,i)=>{const a=(i/22)*Math.PI*2,d=70+Math.random()*70;return `<i style="background:${cols[i%5]};--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d-20}px;--r:${Math.random()*540}deg;animation-delay:${(d+.15+Math.random()*.15).toFixed(2)}s"></i>`}).join('')}</div>`;
 }
-const field=(id,label,val='',opts={})=>`<div class="field"><label for="${id}">${label}</label><div class="input">${opts.area?`<textarea id="${id}" placeholder="${opts.ph||''}">${val}</textarea>`:`<input id="${id}" type="${opts.type||'text'}" value="${val}" placeholder="${opts.ph||''}" ${opts.attrs||''}>`}${opts.pw?`<button type="button" class="trail" data-act="pw" aria-label="Show password">${ic('eyeoff')}</button>`:''}${opts.trail||''}</div></div>`;
+const field=(id,label,val='',opts={})=>`<div class="field"><label for="${id}">${label}</label><div class="input${opts.pref?' has-pref':''}"${opts.pref?` style="--pl:${opts.pl||'58px'}"`:''}>${opts.pref?`<span class="pref">${opts.pref}</span>`:''}${opts.area?`<textarea id="${id}" placeholder="${opts.ph||''}">${val}</textarea>`:`<input id="${id}" type="${opts.type||'text'}" value="${val}" placeholder="${opts.ph||''}" ${opts.attrs||''}>`}${opts.pw?`<button type="button" class="trail" data-act="pw" aria-label="Show password">${ic('eyeoff')}</button>`:''}${opts.trail||''}</div></div>`;
+
+
+/* ---------- v2 data + helpers ---------- */
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const initials=n=>String(n||'').trim().split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'A';
+const slug=n=>String(n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'your-store';
+const stars5=r=>Array.from({length:5},(_,i)=>`<span style="color:${i<r?'var(--amber)':'#DCE1EA'};display:inline-grid">${ic('star')}</span>`).join('');
+const STATES=['Abia','Abuja (FCT)','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno','Cross River','Delta','Ebonyi','Edo','Ekiti','Enugu','Gombe','Imo','Jigawa','Kaduna','Kano','Katsina','Kebbi','Kogi','Kwara','Lagos','Nasarawa','Niger','Ogun','Ondo','Osun','Oyo','Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara'];
+const BANKS=['Access Bank','Fidelity Bank','First Bank','FCMB','GTBank','Kuda','Moniepoint','Opay','Palmpay','Stanbic IBTC','Sterling Bank','UBA','Union Bank','Wema Bank','Zenith Bank'];
+const PINSVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.6 7-12a7 7 0 0 0-14 0c0 5.4 7 12 7 12z" fill="currentColor"/><circle cx="12" cy="10" r="2.6" fill="#fff"/></svg>';
+const MAPSVG='<svg class="mp" viewBox="0 0 360 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="360" height="160" fill="#E6EDF7"/><g fill="#D5DFED"><rect x="18" y="12" width="74" height="42" rx="7"/><rect x="108" y="8" width="54" height="34" rx="7"/><rect x="248" y="16" width="86" height="46" rx="7"/><rect x="26" y="86" width="64" height="52" rx="7"/><rect x="204" y="92" width="52" height="42" rx="7"/><rect x="278" y="98" width="64" height="40" rx="7"/></g><path d="M0 70C80 62 140 78 200 74S300 58 360 66" stroke="#fff" stroke-width="13" fill="none"/><path d="M178 0C172 52 188 106 176 160" stroke="#fff" stroke-width="10" fill="none"/><path d="M0 128L360 114" stroke="#fff" stroke-width="6" fill="none"/><circle cx="302" cy="40" r="14" fill="#CDEBD7"/><circle cx="60" cy="40" r="9" fill="#CDEBD7"/></svg>';
+
+const SELLERS={
+ 'Chidera Electronics':{name:'Chidera Electronics',ini:'CE',color:'#2F7BFF',color2:'#0047C2',area:'Computer Village',city:'Ikeja, Lagos',cats:'Electronics · Audio',since:'Mar 2024',rating:4.8,reviews:132,sales:'200+',reply:'Usually replies within 1 hour',cac:'RC 1849263',ig:'@chideraelectronics',addrNote:'Shop 22, Otigba Plaza, Computer Village, Ikeja',returns:'Returns within 72 hours of delivery if the item is not as described. Sealed electronics carry a 6-month seller warranty.',revs:[['Ngozi E.','Yaba',5,'Headphones were sealed and original. Delivered in two days.'],['Femi A.','Ajah',5,'I asked a lot of questions in chat and they answered all of them quickly.'],['Halima S.','Wuse, Abuja',4,'Good product. Delivery took one extra day but they kept me updated.']]},
+ 'Ìlú Leatherworks':{name:'Ìlú Leatherworks',ini:'IL',color:'#C98A4B',color2:'#7A4A20',area:'Ariaria Market',city:'Aba, Abia',cats:'Bags · Leather goods',since:'Jul 2024',rating:4.8,reviews:86,sales:'140+',reply:'Usually replies within 3 hours',cac:'BN 2716604',ig:'@ilu.leather',addrNote:'Workshop in Ariaria International Market, Aba',returns:'Returns within 72 hours of delivery if the item is not as described. Custom orders are final.',revs:[['Ada N.','Lekki',5,'The leather feels real and the stitching is neat.'],['Kola B.','Ibadan',5,'Bought it as a gift. The packaging was lovely.']]},
+ 'Ikeja Mobile Hub':{name:'Ikeja Mobile Hub',ini:'IM',color:'#22C55E',color2:'#0E8A3E',area:'Allen Avenue',city:'Ikeja, Lagos',cats:'Phones · Power',since:'Jan 2024',rating:4.7,reviews:211,sales:'320+',reply:'Usually replies within 30 minutes',cac:'RC 1502271',ig:'@ikejamobilehub',addrNote:'Shop 5, 41 Allen Avenue, Ikeja',returns:'Returns within 72 hours if not as described. Phones come with a 12-month seller warranty.',revs:[['Tunde O.','Surulere',5,'Phone was brand new and the IMEI checked out.'],['Blessing U.','Port Harcourt',4,'Fast delivery to PH. The power bank works well.']]},
+ 'Lekki Threads':{name:'Lekki Threads',ini:'LT',color:'#8A6A9E',color2:'#4F3563',area:'Lekki Phase 1',city:'Lekki, Lagos',cats:'Fashion · Footwear',since:'May 2025',rating:4.5,reviews:41,sales:'85+',reply:'Usually replies within 2 hours',cac:null,ig:'@lekkithreads',addrNote:'Sells from home in Lekki Phase 1',returns:'Size exchanges within 72 hours of delivery.',revs:[['Zainab M.','Ikoyi',5,'True to size and soft. I will buy again.'],['Chuka I.','Gbagada',4,'Nice sneakers. Took a while to dispatch but arrived fine.']]}
+};
+const storeAv=(name,sz=42)=>{const st=SELLERS[name]||{};return `<span class="st-av" style="width:${sz}px;height:${sz}px;background:linear-gradient(135deg,${st.color||'#2F7BFF'},${st.color2||'#0047C2'})">${st.ini||initials(name)}</span>`;};
+function myStore(){const s=S.sel,reg=s.btype==='registered';return {own:true,name:s.store||'Your store',ini:initials(s.store||'Your store'),color:'#0060FD',color2:'#0039A6',logo:s.logo,area:s.area||'Your area',city:(s.city||'City')+', '+(s.state||'Lagos').replace(' (FCT)',''),cats:s.cats.slice(0,2).join(' · ')||'Your categories',since:'Oct 2026',rating:null,reviews:0,sales:'New',reply:'Replies show here after your first chats',cac:reg?s.cac:null,ig:s.ig?'@'+s.ig.replace(/^@/,''):null,addrNote:(s.shop==='physical'?'Shop in ':'Based in ')+(s.area||'your area')+', '+(s.city||'your city'),returns:'Returns within 72 hours of delivery if the item is not as described.',revs:[]};}
+const storeBadges=st=>['ID verified',...(st.cac?['CAC registered']:[]),'Address verified','Bank verified'];
+function storeHeader(st,pending){
+  return `<div class="sh"><div class="sh-cover" style="--c:${st.color}"></div><div class="sh-body">
+   <span class="sh-logo" style="background:${st.logo?'#fff':`linear-gradient(135deg,${st.color},${st.color2})`}">${st.logo?`<img src="${st.logo}" alt="">`:esc(st.ini)}</span>
+   <div class="sh-name"><b>${esc(st.name)}</b>${pending?`<span class="pill amber" style="padding:4px 8px">${ic('clock')}In review</span>`:`<span class="vb" title="Verified seller">${ic('badge')}</span>`}</div>
+   <div class="sh-meta">${ic('pin')}<span>${esc(st.area)}, ${esc(st.city)} · ${esc(st.cats)}</span></div>
+   <div class="sh-badges">${storeBadges(st).map((b,i)=>`<span class="${pending?'pend':''}" style="--d:${(.3+i*.08).toFixed(2)}s">${ic(pending?'clock':'check')}${b}</span>`).join('')}</div>
+  </div></div>`;
+}
+function trustRows(st){return [
+  ['id','Identity verified',"Owner's ID matched to a live selfie"],
+  st.cac?['building','Registered business','CAC '+st.cac]:['user','Individual seller','Not a registered business. ID and address are verified.',1],
+  ['pin','Address verified',st.addrNote],
+  ['bank','Payout account verified',"Bank account name matches the owner's ID"],
+  ['shield','Every order is escrow-protected','You pay the seller only after you confirm delivery']
+];}
+function acctRes(loading){return loading
+  ?`<div class="acct-res loading"><span class="av"><span class="mini-spin"></span></span><div><b>Checking account…</b><span>${esc(S.sel.bank)}</span></div></div>`
+  :`<div class="acct-res"><span class="av">${ic('check')}</span><div><b>${esc(S.sel.acctName)}</b><span>Matches the name on your ID</span></div></div>`;}
+function saveSW(el){ if(!el) return; el.querySelectorAll('[id^="s-"]').forEach(i=>{S.sel[i.id.slice(2)]=i.value;}); if(S.sel.ig) S.sel.ig=S.sel.ig.replace(/^@/,''); const ag=el.querySelector('#agree'); if(ag) S.sel.agree=ag.classList.contains('on'); }
+const sf=(k,label,opts={})=>field('s-'+k,label,esc(S.sel[k]??''),opts);
+const swTop=n=>`<div class="topbar sw-top"><button type="button" class="iconbtn" data-back aria-label="Back">${ic('back')}</button><div class="sw-prog"><span>Step ${n} of 6</span><div class="sw-bar">${[1,2,3,4,5,6].map(i=>`<i class="${i<n?'done':i===n?'now':''}"></i>`).join('')}</div></div><div></div></div>`;
+const swShell=(n,title,sub,body,cta='Continue')=>`${swTop(n)}<div class="sw-head a-fade"><h1>${title}</h1><p>${sub}</p></div><form class="form stagger" id="f-sw" novalidate>${body}<div class="err" id="sw-err"></div><button class="btn" type="submit">${cta}${ic('arrow')}</button></form>`;
+const upl=(k,title,sub,accept='image/*')=>`<label class="upl ${S.sel[k]?'done':''}" for="u-${k}"><span class="ui">${S.sel[k]?`<img src="${S.sel[k]}" alt="">`:ic('upload')}</span><span class="ut"><b>${title}</b><span>${S.sel[k]?'Uploaded. Tap to replace.':sub}</span></span><span class="st">${S.sel[k]?ic('check'):'Upload'}</span></label><input type="file" id="u-${k}" data-up="${k}" accept="${accept}" class="vh">`;
+const SWV={
+ 1:()=>{const s=S.sel; if(s.name.trim().split(/\s+/).length<2) return 'Enter your first and last name as they appear on your ID.'; if(s.phone.replace(/\D/g,'').replace(/^0/,'').length!==10) return 'Enter a valid Nigerian phone number.'; if(!/^\S+@\S+\.\S+$/.test(s.email.trim())) return 'Enter a valid email address.'; if(s.pw.length<8) return 'Use at least 8 characters for your password.'; if(!s.agree) return 'Accept the Seller Terms to continue.';},
+ 2:()=>{const s=S.sel; if(s.store.trim().length<3) return 'Give your store a name of at least 3 characters.'; if(!s.cats.length) return 'Pick at least one thing you sell.'; if(s.desc.trim().length<20) return 'Add a short description of at least 20 characters.';},
+ 3:()=>{const s=S.sel; if(s.btype==='registered'){ if(!s.bizname.trim()) return 'Enter your business name as registered with CAC.'; if(!/^(RC|BN|IT)\s?\d{5,8}$/i.test(s.cac.trim())) return 'CAC numbers look like RC 1234567 or BN 1234567.'; if(!s.cacDoc) return 'Upload your CAC certificate.';} if(!s.years) return 'Tell buyers how long you have been selling.';},
+ 4:()=>{const s=S.sel; if(!s.street.trim()||!s.area.trim()||!s.city.trim()) return 'Add your address, area and city.'; if(!s.poa) return 'Upload a proof of address.';},
+ 5:()=>{const s=S.sel,d=s.idNum.replace(/\s/g,''); if(s.idType==='NIN'?!/^\d{11}$/.test(d):d.length<6) return s.idType==='NIN'?'Your NIN has 11 digits.':'Enter the number on your ID.'; if(!s.idDoc) return 'Upload a photo of your ID.'; if(!s.selfie) return 'Take a selfie so we can match it to your ID.';},
+ 6:()=>{const s=S.sel; if(!/^\d{10}$/.test(s.acct)) return 'Account numbers have 10 digits.'; if(!s.acctName) return 'Wait a moment while we confirm the account name.';}
+};
+function swA(el,n){
+  const view='sw'+n;
+  el.querySelectorAll('input[data-up]').forEach(inp=>inp.addEventListener('change',e=>{const f=e.target.files[0]; if(!f) return; const k=inp.dataset.up; const fin=src=>{saveSW(el); S.sel[k]=src; render(view,'none'); toast('Uploaded');}; if(f.type.startsWith('image/')) readImg(f,fin); else fin(sampleDoc(f.name.slice(0,30),'Uploaded document','#4B5563'));}));
+  el.addEventListener('click',e=>{
+    const m=e.target.closest('[data-many]'); if(m){const k=m.dataset.many,v=m.dataset.v,a=S.sel[k],i=a.indexOf(v); if(i<0)a.push(v); else a.splice(i,1); m.classList.toggle('on',i<0); return;}
+    const o=e.target.closest('[data-one]'); if(o){const k=o.dataset.one; o.parentElement.querySelectorAll('[data-one]').forEach(x=>x.classList.toggle('on',x===o)); if(k==='idType'){saveSW(el); S.sel[k]=o.dataset.v; render(view,'none');} else S.sel[k]=o.dataset.v; return;}
+    const s=e.target.closest('.seg button'); if(s){const seg=s.parentElement; if(s.classList.contains('on')) return; saveSW(el); S.sel[seg.dataset.seg]=s.dataset.v; seg.classList.toggle('r',s===seg.lastElementChild); seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===s)); setTimeout(()=>{ if(el.isConnected) render(view,'none'); },280);}
+  });
+  form(el,'#f-sw',()=>{ saveSW(el); const msg=SWV[n](); if(msg) return err('sw-err',msg);
+    if(n===1){S.user.name=S.sel.name.trim(); S.user.first=S.user.name.split(' ')[0]; S.user.email=S.sel.email.trim();}
+    if(S.swReturn){S.swReturn=false; back(); return;}
+    go(n<6?'sw'+(n+1):'sreview'); });
+}
+function sampleSelfie(){const c=document.createElement('canvas');c.width=c.height=400;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,0,400);g.addColorStop(0,'#DCE7F7');g.addColorStop(1,'#B9CBE6');x.fillStyle=g;x.fillRect(0,0,400,400);
+  x.fillStyle='#2E3A59';x.beginPath();x.ellipse(200,430,150,120,0,0,7);x.fill();
+  x.fillStyle='#7A4B2E';x.beginPath();x.ellipse(200,195,82,100,0,0,7);x.fill();
+  x.fillStyle='#1B1B1F';x.beginPath();x.ellipse(200,128,90,52,0,Math.PI,0);x.fill();
+  [170,230].forEach(cx=>{x.beginPath();x.arc(cx,195,7,0,7);x.fill();});
+  x.strokeStyle='#3A2216';x.lineWidth=5;x.lineCap='round';x.beginPath();x.arc(200,228,26,.2*Math.PI,.8*Math.PI);x.stroke();
+  return c.toDataURL('image/jpeg',.85);}
+function sampleDoc(title,sub,col='#0B6E4F'){const c=document.createElement('canvas');c.width=600;c.height=420;const x=c.getContext('2d');x.fillStyle='#F7F4EC';x.fillRect(0,0,600,420);x.fillStyle=col;x.fillRect(0,0,600,72);x.fillStyle='#fff';x.font='bold 24px Inter, sans-serif';x.fillText(title,28,46);x.fillStyle='#4B5563';x.font='17px Inter, sans-serif';x.fillText(sub,28,112);
+  [[28,152,520],[28,187,470],[28,222,500],[28,257,380],[28,292,440]].forEach(([a,b,w])=>{x.fillStyle='#DCD6C8';x.fillRect(a,b,w,12);});
+  x.strokeStyle=col;x.lineWidth=4;x.beginPath();x.arc(502,340,46,0,7);x.stroke();x.fillStyle='#F59E0B';x.font='bold 15px Inter, sans-serif';x.fillText('SAMPLE · PROTOTYPE',28,396);return c.toDataURL('image/jpeg',.82);}
+
+/* ---------- Intro slides ---------- */
+const mstars=(d,n=5)=>Array.from({length:n},(_,i)=>`<i class="m-star" style="--d:${(d+i*.09).toFixed(2)}s">${ic('star')}</i>`).join('');
+const MOCK={
+m1:()=>`<div class="mock m1">
+  <div class="m-search a-drop" style="--d:.15s">${ic('search')}<span>Phones · Ikeja</span><b>Verified only</b><span class="m-filter">${ic('check')}</span></div>
+  <div class="m-card a-rise" style="--d:.5s">
+    <div class="m-store"><span class="m-av" style="background:linear-gradient(135deg,#2F7BFF,#0047C2)">CE</span><div class="m-sn"><b>Chidera Electronics<span class="m-vb a-pop" style="--d:1.1s">${ic('badge')}</span></b><small>${ic('pin')}Computer Village, Ikeja</small></div></div>
+    <div class="m-rate">${mstars(1.25)}<span class="a-fade" style="--d:1.7s">4.8 · 132 reviews · 200+ sales</span></div>
+    <div class="m-tags"><span class="a-pop" style="--d:1.85s">${ic('check')}ID verified</span><span class="a-pop" style="--d:2s">${ic('check')}CAC registered</span><span class="a-pop" style="--d:2.15s">${ic('check')}Address verified</span></div>
+    <div class="m-foot a-fade" style="--d:2.3s">${art(P('p1'),'art m-thumb')}<div><small>Wireless Headphones</small><b>₦45,000</b></div><span class="m-escrow">${ic('shield')}Escrow</span></div>
+  </div>
+  <div class="m-float f1" style="--d:2.5s"><span class="m-av sm" style="background:linear-gradient(135deg,#C98A4B,#7A4A20)">IL</span>Ìlú Leatherworks<i>${ic('badge')}</i></div>
+  <div class="m-float f2" style="--d:2.7s"><span class="m-av sm" style="background:linear-gradient(135deg,#22C55E,#0E8A3E)">IM</span>Ikeja Mobile Hub<i>${ic('badge')}</i></div>
+ </div>`,
+m2:()=>`<div class="mock m2">
+  <div class="m-card a-rise" style="--d:.2s">
+    <div class="m-head"><b>Checkout</b><span class="m-secure">${ic('lock')}Secure</span></div>
+    <div class="m-item">${art(P('p1'),'art m-thumb')}<div><b>Headphones</b><small>Chidera Electronics ${ic('badge')}</small></div><b>₦45,000</b></div>
+    <div class="m-line"><span>Delivery · 2–5 days</span><span>₦3,000</span></div>
+    <div class="m-line tot"><span>Total</span><b>₦48,000</b></div>
+    <div class="m-pay"><span class="m-pay-g"></span><span class="m-pay-a">Pay ₦48,000 into escrow</span><span class="m-pay-b">${ic('lock')}Held safely in escrow</span><i class="m-tap"></i>${confetti(1.5)}</div>
+    <div class="m-hint a-fade" style="--d:2.2s">${ic('shield')}The seller can't touch it until you confirm</div>
+  </div>
+  <div class="m-float f3" style="--d:2.5s"><span class="m-ic">${ic('clock')}</span>No dispatch in 48h? <b>Auto refund</b></div>
+ </div>`,
+m3:()=>`<div class="mock m3">
+  <div class="m-paid a-pop" style="--d:2.45s">${ic('wallet')}Released to seller · ₦45,000</div>
+  <div class="m-card a-rise" style="--d:.15s">
+    <div class="m-head"><div><small>Order</small><b>AGR-4K7M-2X91</b></div><span class="m-st"><span class="s1">${ic('lock')}In escrow</span><span class="s2">${ic('check')}Completed</span></span></div>
+    <ol class="m-steps">${[['Paid into escrow','Mon, 9:14 AM'],['Dispatched by seller','Mon, 2:40 PM'],['Delivered to you','Wed, 11:05 AM'],['You confirmed it','Wed, 11:20 AM']].map(([a,b],i)=>`<li style="--d:${(.55+i*.42).toFixed(2)}s"><i class="m-ck">${ic('check')}</i><div><b>${a}</b><small>${b}</small></div></li>`).join('')}</ol>
+  </div>
+  <div class="m-review a-rise" style="--d:2.85s"><div class="m-rs">${mstars(3.05)}</div><p>"Exactly as described. Came sealed in the box."</p><small>Tobi A. · Surulere</small></div>
+ </div>`
+};
+const SLIDES=[
+ {bg:'#0060FD',fg:'#FFFFFF',nb:'#FFFFFF',nf:'#0060FD',t:'Shop sellers you can trust',p:'Every store is checked before it can sell: ID, address and business details. You always know who you are buying from.',m:MOCK.m1},
+ {bg:'#0B1530',fg:'#FFFFFF',nb:'#0060FD',nf:'#FFFFFF',t:'Pay once. We hold it.',p:'Your money sits safely in escrow. If the seller does not dispatch within 48 hours, you get it back automatically.',m:MOCK.m2},
+ {bg:'#EAF1FF',fg:'#0F1729',nb:'#0F1729',nf:'#FFFFFF',t:'It arrives. Then they get paid.',p:'Check your order when it lands. The seller is paid only after you confirm it is as described.',m:MOCK.m3}
+];
 
 /* ---------- Views ---------- */
 const V={
-splash:()=>`<div class="welcome" style="justify-content:center"><div class="mid"><div class="logo-wrap" style="transform:scale(1.3)"><span class="ring"></span><span class="ring"></span><div class="logo-drop">${LOGO(true)}</div></div></div></div>`,
+splash:()=>`<div class="splash"><span class="sp-ring"></span><span class="sp-ring r2"></span><div class="sp-mark"><img src="${LOGO_URI}" alt="Agora"></div><div class="sp-word">Agora</div></div>`,
 
-welcome:()=>`<div class="welcome">
-  <div class="mid">
-    <div class="logo-wrap"><span class="ring"></span><span class="ring"></span><div class="logo-drop"><div class="logo-float">${LOGO(true)}</div></div></div>
-    <h1>${['Agora','Marketplace'].map((w,i)=>`<span class="word" style="animation-delay:${.55+i*.12}s">${w}</span>`).join(' ')}</h1>
-    <p class="rise" style="animation-delay:.85s">Shop safe. Your money is held until your order arrives.</p>
-    <div class="chips-trust rise" style="animation-delay:1.05s"><span>${ic('lock')}Escrow payments</span><span>${ic('check')}Verified sellers</span><span>${ic('pkg')}Easy returns</span></div>
-  </div>
-  <div class="actions">
-    <button class="btn rise" style="animation-delay:1.25s" data-act="buy">I want to buy on Agora</button>
-    <button class="btn ghost rise" style="animation-delay:1.4s" data-act="sell">I want to sell on Agora</button>
-  </div>
-</div>`,
+intro:()=>`<div class="intro2" style="background-color:${SLIDES[0].bg};color:${SLIDES[0].fg}">
+  <div class="i-glow"></div>
+  <div class="i-stage"></div>
+  <div class="i-copy swap"><h1>${SLIDES[0].t}</h1><p>${SLIDES[0].p}</p></div>
+  <div class="i-nav"><button type="button" class="i-skip">Skip</button><div class="i-dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div><button type="button" class="i-next" aria-label="Next">${ic('arrow')}<span>Get started</span></button></div>
+ </div>`,
+
+role:()=>`<div class="role">
+  <div class="role-top a-fade" style="--d:.02s">${LOGO()}<span>Agora</span></div>
+  <h1 class="a-fade" style="--d:.06s">Welcome to <span class="brandtxt">Agora</span></h1>
+  <p class="role-sub a-fade" style="--d:.1s">Join as a</p>
+  ${[['buyer','cart','Buyer','Shop with your money protected until it arrives'],['seller','store','Seller','Open a verified store and sell with trust']].map(([k,i,t,s],j)=>`<button type="button" class="role-card a-rise ${S.rolePicked&&S.role===k?'on':''}" style="--d:${(.14+j*.07).toFixed(2)}s" data-role="${k}" aria-pressed="${S.rolePicked&&S.role===k}"><span class="rc-ic">${ic(i)}</span><span class="rc-t"><b>${t}</b><span>${s}</span></span><span class="rc-radio"></span></button>`).join('')}
+  <div class="a-fade" style="--d:.3s;margin-top:4px"><button class="btn" id="role-next" ${S.rolePicked?'':'disabled'}>Next</button></div>
+  <div class="a-fade" style="--d:.34s"><button class="role-login" data-go="signin">I already have an account</button></div>
+  <div class="why a-rise" style="--d:.4s"><h3>Why Agora?</h3><p>Agora is a Nigerian marketplace where your money is held in escrow until your order arrives as described. Every seller is checked before they can sell, so you always know who you are buying from.</p><div class="why-tags"><span>${ic('check')}Escrow payments</span><span>${ic('check')}Verified sellers</span></div></div>
+ </div>`,
 
 create:()=>`${top('')}
   <div class="intro"><div class="mini-logo">${LOGO(false)}</div><h1>Create your account</h1><p>Join Agora and start shopping with peace of mind.</p></div>
@@ -725,18 +1261,6 @@ signup:()=>`${top('')}
     <p class="fine">By creating an account you agree to our <span class="link">Terms of Service</span> and <span class="link">Privacy Policy</span>.</p>
   </form>`,
 
-onb:()=>{
-  const slides=[
-   {t:'Secure Payments',p:'Your payment is held safely until you confirm that your order has arrived and is as described.',a:ILL.secure},
-   {t:'Verified Sellers',p:'All sellers on Agora are verified, so you can shop with confidence and peace of mind.',a:ILL.verified},
-   {t:'Easy Returns',p:'If something is not right, we have your back with a simple and transparent return process.',a:ILL.returns}];
-  const s=slides[S.onbIdx];
-  return `<div class="onb"><button class="skip" data-go="allset">Skip</button>
-   <div class="stage" id="stage"><div class="art rise">${s.a}</div><div class="rise" style="animation-delay:.12s"><h1>${s.t}</h1><p>${s.p}</p></div></div>
-   <div class="dots">${slides.map((_,i)=>`<i class="${i===S.onbIdx?'on':''}"></i>`).join('')}</div>
-   <button class="btn" data-act="onbnext">${S.onbIdx<2?'Continue':'Get started'}</button></div>`;
-},
-
 allset:()=>`<div class="status" style="margin-top:90px">${confetti()}<div class="badge-ic green">${ic('check')}</div><h1>You're all set!</h1><p>Welcome to Agora. Let's get you shopping safely.</p></div>
   <button class="btn" data-act="start">Start Shopping</button>`,
 
@@ -751,7 +1275,7 @@ signin:()=>`${top('')}
     <div class="divider">Or</div>
     <button type="button" class="btn outline" data-act="oauthin">${ic('google')}Continue with Google</button>
   </form>
-  <p class="center-note" style="margin-top:22px">Don't have an account? <button class="link" data-go="create">Sign up</button></p>`,
+  <p class="center-note" style="margin-top:22px">Don't have an account? <button class="link" data-go="role">Sign up</button></p>`,
 
 forgot:()=>`${top('')}
   <div class="intro" style="margin-top:0"><div class="mini-logo">${LOGO(false)}</div><h1>Forgot your password?</h1><p>Enter the email address linked to your account and we will send you a code.</p></div>
@@ -806,7 +1330,7 @@ product:()=>{
   <div class="subrow"><span class="rate" style="color:var(--ink)">${ic('star')}${p.rating}</span><span>${p.stock} in stock</span></div>
   <div class="small-note">Price includes everything. No fee added at checkout.</div>
   ${p.sizes?`<div class="sizes" role="radiogroup" aria-label="Size">${p.sizes.map(s=>`<button class="${S.size===s?'on':''}" data-size="${s}" role="radio" aria-checked="${S.size===s}">${s}</button>`).join('')}</div>`:''}
-  <div class="sellerrow">${ic('store','ic')}<div><b>${p.seller}</b><span>Verified seller with over ${p.sales} sales</span></div></div>
+  <button class="sellerrow" data-seller="${p.seller}">${storeAv(p.seller)}<div class="tx"><b>${p.seller}${ic('badge')}</b><span>${(SELLERS[p.seller]||{}).area}, ${((SELLERS[p.seller]||{}).city||'').split(',')[0]} · ${(SELLERS[p.seller]||{}).cac?'CAC registered':'ID verified'} · ${p.sales}+ sales</span></div>${ic('chev','chev')}</button>
   <div class="escrow-box">${ic('shield')}<div><b>Protected by Agora escrow</b><p>We hold your ${N(p.price)} until you confirm this arrived as described. If the seller does not dispatch within 48 hours, you are refunded automatically.</p></div></div>
   <div class="about"><b>About this item</b><p>${p.about}</p></div>
   <div class="spacer"></div>
@@ -1005,50 +1529,135 @@ security:()=>`${top('Password &amp; security')}
   </div>`,
 newpw2:()=>V.newpw(),
 
-/* ---------- Seller ---------- */
-verifyid:()=>`${top('Verify your identity')}
-  <div class="intro"><span>${ic('id','icon-lg')}</span><h1>Let's verify your identity</h1><p>This helps keep your account secure and builds trust with buyers.</p></div>
-  <div class="form">
-   <div class="field"><label for="idtype">Choose your ID type</label><div class="input"><select id="idtype"><option>NIN</option><option>International Passport</option><option>Driver's Licence</option><option>Voter's Card</option></select><span class="trail">${ic('down')}</span></div></div>
-   <label class="upload" for="id-in">${S.idDoc?`<img src="${S.idDoc}" alt="Your ID document">`:`${ic('upload')}<span style="font-weight:500;color:var(--ink)">Tap to upload</span><span style="font-size:12.5px">JPG, PNG or PDF, up to 5MB</span>`}</label>
-   <input type="file" id="id-in" accept="image/*,application/pdf" class="vh">
+/* ---------- Seller verification ---------- */
+sw1:()=>swShell(1,'Tell us about yourself','Use the name on your ID. Buyers see your store, never your personal details.',`
+  ${sf('name','Full name',{ph:'As it appears on your ID',attrs:'autocomplete="name"'})}
+  ${sf('phone','Phone number',{type:'tel',pref:'+234',ph:'801 234 5678',attrs:'inputmode="tel" autocomplete="tel-national"'})}
+  ${sf('email','Email address',{type:'email',attrs:'autocomplete="email"'})}
+  ${sf('pw','Create a password',{type:'password',ph:'At least 8 characters',pw:1,attrs:'autocomplete="new-password"'})}
+  <div class="pw-meter" id="pwm" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <span class="check terms ${S.sel.agree?'on':''}" data-act="tick" id="agree" role="checkbox" aria-checked="${!!S.sel.agree}" tabindex="0"><span class="box">${ic('check')}</span><span>I agree to Agora's <b class="link">Seller Terms</b> and <b class="link">Privacy Policy</b>.</span></span>`),
+
+sw2:()=>swShell(2,'Set up your store','This is the first thing buyers see. You can change it later.',`
+  <div class="logo-up-wrap"><label class="logo-up" for="u-logo" aria-label="Add store logo">${S.sel.logo?`<img src="${S.sel.logo}" alt="Store logo">`:`<span class="ini" id="logo-ini">${initials(S.sel.store)}</span>`}</label><span class="cam">${ic('camera')}</span><input type="file" id="u-logo" data-up="logo" accept="image/*" class="vh"></div>
+  <div class="field"><label for="s-store">Store name</label><div class="input"><input id="s-store" value="${esc(S.sel.store)}" placeholder="e.g. Kuye Gadgets" maxlength="40" autocomplete="organization"></div><span class="linkchip">agora.ng/<b id="slug">${slug(S.sel.store)}</b><span class="ok">${ic('check')}Available</span></span></div>
+  <div class="field"><label>What do you sell?</label><div class="chips">${['Electronics','Phones','Fashion','Bags','Beauty','Home','Food','Kids','Other'].map(c=>`<button type="button" class="chip ${S.sel.cats.includes(c)?'on':''}" data-many="cats" data-v="${c}">${ic('check')}${c}</button>`).join('')}</div></div>
+  <div class="field"><div class="lbl-row"><label for="s-desc">Describe your store</label><small id="dcount">${(S.sel.desc||'').length}/160</small></div><div class="input"><textarea id="s-desc" maxlength="160" placeholder="What you sell, and why buyers can rely on you">${esc(S.sel.desc)}</textarea></div></div>`),
+
+sw3:()=>{const reg=S.sel.btype==='registered';
+  return swShell(3,'Business details','Registered businesses get a CAC badge on their store. Individuals can sell too.',`
+  <div class="field"><label>How do you sell?</label><div class="seg ${reg?'r':''}" data-seg="btype"><button type="button" class="${reg?'':'on'}" data-v="individual">Individual</button><button type="button" class="${reg?'on':''}" data-v="registered">Registered business</button></div></div>
+  ${reg?`${sf('bizname','Business name',{ph:'As registered with CAC'})}
+  ${sf('cac','CAC registration number',{ph:'RC 1234567 or BN 1234567',attrs:'autocapitalize="characters"'})}
+  ${upl('cacDoc','CAC certificate','Photo or PDF of your certificate','image/*,application/pdf')}
+  <button type="button" class="demo" data-act="swsample3">${ic('play')}Prototype: use a sample certificate</button>`
+  :`<div class="note blue">${ic('info')}<div><b>Selling as an individual</b><span>You can start once your ID and address are verified. Register with CAC later to add the badge.</span></div></div>`}
+  <div class="field"><label>How long have you been selling?</label><div class="chips">${['Just starting','Under 1 year','1–3 years','3+ years'].map(c=>`<button type="button" class="chip ${S.sel.years===c?'on':''}" data-one="years" data-v="${c}">${ic('check')}${c}</button>`).join('')}</div></div>
+  ${sf('ig','Instagram <span class="opt">(optional)</span>',{pref:'@',pl:'34px',ph:'yourstore'})}
+  ${sf('web','Website or TikTok <span class="opt">(optional)</span>',{ph:'https://',attrs:'inputmode="url"'})}
+  <p class="hint">Links to where buyers already know you make your store page more convincing.</p>`);},
+
+sw4:()=>{const ph=S.sel.shop==='physical';
+  return swShell(4,'Where are you based?','Buyers see your area, never your full address.',`
+  <div class="field"><label>Where do you sell from?</label><div class="seg ${ph?'':'r'}" data-seg="shop"><button type="button" class="${ph?'on':''}" data-v="physical">Physical shop</button><button type="button" class="${ph?'':'on'}" data-v="online">Online or from home</button></div></div>
+  ${sf('street',ph?'Shop address':'Address',{ph:'Building number and street',attrs:'autocomplete="street-address"'})}
+  <div class="row2">${sf('area','Area',{ph:'e.g. Computer Village'})}${sf('city','City',{ph:'e.g. Ikeja'})}</div>
+  <div class="field"><label for="s-state">State</label><div class="input"><select id="s-state">${STATES.map(s=>`<option ${S.sel.state===s?'selected':''}>${s}</option>`).join('')}</select><span class="trail">${ic('down')}</span></div></div>
+  ${sf('landmark','Nearest landmark <span class="opt">(optional)</span>',{ph:'e.g. Opposite Zenith Bank'})}
+  <div class="map">${MAPSVG}<span class="pulse"></span><span class="pin">${PINSVG}</span><div class="lbl">${ic('shield')}<div><b id="maplbl">${esc(S.sel.area||'Your area')}, ${esc(S.sel.city||'your city')}</b><span>This is all buyers see</span></div></div></div>
+  ${upl('poa','Proof of address','Utility bill or tenancy agreement from the last 3 months','image/*,application/pdf')}
+  <button type="button" class="demo" data-act="swsample4">${ic('play')}Prototype: use a sample utility bill</button>
+  ${ph?upl('shopPhoto','Shop front photo <span class="opt">(optional)</span>','Helps buyers recognise your shop'):''}`);},
+
+sw5:()=>{const nin=S.sel.idType==='NIN';
+  return swShell(5,'Verify your identity','We match your ID to a selfie. Your documents are never shown to buyers.',`
+  <div class="field"><label>ID type</label><div class="chips">${['NIN','International passport',"Driver's licence","Voter's card"].map(c=>`<button type="button" class="chip ${S.sel.idType===c?'on':''}" data-one="idType" data-v="${c}">${ic('check')}${c}</button>`).join('')}</div></div>
+  ${sf('idNum',nin?'NIN (11 digits)':'ID number',{ph:nin?'00000000000':'Number on your ID',attrs:nin?'inputmode="numeric" maxlength="11" autocomplete="off"':'autocomplete="off"'})}
+  ${upl('idDoc','Photo of your ID','Front side, with all four corners visible')}
+  <label class="selfie ${S.sel.selfie?'done':''}" for="u-selfie"><span class="ring">${S.sel.selfie?`<img src="${S.sel.selfie}" alt="Your selfie">`:ic('face')}</span><span class="tx"><b>${S.sel.selfie?'Selfie added':'Take a selfie'}</b><span>${S.sel.selfie?"Looks good. We'll match it to your ID photo.":'Face the light. No glasses or hat.'}</span></span></label><input type="file" id="u-selfie" data-up="selfie" accept="image/*" capture="user" class="vh">
+  <button type="button" class="demo" data-act="swsample5">${ic('play')}Prototype: use a sample ID and selfie</button>
+  <div class="note green">${ic('lock')}<div><b>Kept private</b><span>Only Agora's verification team can see your documents.</span></div></div>`);},
+
+sw6:()=>swShell(6,'Where should we pay you?','Payouts land here once buyers confirm delivery.',`
+  <div class="field"><label for="s-bank">Bank</label><div class="input"><select id="s-bank">${BANKS.map(b=>`<option ${S.sel.bank===b?'selected':''}>${b}</option>`).join('')}</select><span class="trail">${ic('down')}</span></div></div>
+  ${sf('acct','Account number',{ph:'10-digit account number',attrs:'inputmode="numeric" maxlength="10" autocomplete="off"'})}
+  <div id="acctres">${S.sel.acctName&&S.sel.acct.length===10?acctRes(false):''}</div>
+  <div class="note blue">${ic('info')}<div><b>The account name must match your ID</b><span>This stops anyone else from collecting your payouts.</span></div></div>
+  <div class="note amber">${ic('shield')}<div><b>Agora will never ask for your PIN or OTP</b><span>Not by phone, WhatsApp or email.</span></div></div>`,'Review details'),
+
+sreview:()=>{const s=S.sel,reg=s.btype==='registered';
+  const sec=(step,title,rows)=>`<div class="rv"><div class="rv-h"><b>${title}</b><button type="button" class="textlink" data-goto="${step}">Edit</button></div>${rows.map(([k,v])=>`<div class="rv-r"><span>${k}</span><b>${v}</b></div>`).join('')}</div>`;
+  return `${top('Review and submit')}
+  <p class="a-fade" style="color:var(--muted);margin:-4px 0 18px;line-height:1.5">Check everything once. Wrong details slow down verification.</p>
+  <div class="rv-preview a-rise" style="--d:.05s"><small>How buyers will see you</small>${storeHeader(myStore(),true)}</div>
+  <div class="stagger list-gap" style="margin-top:16px">
+   ${sec('sw2','Store',[['Name',esc(s.store)],['Link','agora.ng/'+slug(s.store)],['Sells',esc(s.cats.join(', '))]])}
+   ${sec('sw3','Business',[['Type',reg?'Registered business':'Individual seller'],...(reg?[['CAC number',esc(s.cac)],['Certificate','Uploaded']]:[]),['Selling for',esc(s.years)],['Instagram',s.ig?'@'+esc(s.ig):'Not added']])}
+   ${sec('sw4','Address',[['Shown to buyers',esc(s.area)+', '+esc(s.city)],['Full address (private)',esc(s.street)+', '+esc(s.state)],['Proof of address','Uploaded']])}
+   ${sec('sw5','Identity',[['ID',esc(s.idType)+' ending '+esc(String(s.idNum).slice(-3))],['ID photo','Uploaded'],['Selfie','Added']])}
+   ${sec('sw6','Payout',[['Bank',esc(s.bank)],['Account','Ending '+esc(String(s.acct).slice(-4))],['Account name',esc(s.acctName||'')]])}
+   <span class="check terms" data-act="tick" id="confirm" role="checkbox" aria-checked="false" tabindex="0"><span class="box">${ic('check')}</span><span>I confirm these details are true. False details lead to permanent removal from Agora.</span></span>
+   <div class="err" id="rv-err"></div>
   </div>
   <div class="spacer"></div>
-  <div class="sticky-cta"><button class="btn" data-act="idnext" ${S.idDoc?'':'disabled'}>Continue</button><button class="demo" data-act="sampleid">${ic('play')}Prototype: use a sample ID</button></div>`,
+  <div class="sticky-cta"><button class="btn" data-act="swsubmit">Submit for verification</button></div>`;},
 
-store:()=>`${top('Create your store')}
-  <div class="intro"><span>${ic('store','icon-lg')}</span><h1>Set up your store</h1><p>Give your store a name and a short description so customers know what you sell.</p></div>
-  <form class="form" id="f-store" novalidate>
-   ${field('st-name','Store Name','Kuye Store')}
-   ${field('st-desc','Description','',{area:1,ph:'Tell your customers about your store'})}
-   <div class="err" id="st-err"></div>
-   <button class="btn" type="submit">Next</button></form>`,
+vcheck:()=>{const reg=S.sel.btype==='registered',done=S.verify==='done';
+  const items=[['bank','Payout account','Account name matches your ID',.9,'ok'],['face','Selfie match','Your selfie matches your ID photo',1.8,'ok'],['id','ID document',esc(S.sel.idType)+' checked',2.7,'ok'],[reg?'building':'insta',reg?'CAC registration':'Online presence',reg?'Checking '+esc(S.sel.cac)+' with CAC':'Reviewing your social profile',3.4,done?'ok':'wait'],['pin','Shop address','Reviewing your proof of address',3.9,done?'ok':'wait']];
+  return `<div class="vc-head">
+    <div class="vc-ring a-pop"><svg viewBox="0 0 92 92" aria-hidden="true"><circle class="bg" cx="46" cy="46" r="38"/><circle class="fg" id="vcfg" cx="46" cy="46" r="38"/></svg><span class="vc-n" id="vcn">0/5</span></div>
+    <h1 class="a-fade" style="--d:.08s">We're checking your store</h1>
+    <p class="a-fade" style="--d:.12s">Most stores are approved within 24 hours. We'll text you on +234 ${esc(S.sel.phone)} and email you when it's done.</p>
+   </div>
+   <div class="vc-list a-rise" style="--d:.16s">${items.map(([i,t,s,d,res])=>`<div class="vc-row" data-res="${res}" style="--d:${d}s"><span class="vc-ic">${ic(i)}</span><div><b>${t}</b><span>${s}</span></div><span class="vc-st"><span class="q">Queued</span><span class="vc-spin"></span><span class="ok">${ic('check')}</span><span class="wait">In review</span></span></div>`).join('')}</div>
+   <div class="spacer"></div>
+   <div class="sticky-cta"><button class="btn" data-go="addprod">${ic('plus')}Add products while you wait</button><button class="demo" data-act="approve">${ic('play')}Prototype: finish verification now</button></div>`;},
 
-addprod:()=>`${top('Add your products')}
-  <div class="intro" style="margin-top:0"><span>${ic('camera','icon-lg')}</span><h1 style="font-size:20px">Upload product images</h1><p>You can add up to five images.</p></div>
+vdone:()=>`<div class="status" style="margin:18px 0 20px">${confetti()}<div class="badge-ic green">${ic('check')}</div><h1>${esc(S.sel.store)} is verified</h1><p>Your store is live. Buyers see these badges on your store and every product you list.</p></div>
+  <div class="a-rise" style="--d:.2s">${storeHeader(myStore(),false)}</div>
+  <div class="spacer"></div>
+  <div class="sticky-cta"><button class="btn" data-act="toseller">Go to my dashboard</button><button class="btn outline" data-act="mystore">See my store as buyers do</button></div>`,
+
+sellerpage:()=>{const st=S.viewSeller==='__me'?myStore():SELLERS[S.viewSeller]; const prods=PRODUCTS.filter(p=>p.seller===st.name);
+  return `${top('Store',`<button class="iconbtn" data-copy="agora.ng/${slug(st.name)}" aria-label="Copy store link">${ic('share')}</button>`)}
+  <div class="a-rise">${storeHeader(st,false)}</div>
+  <div class="sp-stats a-rise" style="--d:.06s">
+   <div><b>${st.rating?ic('star')+st.rating:'New'}</b><span>${st.reviews?st.reviews+' reviews':'No reviews yet'}</span></div>
+   <div><b>${st.sales}</b><span>Sales</span></div>
+   <div><b>${st.since}</b><span>Selling since</span></div>
+  </div>
+  <div class="trust a-rise" style="--d:.12s"><h3>${ic('shield')}Why you can trust this store</h3>
+   ${trustRows(st).map(([i,t,s,neu],j)=>`<div class="tr ${neu?'neu':''}" style="--d:${(.35+j*.12).toFixed(2)}s"><span class="tr-ic">${ic(i)}</span><div><b>${t}</b><span>${esc(s)}</span></div><span class="tr-ck">${ic(neu?'info':'check')}</span></div>`).join('')}
+   <p class="tr-foot">Agora checked these details before this store could sell. <button class="textlink" data-go="escrow">How escrow works</button></p>
+  </div>
+  <div class="infolist a-rise" style="--d:.18s">
+   <div>${ic('msg')}<span>${esc(st.reply)}</span></div>
+   <div>${ic('return')}<span>${esc(st.returns)}</span></div>
+   ${st.ig?`<div>${ic('insta')}<span>Also on Instagram: <b>${esc(st.ig)}</b></span></div>`:''}
+  </div>
+  <div class="note amber a-rise" style="--d:.22s;margin-top:14px;padding:14px">${ic('lock')}<div><b>Only pay inside Agora</b><span>Escrow protects you only when you pay in the app. Report any seller who asks you to pay outside it.</span></div></div>
+  ${st.revs.length?`<div class="sechead" style="margin-top:26px"><b>Reviews</b><span class="rate">${ic('star')}${st.rating} · ${st.reviews} reviews</span></div><div class="revs">${st.revs.map(([n,a,r,t])=>`<div class="rev"><div class="rev-h"><span class="rev-av">${initials(n)}</span><div><b>${n}</b><small>${a}</small></div><span class="rev-s">${stars5(r)}</span></div><p>${t}</p><span class="pill green" style="padding:4px 8px;align-self:flex-start">${ic('check')}Verified purchase</span></div>`).join('')}</div>`:''}
+  ${prods.length?`<div class="sechead" style="margin-top:26px"><b>Products</b><small style="color:var(--muted)">${prods.length} items</small></div><div class="grid" style="margin-top:0">${prods.map(pcard).join('')}</div>`
+   :`<div class="empty" style="padding:26px 0 0">${ic('pkg')}<b>No products yet</b><p>${st.own?'Products you add show here, with your verified badges.':'This store has not listed anything yet.'}</p>${st.own?`<button class="btn small" data-go="addprod" style="width:auto;padding:0 22px">${ic('plus')}Add your first product</button>`:''}</div>`}
+  ${st.own?'':`<button class="textlink" style="display:block;margin:26px auto 0;color:var(--muted)" data-act="reportstore">Report this store</button>`}`;},
+
+addprod:()=>`${top('Add a product')}
+  <div class="intro" style="margin-top:0"><span>${ic('camera','icon-lg')}</span><h1 style="font-size:20px">Upload product images</h1><p>Add up to five clear photos. Buyers trust real photos over stock images.</p></div>
   <div class="imgs">${[0,1,2,3,4].map(i=>S.prodImgs[i]?`<div><img src="${S.prodImgs[i]}" alt="Product image ${i+1}"></div>`:i===S.prodImgs.length?`<label for="pi-in" aria-label="Add image">${ic('plus')}</label>`:`<div style="cursor:default;opacity:.5"></div>`).join('')}</div>
   <input type="file" id="pi-in" accept="image/*" multiple class="vh">
-  <form class="form" id="f-prod" novalidate style="margin-top:24px">
-   ${field('pr-name','Product Name','Wireless earbuds')}
-   <div class="field"><label for="pr-cat">Category</label><div class="input"><select id="pr-cat"><option value="">Select category</option><option selected>Electronics</option><option>Phones</option><option>Bags</option><option>Fashion</option></select><span class="trail">${ic('down')}</span></div></div>
+  <form class="form stagger" id="f-prod" novalidate style="margin-top:24px">
+   ${field('pr-name','Product name','Wireless earbuds')}
+   <div class="field"><label for="pr-cat">Category</label><div class="input"><select id="pr-cat"><option value="">Select category</option><option selected>Electronics</option><option>Phones</option><option>Bags</option><option>Fashion</option><option>Beauty</option><option>Home</option></select><span class="trail">${ic('down')}</span></div></div>
    ${field('pr-price','Price (₦)','25,000',{attrs:'inputmode="numeric"'})}
    <div class="err" id="pr-err"></div>
    <button class="btn" type="submit">Add product</button></form>`,
-
-vpending:()=>`<div class="status" style="margin-top:70px"><div class="badge-ic amber">${ic('clock')}</div><h1>Verification pending</h1><p>Your identity document has been received and is being reviewed.</p></div>
-  <div class="setrow" style="justify-content:center">${ic('clock')}<div class="tx" style="flex:none"><b>Estimated time</b><span>Up to 24 hours</span></div></div>
-  <div class="spacer"></div>
-  <div class="sticky-cta"><button class="demo" data-act="approve">${ic('play')}Prototype: approve verification now</button></div>`,
-
-vdone:()=>`<div class="status" style="margin-top:70px">${confetti()}<div class="badge-ic green">${ic('check')}</div><h1>Identity verified</h1><p>Your ID has been verified. Buyers will see the verified badge on ${S.store?.name||'your store'}.</p></div>
-  <button class="btn" data-act="toseller">Start selling</button>`,
 
 seller:()=>{
   const has=S.sellerHas!==false;
   const rows=[['p1','AG0123458','12 Oct 2026',45000,'Delivered'],['p2','AG0123459','14 Oct 2026',20000,'In escrow'],['p7','AG0123462','19 Oct 2026',52000,'Delivered'],['p10','AG0123470','24 Oct 2026',21000,'Dispatched']];
   const pill={Delivered:'green','In escrow':'amber',Dispatched:'blue'};
   return `<div class="brandbar"><div class="brand">${LOGO(false)}Agora</div><div style="display:flex;align-items:center;gap:6px"><button class="iconbtn" data-act="tobuyer" aria-label="Switch to buying">${ic('cart')}</button><button class="avatar" data-go="profile" aria-label="Profile">BK</button></div></div>
-  <div class="greet"><h1>Good evening, ${S.user.first} 👋</h1><span class="verified">${ic('check')}Verified seller · ${S.store?.name||'Kuye Store'}</span></div>
+  <div class="greet"><h1>Good evening, ${esc(S.user.first)}</h1><button class="verified" data-act="mystore">${ic('badge')}Verified seller · ${esc(S.sel.store||S.store?.name||'Kuye Store')}${ic('chev')}</button></div>
   <div class="stats">
    <button class="stat g" data-go="paidout"><b>${has?'₦245,000':'₦0'}</b><span>Paid out</span></button>
    <button class="stat b" data-go="held"><b>${has?'₦72,000':'₦0'}</b><span>Held in escrow</span></button>
@@ -1106,14 +1715,54 @@ arrived:`<svg viewBox="0 0 240 170" style="width:100%;height:100%"><ellipse cx="
 
 /* ---------- Actions after render ---------- */
 const A={
-splash:()=>{ setTimeout(()=>{ if(stack[stack.length-1]==='splash') go('welcome',{replace:true,dir:'fade'}); },2100); },
-onb:(el)=>{
-  const st=el.querySelector('#stage'); let x0=null;
-  st.addEventListener('pointerdown',e=>x0=e.clientX);
-  st.addEventListener('pointerup',e=>{ if(x0===null) return; const dx=e.clientX-x0; x0=null;
-    if(dx<-40) next(); else if(dx>40&&S.onbIdx>0){S.onbIdx--; render('onb','back');} });
-  function next(){ if(S.onbIdx<2){S.onbIdx++; render('onb','fwd');} else go('allset',{replace:true}); }
-  el.querySelector('[data-act="onbnext"]').onclick=next;
+splash:(el)=>{ setTimeout(()=>{ if(stack[stack.length-1]!=='splash') return; el.querySelector('.splash').classList.add('out'); setTimeout(()=>{ if(stack[stack.length-1]==='splash') go('intro',{replace:true,dir:'none'}); },430); },1900); },
+intro:(el)=>{
+  const root=el.querySelector('.intro2'),stage=el.querySelector('.i-stage'),copy=el.querySelector('.i-copy'),nxt=el.querySelector('.i-next'),dots=[...el.querySelectorAll('.i-dots i')],glow=el.querySelector('.i-glow');
+  const meta=document.querySelector('meta[name="theme-color"]'); let idx=0,busy=false;
+  const paint=i=>{const s=SLIDES[i]; root.style.backgroundColor=s.bg; root.style.color=s.fg; nxt.style.backgroundColor=s.nb; nxt.style.color=s.nf; if(meta) meta.content=s.bg; root.classList.toggle('last',i===2); nxt.classList.toggle('wide',i===2); nxt.setAttribute('aria-label',i===2?'Get started':'Next slide'); dots.forEach((d,j)=>d.classList.toggle('on',j===i)); glow.style.opacity=i===2?0:1;};
+  const fit=slot=>{const f=slot.firstElementChild,m=f.firstElementChild; const h=slot.clientHeight-6,w=slot.clientWidth-8; const sc=Math.max(.5,Math.min(1.12,h/m.offsetHeight,w/m.offsetWidth)); const x=(slot.clientWidth-m.offsetWidth*sc)/2,y=Math.max(0,(slot.clientHeight-m.offsetHeight*sc)/2); f.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${sc.toFixed(3)})`;};
+  const mount=i=>{const slot=document.createElement('div'); slot.className='slot'; slot.innerHTML=`<div class="mock-fit">${SLIDES[i].m()}</div>`; stage.appendChild(slot); fit(slot);};
+  const show=(i,dir)=>{ if(busy||i<0||i>2||i===idx) return; busy=true; const old=stage.querySelector('.slot:not(.leave)'); if(old){old.classList.add('leave'); if(dir<0) old.classList.add('rev'); setTimeout(()=>old.remove(),460);} idx=i; paint(i);
+    setTimeout(()=>{ if(!el.isConnected) return; copy.innerHTML=`<h1>${SLIDES[i].t}</h1><p>${SLIDES[i].p}</p>`; copy.classList.remove('swap'); void copy.offsetWidth; copy.classList.add('swap'); mount(i); busy=false; },170); };
+  paint(0); mount(0);
+  nxt.addEventListener('click',()=>{ if(idx<2) show(idx+1,1); else go('role'); });
+  el.querySelector('.i-skip').addEventListener('click',()=>go('role'));
+  let x0=null;
+  root.addEventListener('pointerdown',e=>{ if(e.target.closest('button')) return; x0=e.clientX; });
+  root.addEventListener('pointerup',e=>{ if(x0===null) return; const dx=e.clientX-x0; x0=null; if(dx<-45) show(idx+1,1); else if(dx>45) show(idx-1,-1); });
+  const onKey=e=>{ if(!el.isConnected){removeEventListener('keydown',onKey);return;} if(e.key==='ArrowRight') show(idx+1,1); if(e.key==='ArrowLeft') show(idx-1,-1); };
+  addEventListener('keydown',onKey);
+  const refit=()=>{ const s=stage.querySelector('.slot:not(.leave)'); if(s) fit(s); };
+  if(window.ResizeObserver){ new ResizeObserver(refit).observe(stage); } else addEventListener('resize',refit);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(el.isConnected) refit(); });
+},
+role:(el)=>{
+  const nx=el.querySelector('#role-next'); let pick=S.rolePicked?S.role:null;
+  el.querySelectorAll('[data-role]').forEach(b=>b.addEventListener('click',()=>{ pick=b.dataset.role; el.querySelectorAll('[data-role]').forEach(x=>{x.classList.toggle('on',x===b); x.setAttribute('aria-pressed',x===b);}); nx.disabled=false; }));
+  nx.addEventListener('click',()=>{ if(!pick) return; S.role=pick; S.rolePicked=true; go(pick==='seller'?'sw1':'create'); });
+},
+sw1:(el)=>{ swA(el,1); const p=el.querySelector('#s-pw'),m=el.querySelector('#pwm'); const up=()=>{const v=p.value; let s=0; if(v.length>=8)s++; if(/[a-z]/.test(v)&&/[A-Z]/.test(v))s++; if(/\d/.test(v))s++; if(/[^A-Za-z0-9]/.test(v)||v.length>=12)s++; m.className='pw-meter s'+(v?Math.max(1,s):0);}; p.addEventListener('input',up); up(); },
+sw2:(el)=>{ swA(el,2); const n=el.querySelector('#s-store'),sl=el.querySelector('#slug'),ini=el.querySelector('#logo-ini'),d=el.querySelector('#s-desc'),dc=el.querySelector('#dcount');
+  n.addEventListener('input',()=>{ sl.textContent=slug(n.value); if(ini) ini.textContent=initials(n.value); }); d.addEventListener('input',()=>dc.textContent=d.value.length+'/160'); },
+sw3:(el)=>swA(el,3),
+sw4:(el)=>{ swA(el,4); const a=el.querySelector('#s-area'),c=el.querySelector('#s-city'),l=el.querySelector('#maplbl'); const up=()=>l.textContent=(a.value.trim()||'Your area')+', '+(c.value.trim()||'your city'); a.addEventListener('input',up); c.addEventListener('input',up); },
+sw5:(el)=>{ swA(el,5); const i=el.querySelector('#s-idNum'); if(S.sel.idType==='NIN') i.addEventListener('input',()=>{i.value=i.value.replace(/\D/g,'').slice(0,11);}); },
+sw6:(el)=>{ swA(el,6); const a=el.querySelector('#s-acct'),b=el.querySelector('#s-bank'),box=el.querySelector('#acctres'); let t;
+  const run=()=>{ a.value=a.value.replace(/\D/g,'').slice(0,10); S.sel.acct=a.value; S.sel.bank=b.value; clearTimeout(t);
+    if(a.value.length===10){ S.sel.acctName=null; box.innerHTML=acctRes(true); t=setTimeout(()=>{ if(!el.isConnected) return; S.sel.acctName=S.sel.name.trim().toUpperCase(); box.innerHTML=acctRes(false); },1200); }
+    else { S.sel.acctName=null; box.innerHTML=''; } };
+  a.addEventListener('input',run); b.addEventListener('change',()=>{ if(a.value.length===10) run(); else S.sel.bank=b.value; }); },
+sreview:()=>{ S.swReturn=false; },
+vcheck:(el)=>{
+  const rows=[...el.querySelectorAll('.vc-row')],fg=el.querySelector('#vcfg'),n=el.querySelector('#vcn');
+  const upd=()=>{ const k=rows.filter(r=>r.classList.contains('ok')).length; n.textContent=k+'/'+rows.length; fg.style.strokeDashoffset=(239*(1-k/rows.length)).toFixed(1); fg.style.stroke=k===rows.length?'var(--green)':''; };
+  el._upd=upd;
+  if(S.vcSeen){ rows.forEach(r=>r.classList.add(r.dataset.res)); requestAnimationFrame(upd); return; }
+  S.vcSeen=true;
+  rows.forEach(r=>{ const d=parseFloat(r.style.getPropertyValue('--d'))*1000;
+    setTimeout(()=>{ if(el.isConnected&&!r.classList.contains('ok')) r.classList.add('run'); },Math.max(300,d-750));
+    setTimeout(()=>{ if(!el.isConnected) return; r.classList.remove('run'); r.classList.add(r.dataset.res); upd(); },d); });
+  requestAnimationFrame(upd);
 },
 signup:(el)=>form(el,'#f-signup',()=>{
   const n=val('su-name'),e=val('su-email'),p=val('su-pw');
@@ -1125,7 +1774,7 @@ signup:(el)=>form(el,'#f-signup',()=>{
 signin:(el)=>form(el,'#f-signin',()=>{
   if(!/.+@.+\..+/.test(val('si-email'))) return err('si-err','Enter a valid email address.');
   if(!val('si-pw')) return err('si-err','Enter your password. Any password works in this prototype.');
-  go(S.role==='seller'?(S.store?'seller':'verifyid'):'home',{reset:true}); toast('Signed in');
+  go(S.role==='seller'?(S.store?'seller':'sw1'):'home',{reset:true}); toast('Signed in');
 }),
 forgot:(el)=>form(el,'#f-forgot',()=>{ toast('Code sent to '+val('fp-email'),'check'); go('otp'); }),
 otp:(el)=>{
@@ -1171,14 +1820,12 @@ confirm:(el)=>{
 },
 rate:(el)=>{},
 personal:(el)=>form(el,'#f-personal',()=>{S.user.name=val('pi-name');S.user.email=val('pi-email');back();toast('Changes saved');}),
-verifyid:(el)=>{ el.querySelector('#id-in').addEventListener('change',e=>{const f=e.target.files[0]; if(!f) return; if(f.type.startsWith('image/')) readImg(f,src=>{S.idDoc=src;render('verifyid','none');}); else {S.idDoc=sampleID(f.name);render('verifyid','none');}}); },
-store:(el)=>form(el,'#f-store',()=>{ if(!val('st-name')) return err('st-err','Give your store a name.'); S.store={name:val('st-name'),desc:val('st-desc')}; go('addprod'); }),
 addprod:(el)=>{
   el.querySelector('#pi-in').addEventListener('change',e=>{[...e.target.files].slice(0,5-S.prodImgs.length).forEach(f=>readImg(f,src=>{S.prodImgs.push(src);render('addprod','none');}));});
   form(el,'#f-prod',()=>{
     if(!val('pr-name')||!val('pr-cat')||!val('pr-price')) return err('pr-err','Add a product name, category and price.');
     S.sellerProducts.push({name:val('pr-name'),cat:val('pr-cat'),price:val('pr-price')});
-    toast(val('pr-name')+' added'); go('vpending',{reset:true});
+    S.prodImgs=[]; toast(val('pr-name')+' added'); if(S.verify==='done') go('seller',{reset:true}); else back();
   });
 }
 };
@@ -1201,7 +1848,7 @@ function samplePhoto(){ const c=document.createElement('canvas');c.width=800;c.h
     img.src='data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${ART[p.art](p.c)}</svg>`);});}
 function now(){const d=new Date();return d.getDate()+' '+d.toLocaleString('en',{month:'short'})+' at '+d.toLocaleTimeString('en',{hour:'numeric',minute:'2-digit'});}
 function newOrderId(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=n=>Array.from({length:n},()=>c[Math.random()*c.length|0]).join('');return 'AGR-'+r(4)+'-'+r(4);}
-function afterAuth(){ if(S.role==='seller'){ go('verifyid',{reset:true}); } else { S.onbIdx=0; go('onb',{reset:true}); } }
+function afterAuth(){ if(S.role==='seller'){ go('sw1',{reset:true}); } else { go('allset',{reset:true}); } }
 function placeOrder(status){
   S.order={id:newOrderId(),items:S.cart.map(c=>({...c})),total:subtotal()+fee(),status,heldAt:status==='held'?now():null};
   S.cart=[];
@@ -1228,11 +1875,20 @@ app.addEventListener('click',async e=>{
   if(d.otab){ S.otab=d.otab; render('orders','none'); return; }
   if(d.rm){ S.recent.splice(+d.rm,1); render('search','none'); return; }
   if(d.defaddr){ S.addresses.forEach((a,i)=>a.def=i===+d.defaddr); render('addresses','none'); toast('Default address updated'); return; }
+  if(d.seller){ S.viewSeller=d.seller; go('sellerpage'); return; }
+  if(d.goto){ S.swReturn=true; go(d.goto); return; }
   const a=d.act; if(!a) return;
   switch(a){
-    case 'buy': S.role='buyer'; go('create'); break;
-    case 'sell': S.role='seller'; go('create'); break;
-    case 'sell2': S.role='seller'; go('verifyid'); break;
+    case 'sell2': S.role='seller'; go(S.verify==='none'?'sw1':S.verify==='done'?'seller':'vcheck'); break;
+    case 'mystore': S.viewSeller='__me'; go('sellerpage'); break;
+    case 'reportstore': overlay(`<h3>Report this store</h3><p>We review every report within 24 hours. Any money of yours in escrow stays frozen while we look.</p><div class="list-gap">${['Fake or counterfeit items','Asked me to pay outside Agora','Rude or abusive','Something else'].map(x=>`<button class="radio-card" data-act="reported2"><span class="t"><b>${x}</b></span>${ic('chev')}</button>`).join('')}</div>`,true); break;
+    case 'reported2': closeOverlay(); toast('Report sent. Thank you.','shield'); break;
+    case 'swsubmit': { if(!app.querySelector('#confirm.on')){ err('rv-err','Tick the box to confirm your details are true.'); break; } processing('Submitting your store…','Your documents are sent securely',()=>{ S.verify='pending'; S.vcSeen=false; S.store={name:S.sel.store}; go('vcheck',{reset:true}); }); break; }
+    case 'swsample3': case 'swsample4': case 'swsample5': { const sc=app.querySelector('.screen'); saveSW(sc);
+      if(a==='swsample3') S.sel.cacDoc=sampleDoc('CERTIFICATE OF REGISTRATION','Corporate Affairs Commission · '+(S.sel.cac||'BN 3204718'),'#0B6E4F');
+      if(a==='swsample4') S.sel.poa=sampleDoc('ELECTRICITY BILL','Ikeja Electric · '+(S.sel.street||'Your address'),'#B45309');
+      if(a==='swsample5'){ S.sel.idDoc=sampleID(); S.sel.selfie=sampleSelfie(); if(!S.sel.idNum) S.sel.idNum='22183749561'; }
+      render(sc.dataset.view,'none'); toast('Sample added'); break; }
     case 'oauth': processing('Connecting…','Signing you in securely',afterAuth); break;
     case 'oauthin': processing('Connecting…','Signing you in securely',()=>go('home',{reset:true})); break;
     case 'start': go('home',{reset:true}); break;
@@ -1276,17 +1932,19 @@ app.addEventListener('click',async e=>{
     case 'saveaddr': { const l=val('na-line'); if(!l){toast('Enter an address first','err');break;} S.addresses.push({label:val('na-label')||'Other',line:l,line2:'Lagos',def:false}); closeOverlay(); render('addresses','none'); toast('Address saved'); break; }
     case 'support': overlay(`<h3>Contact support</h3><p>Agora support replies within 15 minutes, 7am to 10pm daily.</p><div class="acct"><div><small>Email</small><b style="font-size:15px">help@agora.ng</b></div><button class="copy" data-copy="help@agora.ng">${ic('copy')}Copy</button></div><button class="btn" data-act="closeov">Done</button>`,true); break;
     case 'soon': toast('This section opens here in the full app','info'); break;
-    case 'logout': S.order=null; S.cart=[]; go('welcome',{reset:true,dir:'fade'}); break;
+    case 'logout': S.order=null; S.cart=[]; S.rolePicked=false; go('role',{reset:true}); break;
     case 'twofa': S.twofa=!S.twofa; t.classList.toggle('on',S.twofa); t.setAttribute('aria-checked',S.twofa); toast(S.twofa?'Two-factor authentication on':'Two-factor authentication off',S.twofa?'shield':'info'); break;
-    case 'sampleid': S.idDoc=sampleID(); render('verifyid','none'); break;
-    case 'idnext': go('store'); break;
-    case 'approve': S.verify='done'; go('vdone',{reset:true}); break;
-    case 'toseller': S.role='seller'; if(!S.store) S.store={name:'Kuye Store'}; go('seller',{reset:true}); break;
+    case 'approve': { S.verify='done'; const sc=app.querySelector('.screen'); const rows=[...app.querySelectorAll('.vc-row:not(.ok)')];
+      rows.forEach((r,i)=>setTimeout(()=>{ r.dataset.res='ok'; r.classList.remove('wait','run'); r.classList.add('ok'); sc._upd&&sc._upd(); },250+i*380));
+      setTimeout(()=>{ if(app.querySelector('.screen')===sc) go('vdone',{reset:true}); },900+rows.length*380); break; }
+    case 'toseller': S.role='seller'; if(!S.store) S.store={name:S.sel.store}; go('seller',{reset:true}); break;
     case 'tobuyer': S.role='buyer'; go('home',{reset:true}); break;
     case 'toggleseller': S.sellerHas=S.sellerHas===false; render('seller','none'); break;
     case 'hideamt': { const b=app.querySelector('#po-amt'); const h=b.textContent.includes('•'); b.textContent=h?'₦245,000':'₦ • • • • •'; t.innerHTML=ic(h?'eye':'eyeoff'); break; }
   }
 });
+
+app.addEventListener('animationend',e=>{ const t=e.target; if(!t.closest||t.closest('.mock')) return; if(t.matches('.stagger > *,.a-rise,.a-fade,.a-drop,.a-pop,.pcard,.citem,.orow,.srow')) t.style.animation='none'; });
 
 go('splash');
 if('serviceWorker' in navigator && location.protocol==='https:' && location.hostname!=='localhost'){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}

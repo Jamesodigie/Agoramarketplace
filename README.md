@@ -18,12 +18,14 @@ Every build is signed with the same key in `android-signing/`, so a new version 
 
 ## What's in it
 
-- **Animated hero:** a splash screen, then the welcome screen with a drifting security pattern, the bag logo dropping in and the checkmark drawing itself
-- **Buyer onboarding:** create account (Google, Apple or email), sign in, forgot password with an OTP code, a three-slide intro and an "all set" screen
+- **Intro:** the logo splash, then three swipeable slides, each with its own colour and a live UI scene that builds itself step by step (verified seller search, escrow checkout, order tracking with payout). Ends on a "Welcome to Agora, join as a Buyer or Seller" picker.
+- **Seller verification (6 steps):** about you, store setup (name, link, categories, logo), business details (CAC number and certificate, or individual seller, plus socials), address with proof of address (buyers see only the area), identity (ID number, ID photo, selfie), and payout account with an account-name check. Then a review screen, an animated verification checklist and an approved screen.
+- **Store trust page:** buyers tap any seller to see their verified badges, CAC number, area, ratings, reviews, return policy and products.
+- **Buyer onboarding:** create account (Google, Apple or email), sign in, forgot password with an OTP code and an "all set" screen
 - **Shopping:** home feed with category filters, search, product detail with sizes, cart with quantities
 - **Checkout:** delivery details, review and payment by card or bank transfer, ending in success, pending or failed
 - **Order tracking:** dispatch and delivery, photo confirmation, rating
 - **Account:** profile, orders with tabs, saved addresses, how escrow works, settings, personal info, password and security
-- **Seller:** ID verification, store setup, adding products, verification pending and approved, dashboard, payouts, funds held in escrow
+- **Seller dashboard:** payouts, funds held in escrow, adding products
 
 Buttons labelled **"Prototype: …"** stand in for things a backend would do, such as a seller dispatching an order or a payment failing.
