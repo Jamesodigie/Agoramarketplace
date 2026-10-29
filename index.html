@@ -1540,7 +1540,7 @@ sw1:()=>swShell(1,'Tell us about yourself','Use the name on your ID. Buyers see 
 
 sw2:()=>swShell(2,'Set up your store','This is the first thing buyers see. You can change it later.',`
   <div class="logo-up-wrap"><label class="logo-up" for="u-logo" aria-label="Add store logo">${S.sel.logo?`<img src="${S.sel.logo}" alt="Store logo">`:`<span class="ini" id="logo-ini">${initials(S.sel.store)}</span>`}</label><span class="cam">${ic('camera')}</span><input type="file" id="u-logo" data-up="logo" accept="image/*" class="vh"></div>
-  <div class="field"><label for="s-store">Store name</label><div class="input"><input id="s-store" value="${esc(S.sel.store)}" placeholder="e.g. Kuye Gadgets" maxlength="40" autocomplete="organization"></div><span class="linkchip">agora.ng/<b id="slug">${slug(S.sel.store)}</b><span class="ok">${ic('check')}Available</span></span></div>
+  <div class="field"><label for="s-store">Store name</label><div class="input"><input id="s-store" value="${esc(S.sel.store)}" placeholder="e.g. Kuye Gadgets" maxlength="40" autocomplete="organization"></div><span class="linkchip">agoramarket.ng/<b id="slug">${slug(S.sel.store)}</b><span class="ok">${ic('check')}Available</span></span></div>
   <div class="field"><label>What do you sell?</label><div class="chips">${['Electronics','Phones','Fashion','Bags','Beauty','Home','Food','Kids','Other'].map(c=>`<button type="button" class="chip ${S.sel.cats.includes(c)?'on':''}" data-many="cats" data-v="${c}">${ic('check')}${c}</button>`).join('')}</div></div>
   <div class="field"><div class="lbl-row"><label for="s-desc">Describe your store</label><small id="dcount">${(S.sel.desc||'').length}/160</small></div><div class="input"><textarea id="s-desc" maxlength="160" placeholder="What you sell, and why buyers can rely on you">${esc(S.sel.desc)}</textarea></div></div>`),
 
@@ -1591,7 +1591,7 @@ sreview:()=>{const s=S.sel,reg=s.btype==='registered';
   <p class="a-fade" style="color:var(--muted);margin:-4px 0 18px;line-height:1.5">Check everything once. Wrong details slow down verification.</p>
   <div class="rv-preview a-rise" style="--d:.05s"><small>How buyers will see you</small>${storeHeader(myStore(),true)}</div>
   <div class="stagger list-gap" style="margin-top:16px">
-   ${sec('sw2','Store',[['Name',esc(s.store)],['Link','agora.ng/'+slug(s.store)],['Sells',esc(s.cats.join(', '))]])}
+   ${sec('sw2','Store',[['Name',esc(s.store)],['Link','agoramarket.ng/'+slug(s.store)],['Sells',esc(s.cats.join(', '))]])}
    ${sec('sw3','Business',[['Type',reg?'Registered business':'Individual seller'],...(reg?[['CAC number',esc(s.cac)],['Certificate','Uploaded']]:[]),['Selling for',esc(s.years)],['Instagram',s.ig?'@'+esc(s.ig):'Not added']])}
    ${sec('sw4','Address',[['Shown to buyers',esc(s.area)+', '+esc(s.city)],['Full address (private)',esc(s.street)+', '+esc(s.state)],['Proof of address','Uploaded']])}
    ${sec('sw5','Identity',[['ID',esc(s.idType)+' ending '+esc(String(s.idNum).slice(-3))],['ID photo','Uploaded'],['Selfie','Added']])}
@@ -1619,7 +1619,7 @@ vdone:()=>`<div class="status" style="margin:18px 0 20px">${confetti()}<div clas
   <div class="sticky-cta"><button class="btn" data-act="toseller">Go to my dashboard</button><button class="btn outline" data-act="mystore">See my store as buyers do</button></div>`,
 
 sellerpage:()=>{const st=S.viewSeller==='__me'?myStore():SELLERS[S.viewSeller]; const prods=PRODUCTS.filter(p=>p.seller===st.name);
-  return `${top('Store',`<button class="iconbtn" data-copy="agora.ng/${slug(st.name)}" aria-label="Copy store link">${ic('share')}</button>`)}
+  return `${top('Store',`<button class="iconbtn" data-copy="agoramarket.ng/${slug(st.name)}" aria-label="Copy store link">${ic('share')}</button>`)}
   <div class="a-rise">${storeHeader(st,false)}</div>
   <div class="sp-stats a-rise" style="--d:.06s">
    <div><b>${st.rating?ic('star')+st.rating:'New'}</b><span>${st.reviews?st.reviews+' reviews':'No reviews yet'}</span></div>
@@ -1665,7 +1665,7 @@ seller:()=>{
   </div>
   <div class="sechead"><b>Recent Orders</b>${has?'<button class="textlink">View all</button>':''}</div>
   ${has?`<div class="list-gap">${rows.map(([pid,id,d,a,s])=>`<div class="srow">${art(P(pid))}<div class="tx"><span>Order ID: #${id}</span><span>${d}</span><b>${N(a)}</b></div><span class="pill ${pill[s]}">${s}</span></div>`).join('')}</div>`
-  :`<div class="empty">${ic('pkg')}<b>No orders yet</b><p>Share your store link. Buyers who see escrow protection convert better than buyers who do not.</p><button class="btn small" data-copy="agora.ng/kuye-store" style="width:auto;padding:0 22px">${ic('copy')}Copy store link</button></div>`}
+  :`<div class="empty">${ic('pkg')}<b>No orders yet</b><p>Share your store link. Buyers who see escrow protection convert better than buyers who do not.</p><button class="btn small" data-copy="agoramarket.ng/kuye-store" style="width:auto;padding:0 22px">${ic('copy')}Copy store link</button></div>`}
   <button class="demo" style="margin-top:20px" data-act="toggleseller">${ic('play')}Prototype: show ${has?'a new store with no orders':'a store with orders'}</button>`;
 },
 
@@ -1930,7 +1930,7 @@ app.addEventListener('click',async e=>{
     case 'editaddr': toast('Address editing opens here in the full app','info'); break;
     case 'addaddr': overlay(`<h3>Add new address</h3><div class="form">${field('na-label','Label','Office')}${field('na-line','Address','')}<button class="btn" data-act="saveaddr">Save address</button></div>`,true); break;
     case 'saveaddr': { const l=val('na-line'); if(!l){toast('Enter an address first','err');break;} S.addresses.push({label:val('na-label')||'Other',line:l,line2:'Lagos',def:false}); closeOverlay(); render('addresses','none'); toast('Address saved'); break; }
-    case 'support': overlay(`<h3>Contact support</h3><p>Agora support replies within 15 minutes, 7am to 10pm daily.</p><div class="acct"><div><small>Email</small><b style="font-size:15px">help@agora.ng</b></div><button class="copy" data-copy="help@agora.ng">${ic('copy')}Copy</button></div><button class="btn" data-act="closeov">Done</button>`,true); break;
+    case 'support': overlay(`<h3>Contact support</h3><p>Agora support replies within 15 minutes, 7am to 10pm daily.</p><div class="acct"><div><small>Email</small><b style="font-size:15px">help@agoramarket.ng</b></div><button class="copy" data-copy="help@agoramarket.ng">${ic('copy')}Copy</button></div><button class="btn" data-act="closeov">Done</button>`,true); break;
     case 'soon': toast('This section opens here in the full app','info'); break;
     case 'logout': S.order=null; S.cart=[]; S.rolePicked=false; go('role',{reset:true}); break;
     case 'twofa': S.twofa=!S.twofa; t.classList.toggle('on',S.twofa); t.setAttribute('aria-checked',S.twofa); toast(S.twofa?'Two-factor authentication on':'Two-factor authentication off',S.twofa?'shield':'info'); break;

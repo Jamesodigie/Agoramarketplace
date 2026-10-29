@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../data.dart';
 import '../icons.dart';
+import '../links.dart';
 import '../nav.dart';
 import '../state.dart';
 import '../theme.dart';
@@ -186,17 +187,23 @@ class SellerStep2 extends StatefulWidget {
 }
 
 class _SellerStep2State extends State<SellerStep2> {
-  late final store = TextEditingController(text: sel.store), desc = TextEditingController(text: sel.desc);
+  late final store = TextEditingController(text: sel.store), desc = TextEditingController(text: sel.desc), handle = TextEditingController(text: sel.handle);
+  late bool handleEdited = sel.handleEdited;
   String? err;
   static const cats = ['Electronics', 'Phones', 'Fashion', 'Bags', 'Beauty', 'Home', 'Food', 'Kids', 'Other'];
 
   void _next() {
     sel
       ..store = store.text.trim()
-      ..desc = desc.text.trim();
+      ..desc = desc.text.trim()
+      ..handle = handle.text
+      ..handleEdited = handleEdited;
     String? e;
+    final hp = handleProblem(sel.handle);
     if (sel.store.length < 3) {
       e = 'Give your store a name of at least 3 characters.';
+    } else if (hp != null) {
+      e = 'Store link: $hp.';
     } else if (sel.cats.isEmpty) {
       e = 'Pick at least one thing you sell.';
     } else if (sel.desc.length < 20) {
@@ -244,13 +251,41 @@ class _SellerStep2State extends State<SellerStep2> {
             ),
           ),
           Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Field(label: 'Store name', ctrl: store, hint: 'e.g. Kuye Gadgets', maxLength: 40, caps: TextCapitalization.words, onChanged: (_) => setState(() {})),
+            Field(
+              label: 'Store name',
+              ctrl: store,
+              hint: 'e.g. Kuye Gadgets',
+              maxLength: 40,
+              caps: TextCapitalization.words,
+              onChanged: (_) => setState(() {
+                if (!handleEdited) handle.text = handleFrom(store.text);
+              }),
+            ),
+          ]),
+          Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Field(
+              label: 'Store link',
+              ctrl: handle,
+              prefix: '$kDomain/',
+              hint: 'storebyella',
+              maxLength: 30,
+              keyboard: TextInputType.url,
+              formatters: [HandleFormatter()],
+              onChanged: (_) => setState(() => handleEdited = true),
+            ),
             const SizedBox(height: 8),
-            Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 6, children: [
-              Text('agora.ng/', style: ts(13, c: C.muted)),
-              Text(slugify(store.text), style: ts(13, w: w6, c: C.blue)),
-              Row(mainAxisSize: MainAxisSize.min, children: [Ic('check', size: 14, color: C.greenInk), const SizedBox(width: 3), Text('Available', style: ts(13, w: w6, c: C.greenInk))]),
-            ]),
+            Builder(builder: (_) {
+              final p = handleProblem(handle.text);
+              final ok = p == null;
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                child: Row(key: ValueKey(p), children: [
+                  Ic(ok ? 'check' : 'info', size: 15, color: ok ? C.greenInk : C.red),
+                  const SizedBox(width: 5),
+                  Expanded(child: Text(ok ? 'Available. Share it on WhatsApp, Instagram, X and more.' : p, style: ts(13, w: w5, c: ok ? C.greenInk : C.red))),
+                ]),
+              );
+            }),
           ]),
           Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Text('What do you sell?', style: ts(15, w: w5)),
@@ -745,7 +780,7 @@ class _SellerReviewScreenState extends State<SellerReviewScreen> {
           StoreHeader(sel.toSeller(), pending: true).rise(40),
           const SizedBox(height: 16),
           ...stagger([
-            _sec('Store', const SellerStep2(fromReview: true), [('Name', sel.store), ('Link', 'agora.ng/${slugify(sel.store)}'), ('Sells', sel.cats.join(', '))]),
+            _sec('Store', const SellerStep2(fromReview: true), [('Name', sel.store), ('Link', storeLink(sel.handle)), ('Sells', sel.cats.join(', '))]),
             _sec('Business', const SellerStep3(fromReview: true), [
               ('Type', sel.registered ? 'Registered business' : 'Individual seller'),
               if (sel.registered) ('CAC number', sel.cac),

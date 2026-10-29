@@ -34,6 +34,8 @@ const List<Product> kProducts = [
   Product(id: 'p7', name: 'Smart Watch', short: 'Smart Watch', price: 52000, cat: 'Electronics', seller: 'Chidera Electronics', rating: 4.7, stock: 9, art: 'watch', color: '#2F7BFF', bg: Color(0xFFDDE6F5), sales: 200, about: 'Heart rate, sleep and step tracking with a 7-day battery and water resistance.'),
   Product(id: 'p8', name: 'Power Bank 20000mAh', short: 'Power Bank', price: 18000, cat: 'Phones', seller: 'Ikeja Mobile Hub', rating: 4.8, stock: 30, art: 'power', color: '#22C55E', bg: Color(0xFFE3F1E8), sales: 320, about: 'Charges a phone four times over. Fast charging on both USB-C and USB-A ports, handy during power cuts.'),
   Product(id: 'p9', name: 'Canvas Sneakers', short: 'Canvas Sneakers', price: 24000, cat: 'Fashion', seller: 'Lekki Threads', rating: 4.6, stock: 14, art: 'sneaker', color: '#C67B2E', bg: Color(0xFFF1E4CC), sizes: ['40', '41', '42', '43'], sales: 85, about: 'Everyday canvas sneakers with a cushioned insole and gum rubber sole.'),
+  Product(id: 'p11', name: 'Mini Shoulder Bag', short: 'Mini Shoulder Bag', price: 38500, cat: 'Bags', seller: 'Store by Ella', rating: 4.9, stock: 6, art: 'handbag', color: '#D9468F', bg: Color(0xFFF7E3EE), sales: 150, about: 'Compact shoulder bag in soft vegan leather with a gold chain strap. Fits a phone, cards and lipstick.'),
+  Product(id: 'p12', name: 'Weekend Tote', short: 'Weekend Tote', price: 29000, cat: 'Bags', seller: 'Store by Ella', rating: 4.8, stock: 10, art: 'tote', color: '#3E3A63', bg: Color(0xFFE6E5F2), sales: 150, about: 'Roomy structured tote for work or a weekend away, with a laptop sleeve and a zip pocket.'),
   Product(id: 'p10', name: 'Studio Earbuds', short: 'Studio Earbuds', price: 21000, cat: 'Electronics', seller: 'Chidera Electronics', rating: 4.4, stock: 25, art: 'headphones', color: '#F5F5F5', bg: Color(0xFF2B3445), sales: 200, about: 'Wireless earbuds with charging case and touch controls.'),
 ];
 
@@ -54,6 +56,7 @@ class Seller {
   final List<Review> revs;
   final bool own;
   final dynamic logo; // Upload? for the seller's own store
+  final String? handle; // the store link name: agoramarket.ng/<handle>
   const Seller({
     required this.name,
     required this.ini,
@@ -74,7 +77,9 @@ class Seller {
     required this.revs,
     this.own = false,
     this.logo,
+    this.handle,
   });
+  String get slug => handle ?? handleFrom(name);
   List<String> get badges => ['ID verified', if (cac != null) 'CAC registered', 'Address verified', 'Bank verified'];
 }
 
@@ -92,6 +97,10 @@ const Map<String, Seller> kSellers = {
     Review('Tunde O.', 'Surulere', 5, 'Phone was brand new and the IMEI checked out.'),
     Review('Blessing U.', 'Port Harcourt', 4, 'Fast delivery to PH. The power bank works well.'),
   ]),
+  'Store by Ella': Seller(name: 'Store by Ella', handle: 'storebyella', ini: 'SE', color: Color(0xFFD9468F), color2: Color(0xFF8E1F5A), area: 'Wuse 2', city: 'Abuja, FCT', cats: 'Bags · Fashion', since: 'Feb 2026', rating: 4.9, reviews: 63, sales: '150+', reply: 'Usually replies within 30 minutes', cac: 'BN 3398120', ig: '@storebyella', addrNote: 'Boutique in Wuse 2, Abuja', returns: 'Exchanges within 72 hours of delivery. Item must be unused with tags.', revs: [
+    Review('Hauwa B.', 'Garki', 5, 'Ella sent a video of my bag before dispatch. Exactly what I got.'),
+    Review('Tolu A.', 'Lekki', 5, 'Delivered to Lagos in 2 days, well packaged.'),
+  ]),
   'Lekki Threads': Seller(name: 'Lekki Threads', ini: 'LT', color: Color(0xFF8A6A9E), color2: Color(0xFF4F3563), area: 'Lekki Phase 1', city: 'Lekki, Lagos', cats: 'Fashion · Footwear', since: 'May 2025', rating: 4.5, reviews: 41, sales: '85+', reply: 'Usually replies within 2 hours', cac: null, ig: '@lekkithreads', addrNote: 'Sells from home in Lekki Phase 1', returns: 'Size exchanges within 72 hours of delivery.', revs: [
     Review('Zainab M.', 'Ikoyi', 5, 'True to size and soft. I will buy again.'),
     Review('Chuka I.', 'Gbagada', 4, 'Nice sneakers. Took a while to dispatch but arrived fine.'),
@@ -100,3 +109,13 @@ const Map<String, Seller> kSellers = {
 
 const kStates = ['Abia', 'Abuja (FCT)', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara'];
 const kBanks = ['Access Bank', 'Fidelity Bank', 'First Bank', 'FCMB', 'GTBank', 'Kuda', 'Moniepoint', 'Opay', 'Palmpay', 'Stanbic IBTC', 'Sterling Bank', 'UBA', 'Union Bank', 'Wema Bank', 'Zenith Bank'];
+
+/// A store link name built from the store name: "Store by Ella" -> "storebyella".
+String handleFrom(String name) {
+  const map = {'à': 'a', 'á': 'a', 'â': 'a', 'è': 'e', 'é': 'e', 'ẹ': 'e', 'ì': 'i', 'í': 'i', 'ò': 'o', 'ó': 'o', 'ọ': 'o', 'ù': 'u', 'ú': 'u', 'ṣ': 's', 'ñ': 'n'};
+  var s = name.toLowerCase();
+  map.forEach((k, v) => s = s.replaceAll(k, v));
+  s = s.replaceAll(RegExp(r'[^a-z0-9]'), '');
+  if (s.length > 30) s = s.substring(0, 30);
+  return s;
+}

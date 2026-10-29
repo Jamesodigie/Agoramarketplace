@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "ng.agora.marketplace",
+      "sha256_cert_fingerprints": ["D8:B8:2B:80:20:59:B9:04:5C:DB:E3:7B:AE:86:DF:E9:BB:79:C6:30:2F:CA:A4:51:EC:A7:8B:53:16:3C:94:0F"]
+    }
+  }
+]

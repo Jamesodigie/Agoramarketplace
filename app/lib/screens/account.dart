@@ -200,7 +200,7 @@ class EscrowScreen extends StatelessWidget {
       Btn('Contact support', onTap: () => showSheet(context,
           title: 'Contact support',
           body: 'Agora support replies within 15 minutes, 7am to 10pm daily.',
-          child: Column(mainAxisSize: MainAxisSize.min, children: [const CopyRow('Email', 'help@agora.ng', copy: 'help@agora.ng'), const SizedBox(height: 16), Btn('Done', onTap: () => Navigator.of(context).pop())]))),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [const CopyRow('Email', 'help@agoramarket.ng', copy: 'help@agoramarket.ng'), const SizedBox(height: 16), Btn('Done', onTap: () => Navigator.of(context).pop())]))),
     ]);
   }
 }

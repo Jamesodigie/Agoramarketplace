@@ -240,12 +240,13 @@ class TopBar extends StatelessWidget {
   final String? title;
   final Widget? trailing;
   final bool back;
-  const TopBar({super.key, this.title, this.trailing, this.back = true});
+  final VoidCallback? onBack;
+  const TopBar({super.key, this.title, this.trailing, this.back = true, this.onBack});
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
         child: Row(children: [
-          SizedBox(width: 44, child: back ? IconBtn('back', label: 'Back', onTap: () => Navigator.of(context).maybePop()) : null),
+          SizedBox(width: 44, child: back ? IconBtn('back', label: 'Back', onTap: onBack ?? () => Navigator.of(context).maybePop()) : null),
           Expanded(child: Text(title ?? '', textAlign: TextAlign.center, style: ts(17, w: w6), maxLines: 1, overflow: TextOverflow.ellipsis)),
           SizedBox(width: 44, child: trailing),
         ]),
@@ -262,8 +263,10 @@ class AppPage extends StatelessWidget {
   final Widget? bottom;
   final EdgeInsets padding;
   final ScrollController? controller;
+  final VoidCallback? onBack;
   const AppPage({
     super.key,
+    this.onBack,
     this.title,
     this.trailing,
     this.back = true,
@@ -288,7 +291,7 @@ class AppPage extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),
               child: Column(children: [
-                if (topbar) TopBar(title: title, trailing: trailing, back: back),
+                if (topbar) TopBar(title: title, trailing: trailing, back: back, onBack: onBack),
                 if (header != null) header!,
                 Expanded(
                   child: ListView(

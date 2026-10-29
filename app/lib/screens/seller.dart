@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../data.dart';
+import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../icons.dart';
+import '../links.dart';
 import '../nav.dart';
 import '../state.dart';
 import '../theme.dart';
@@ -70,7 +72,9 @@ class SellerDashboard extends StatelessWidget {
                   ]),
                 ),
               ).fadeUp(40),
-              const SizedBox(height: 22),
+              const SizedBox(height: 18),
+              StoreLinkCard(app.sel.toSeller()).rise(60),
+              const SizedBox(height: 14),
               Row(children: [
                 _stat(has ? '₦245,000' : '₦0', 'Paid out', C.green, () => go(const PaidOutScreen())),
                 const SizedBox(width: 12),
@@ -113,10 +117,7 @@ class SellerDashboard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text('Share your store link. Buyers who see escrow protection convert better than buyers who do not.', textAlign: TextAlign.center, style: ts(14, c: C.muted, h: 1.5)),
                     const SizedBox(height: 16),
-                    Btn('Copy store link', icon: 'copy', small: true, expand: false, onTap: () async {
-                      await Clipboard.setData(ClipboardData(text: 'agora.ng/${slugify(app.sel.store)}'));
-                      toast('Store link copied', icon: 'copy');
-                    }),
+                    Btn('Share store link', icon: 'share', small: true, expand: false, onTap: () => shareStore(context, app.sel.toSeller())),
                   ]),
                 ),
               const SizedBox(height: 10),
@@ -217,7 +218,9 @@ class HeldScreen extends StatelessWidget {
 /// The page buyers see when they tap a seller: badges, checks, reviews, products.
 class StoreScreen extends StatelessWidget {
   final Seller s;
-  const StoreScreen(this.s, {super.key});
+  /// True when the page was opened from a shared link, so there is nothing to go back to.
+  final bool entry;
+  const StoreScreen(this.s, {super.key, this.entry = false});
 
   Widget _stat(Widget top, String l) => Expanded(
         child: CardBox(
@@ -232,12 +235,11 @@ class StoreScreen extends StatelessWidget {
     final prods = kProducts.where((p) => p.seller == s.name).toList();
     final rows = trustRows(s);
     return AppPage(
-      title: 'Store',
-      trailing: IconBtn('share', label: 'Copy store link', onTap: () async {
-        await Clipboard.setData(ClipboardData(text: 'agora.ng/${slugify(s.name)}'));
-        toast('Store link copied', icon: 'copy');
-      }),
+      title: entry ? storeLink(s.slug) : 'Store',
+      onBack: entry ? () => goReset(const HomeScreen()) : null,
+      trailing: IconBtn('share', label: 'Share store', onTap: () => shareStore(context, s)),
       children: [
+        if (entry && kIsWeb) ...[const GetAppBanner().drop(), const SizedBox(height: 14)],
         StoreHeader(s).rise(),
         const SizedBox(height: 14),
         Row(children: [
@@ -365,4 +367,53 @@ class EscrowScreenLink extends StatelessWidget {
   const EscrowScreenLink({super.key});
   @override
   Widget build(BuildContext context) => const EscrowScreen();
+}
+
+/// Shown on the web when someone arrives from a store link.
+class GetAppBanner extends StatelessWidget {
+  const GetAppBanner({super.key});
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+        decoration: BoxDecoration(color: C.navy, borderRadius: BorderRadius.circular(18)),
+        child: Row(children: [
+          const LogoTile(size: 36),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Agora Marketplace', style: ts(14, w: w7, c: Colors.white)),
+              Text('Pay safely. Money held until delivery.', style: ts(12, c: Colors.white.withValues(alpha: 0.7))),
+            ]),
+          ),
+          Pressable(
+            label: 'Get the app',
+            onTap: () => launchUrl(Uri.parse(kAppDownload), mode: LaunchMode.externalApplication),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+              decoration: BoxDecoration(color: C.brand, borderRadius: BorderRadius.circular(12)),
+              child: Text('Get app', style: ts(13.5, w: w7, c: Colors.white)),
+            ),
+          ),
+        ]),
+      );
+}
+
+/// Shown when a link points to a store that does not exist.
+class StoreNotFoundScreen extends StatelessWidget {
+  final String handle;
+  const StoreNotFoundScreen(this.handle, {super.key});
+  @override
+  Widget build(BuildContext context) => AppPage(
+        back: false,
+        children: [
+          const SizedBox(height: 60),
+          Center(child: Ic('store', size: 72, color: C.blue).popIn()),
+          const SizedBox(height: 18),
+          Text('No store at this link', textAlign: TextAlign.center, style: ts(22, w: w7)).fadeUp(80),
+          const SizedBox(height: 8),
+          Text('${storeLink(handle)} is not a store on Agora yet. Check the spelling, or ask the seller for their link.', textAlign: TextAlign.center, style: ts(14.5, c: C.muted, h: 1.5)).fadeUp(140),
+          const SizedBox(height: 26),
+          Btn('Browse Agora', onTap: () => goReset(const HomeScreen())).rise(200),
+        ],
+      );
 }

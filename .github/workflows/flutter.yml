@@ -214,6 +214,8 @@ jobs:
         run: |
           set -o pipefail
           (flutter build web --release --no-web-resources-cdn || flutter build web --release) 2>&1 | tee ../build.log
+          # Hosting files for agoramarket.ng: store-link rewrites and Android app-link verification
+          cp -r hosting/. build/web/
       - name: Share the log (on failure)
         if: failure()
         run: |
@@ -229,6 +231,7 @@ jobs:
         with:
           name: web
           path: app/build/web
+          include-hidden-files: true
 
   release:
     name: Publish release

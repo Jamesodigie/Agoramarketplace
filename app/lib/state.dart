@@ -56,6 +56,8 @@ class Ship {
 class SellerDraft {
   String name = 'Boluwatife Kuye', phone = '813 061 2867', email = 'Kuyebolu101@gmail.com', pw = '';
   bool agree = false;
+  String handle = 'kuyegadgets';
+  bool handleEdited = false;
   String store = 'Kuye Gadgets', desc = 'Original phones, chargers and audio accessories. Sealed boxes and a 6-month warranty on every gadget.';
   List<String> cats = ['Electronics', 'Phones'];
   Upload? logo;
@@ -90,6 +92,7 @@ class SellerDraft {
         revs: const [],
         own: true,
         logo: logo,
+        handle: handle,
       );
 }
 
