@@ -232,7 +232,7 @@ class _SellerStep2State extends State<SellerStep2> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(26),
-                    child: sel.logo != null ? Thumb(sel.logo!) : Center(child: Text(initials(store.text.isEmpty ? 'A' : store.text), style: ts(28, w: w7, c: Colors.white))),
+                    child: sel.logo != null ? UploadThumb(sel.logo!) : Center(child: Text(initials(store.text.isEmpty ? 'A' : store.text), style: ts(28, w: w7, c: Colors.white))),
                   ),
                 ),
                 Positioned(
@@ -550,7 +550,7 @@ class _SellerStep5State extends State<SellerStep5> {
                 width: 76,
                 height: 76,
                 decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: hasSelfie ? C.green : const Color(0xFFB9C6DA), width: hasSelfie ? 3 : 2)),
-                child: ClipOval(child: hasSelfie ? Thumb(sel.selfie!) : Center(child: Ic('face', size: 36, color: C.blue))),
+                child: ClipOval(child: hasSelfie ? UploadThumb(sel.selfie!) : Center(child: Ic('face', size: 36, color: C.blue))),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -974,7 +974,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   width: w,
                   height: w,
                   child: i < imgs.length
-                      ? ClipRRect(borderRadius: BorderRadius.circular(12), child: Thumb(imgs[i])).popIn()
+                      ? ClipRRect(borderRadius: BorderRadius.circular(12), child: UploadThumb(imgs[i])).popIn()
                       : Pressable(
                           onTap: i == imgs.length
                               ? () async {

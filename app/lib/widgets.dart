@@ -818,9 +818,9 @@ class _SourceRow extends StatelessWidget {
       );
 }
 
-class Thumb extends StatelessWidget {
+class UploadThumb extends StatelessWidget {
   final Upload u;
-  const Thumb(this.u, {super.key});
+  const UploadThumb(this.u, {super.key});
   @override
   Widget build(BuildContext context) {
     if (u.bytes != null) return Image.memory(u.bytes!, fit: BoxFit.cover, gaplessPlayback: true);
@@ -856,7 +856,7 @@ class UploadTile extends StatelessWidget {
               child: SizedBox(
                 width: 48,
                 height: 48,
-                child: done ? Thumb(value!) : Container(color: C.blue50, child: Center(child: Ic('upload', size: 22, color: C.blue))),
+                child: done ? UploadThumb(value!) : Container(color: C.blue50, child: Center(child: Ic('upload', size: 22, color: C.blue))),
               ),
             ),
             const SizedBox(width: 14),
@@ -927,7 +927,7 @@ class StoreAvatar extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(border ? r - 4 : r),
-        child: logo != null ? Thumb(logo) : Center(child: Text(s.ini, style: ts(size * 0.32, w: w7, c: Colors.white))),
+        child: logo != null ? UploadThumb(logo) : Center(child: Text(s.ini, style: ts(size * 0.32, w: w7, c: Colors.white))),
       ),
     );
   }

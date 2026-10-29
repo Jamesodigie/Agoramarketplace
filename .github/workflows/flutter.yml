@@ -40,6 +40,7 @@ jobs:
             exit 0
           fi
           flutter create --platforms=android,ios,web --org ng.agora --project-name agora .
+          rm -f test/widget_test.dart
           # Same app ID as the earlier APK, so this version installs over it
           for f in android/app/build.gradle.kts android/app/build.gradle; do
             if [ -f "$f" ]; then sed -i -E 's/applicationId( = |[[:space:]]+)"ng\.agora\.agora"/applicationId\1"ng.agora.marketplace"/' "$f"; fi

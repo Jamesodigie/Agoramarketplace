@@ -231,7 +231,7 @@ class _ConfirmPhotoScreenState extends State<ConfirmPhotoScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: ph != null
-                    ? SizedBox.expand(child: Thumb(ph))
+                    ? SizedBox.expand(child: UploadThumb(ph))
                     : Center(child: Column(mainAxisSize: MainAxisSize.min, children: [Ic('camera', size: 44, color: C.blue), const SizedBox(height: 8), Text('Tap to take or upload a photo', style: ts(14, c: C.muted))])),
               ),
             ),
