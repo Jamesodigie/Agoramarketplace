@@ -81,11 +81,27 @@ jobs:
 
       - name: Check the code
         working-directory: app
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+        run: |
+          set -o pipefail
+          flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1 | tee ../analyze.log
 
       - name: Run tests
         working-directory: app
-        run: flutter test
+        run: |
+          set -o pipefail
+          flutter test 2>&1 | tee ../test.log
+
+      - name: Share the log (on failure)
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p /tmp/ci && cp *.log /tmp/ci/ 2>/dev/null || true
+          git switch --orphan ci-log-prepare
+          mkdir -p logs && cp /tmp/ci/*.log logs/ 2>/dev/null || true
+          git add logs
+          git commit -m "CI log prepare run ${{ github.run_number }}" || true
+          git push -f origin HEAD:ci-log-prepare
 
       - name: Save generated folders to the repo
         id: commit
@@ -120,7 +136,20 @@ jobs:
         run: mkdir -p ~/.android && cp android-signing/debug.keystore ~/.android/debug.keystore
       - name: Build APK
         working-directory: app
-        run: flutter build apk --release --build-number=$((200 + ${{ github.run_number }})) --build-name=2.0.${{ github.run_number }}
+        run: |
+          set -o pipefail
+          flutter build apk --release --build-number=$((200 + ${{ github.run_number }})) --build-name=2.0.${{ github.run_number }} 2>&1 | tee ../build.log
+      - name: Share the log (on failure)
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p /tmp/ci && cp *.log /tmp/ci/ 2>/dev/null || true
+          git switch --orphan ci-log-android
+          mkdir -p logs && cp /tmp/ci/*.log logs/ 2>/dev/null || true
+          git add logs
+          git commit -m "CI log android run ${{ github.run_number }}" || true
+          git push -f origin HEAD:ci-log-android
       - run: cp app/build/app/outputs/flutter-apk/app-release.apk Agora.apk
       - uses: actions/upload-artifact@v4
         with:
@@ -142,7 +171,20 @@ jobs:
           cache: true
       - name: Build for iPhone (no signing)
         working-directory: app
-        run: flutter build ios --release --no-codesign --build-number=$((200 + ${{ github.run_number }})) --build-name=2.0.${{ github.run_number }}
+        run: |
+          set -o pipefail
+          flutter build ios --release --no-codesign --build-number=$((200 + ${{ github.run_number }})) --build-name=2.0.${{ github.run_number }} 2>&1 | tee ../build.log
+      - name: Share the log (on failure)
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p /tmp/ci && cp *.log /tmp/ci/ 2>/dev/null || true
+          git switch --orphan ci-log-ios
+          mkdir -p logs && cp /tmp/ci/*.log logs/ 2>/dev/null || true
+          git add logs
+          git commit -m "CI log ios run ${{ github.run_number }}" || true
+          git push -f origin HEAD:ci-log-ios
       - name: Package
         run: |
           mkdir -p Payload
@@ -168,7 +210,20 @@ jobs:
           cache: true
       - name: Build web app
         working-directory: app
-        run: flutter build web --release --no-web-resources-cdn || flutter build web --release
+        run: |
+          set -o pipefail
+          (flutter build web --release --no-web-resources-cdn || flutter build web --release) 2>&1 | tee ../build.log
+      - name: Share the log (on failure)
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p /tmp/ci && cp *.log /tmp/ci/ 2>/dev/null || true
+          git switch --orphan ci-log-web
+          mkdir -p logs && cp /tmp/ci/*.log logs/ 2>/dev/null || true
+          git add logs
+          git commit -m "CI log web run ${{ github.run_number }}" || true
+          git push -f origin HEAD:ci-log-web
       - uses: actions/upload-artifact@v4
         with:
           name: web
