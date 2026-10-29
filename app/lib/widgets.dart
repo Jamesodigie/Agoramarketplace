@@ -138,7 +138,6 @@ class Btn extends StatelessWidget {
       opacity: onTap == null ? 0.45 : 1,
       child: Pressable(
         onTap: onTap,
-        label: label,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           height: small ? 46 : 56,
@@ -1013,7 +1012,6 @@ class ProductCard extends StatelessWidget {
   const ProductCard(this.p, {super.key, this.index = 0});
   @override
   Widget build(BuildContext context) => Pressable(
-        label: p.name,
         onTap: () => go(ProductScreen(p)),
         child: Container(
           padding: const EdgeInsets.all(10),

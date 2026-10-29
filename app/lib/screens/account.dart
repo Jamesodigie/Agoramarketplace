@@ -17,7 +17,6 @@ class MenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Pressable(
         onTap: onTap,
-        label: label,
         child: Container(
           height: 56,
           padding: const EdgeInsets.symmetric(horizontal: 16),

@@ -35,6 +35,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(const AssetImage('assets/logo.png'), context);
+  }
+
+  @override
   void dispose() {
     _t1?.cancel();
     _t2?.cancel();
@@ -202,7 +208,7 @@ class _IntroScreenState extends State<IntroScreen> {
                   ),
                   Pressable(
                     scale: 0.92,
-                    label: last ? 'Get started' : 'Next slide',
+                    label: last ? null : 'Next slide',
                     onTap: _next,
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 550),
@@ -360,7 +366,7 @@ class _MockTrust extends StatelessWidget {
       ])).rise(500),
       SizedBox(
         height: 86,
-        child: Stack(children: [
+        child: Stack(clipBehavior: Clip.none, children: [
           Positioned(left: -10, top: 10, child: _float(Row(mainAxisSize: MainAxisSize.min, children: [_mav('IL', const Color(0xFFC98A4B), const Color(0xFF7A4A20), size: 26), const SizedBox(width: 8), Text('Ìlú Leatherworks', style: ts(12, w: w6)), const SizedBox(width: 6), Ic('badge', size: 15, color: C.brand)]), 2500)),
           Positioned(right: -8, top: 46, child: _float(Row(mainAxisSize: MainAxisSize.min, children: [_mav('IM', const Color(0xFF22C55E), const Color(0xFF0E8A3E), size: 26), const SizedBox(width: 8), Text('Ikeja Mobile Hub', style: ts(12, w: w6)), const SizedBox(width: 6), Ic('badge', size: 15, color: C.brand)]), 2700)),
         ]),
@@ -422,7 +428,7 @@ class _MockEscrow extends StatelessWidget {
       ])).rise(200),
       SizedBox(
         height: 60,
-        child: Stack(children: [
+        child: Stack(clipBehavior: Clip.none, children: [
           Positioned(
             right: -6,
             top: 14,
@@ -542,7 +548,6 @@ class _RoleScreenState extends State<RoleScreen> {
   Widget _card(String k, String icon, String t, String s) {
     final on = pick == k;
     return Pressable(
-      label: t,
       onTap: () => setState(() => pick = k),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),

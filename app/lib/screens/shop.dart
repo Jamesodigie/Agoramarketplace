@@ -345,7 +345,6 @@ class _ProductScreenState extends State<ProductScreen> {
         ],
         const SizedBox(height: 20),
         Pressable(
-          label: 'Open ${s.name}',
           onTap: () => go(StoreScreen(s)),
           child: CardBox(
             padding: const EdgeInsets.all(12),
