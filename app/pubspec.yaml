@@ -1,0 +1,57 @@
+name: agora
+description: Agora Marketplace. Shop safe. Your money is held in escrow until your order arrives.
+publish_to: 'none'
+version: 2.0.0+200
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_svg: ^2.0.10
+  flutter_animate: ^4.5.0
+  image_picker: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logo.png
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/icon/icon.png
+  remove_alpha_ios: true
+  adaptive_icon_background: "#0060FD"
+  adaptive_icon_foreground: assets/icon/foreground.png
+  web:
+    generate: true
+    image_path: assets/icon/icon.png
+    background_color: "#0060FD"
+    theme_color: "#0060FD"
+
+flutter_native_splash:
+  color: "#0060FD"
+  image: assets/icon/splash.png
+  android_12:
+    color: "#0060FD"
+    image: assets/icon/splash12.png
+  web: false

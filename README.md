@@ -1,20 +1,26 @@
 # Agora Marketplace
 
-Clickable prototype of Agora, an escrow-protected marketplace for Lagos. Buyers pay into escrow, sellers are verified, and money is released only after the buyer confirms delivery.
+Escrow-protected marketplace for Nigeria. Buyers pay into escrow, sellers are verified, and money is released only after the buyer confirms delivery.
 
-Built from the Agora Figma file. It's a single `index.html` with no build step and no dependencies.
+## The app (Flutter: Android, iOS, web)
 
-## Run it
+The real app lives in [`app/`](app). It's one Flutter codebase that builds for Android, iPhone and the web.
 
-- **Web:** https://jamesodigie.github.io/Agoramarketplace/ (or open `index.html` locally).
-- **Install from the browser:** open the web link on your phone, then use *Add to Home Screen* (Chrome or Safari). It opens full screen like an app and works offline.
-- **Android APK:** every push to `main` builds a new APK. Download **Agora.apk** from the latest release on your Android phone: https://github.com/Jamesodigie/Agoramarketplace/releases/latest. When the phone asks, allow your browser to install unknown apps.
+- **Download for Android:** https://github.com/Jamesodigie/Agoramarketplace/releases/latest/download/Agora.apk
+- **iPhone:** every build also produces an unsigned iOS app. Installing it on an iPhone needs an Apple Developer account (TestFlight or the App Store).
+- **How it's built:** `.github/workflows/flutter.yml` checks the code, runs the tests, then builds the Android APK, the iOS app and the web app on every push, and publishes them to Releases.
 
-## How the APK is built
+### Work on it locally
 
-`.github/workflows/android-apk.yml` wraps `index.html` in a native Android shell with [Capacitor](https://capacitorjs.com), generates the icon and splash screen from `assets/`, builds with Gradle and publishes the APK to Releases.
+1. Install Flutter 3.29 or newer.
+2. `cd app && flutter pub get`
+3. `flutter run` with a phone or simulator connected (or `flutter run -d chrome`).
 
-Every build is signed with the same key in `android-signing/`, so a new version installs over the old one. That key is a **debug key for testing only**. Before publishing on the Play Store, create a private release key and keep it out of the repo.
+Code layout: `lib/screens/` holds the screens (intro, auth, shop, checkout, orders, account, seller onboarding, seller dashboard and store page), `lib/widgets.dart` the shared components, `lib/state.dart` the app state and `lib/data.dart` the sample products and sellers.
+
+## Web prototype (HTML)
+
+The original clickable prototype is `index.html` at the root of the repo, served at https://jamesodigie.github.io/Agoramarketplace/.
 
 ## What's in it
 

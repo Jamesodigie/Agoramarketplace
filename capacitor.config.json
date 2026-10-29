@@ -1,8 +1,0 @@
-{
-  "appId": "ng.agora.marketplace",
-  "appName": "Agora",
-  "webDir": "www",
-  "android": {
-    "backgroundColor": "#0060FD"
-  }
-}

@@ -1,0 +1,208 @@
+name: Flutter app (Android, iOS, web)
+
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', '.github/workflows/flutter.yml', 'android-signing/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flutter-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: '3.29.3'
+
+jobs:
+  prepare:
+    name: Check code and set up project
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.commit.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Generate Android, iOS and web folders (first run only)
+        id: gen
+        working-directory: app
+        run: |
+          if [ -d android ] && [ -d ios ] && [ -d web ]; then
+            echo "Platform folders already exist"
+            exit 0
+          fi
+          flutter create --platforms=android,ios,web --org ng.agora --project-name agora .
+          # Same app ID as the earlier APK, so this version installs over it
+          for f in android/app/build.gradle.kts android/app/build.gradle; do
+            if [ -f "$f" ]; then sed -i -E 's/applicationId( = |[[:space:]]+)"ng\.agora\.agora"/applicationId\1"ng.agora.marketplace"/' "$f"; fi
+          done
+          sed -i 's/android:label="agora"/android:label="Agora"/' android/app/src/main/AndroidManifest.xml
+          sed -i 's/PRODUCT_BUNDLE_IDENTIFIER = ng\.agora\.agora;/PRODUCT_BUNDLE_IDENTIFIER = ng.agora.marketplace;/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i 's#<title>agora</title>#<title>Agora</title>#' web/index.html
+          sed -i 's/"name": "agora"/"name": "Agora Marketplace"/; s/"short_name": "agora"/"short_name": "Agora"/' web/manifest.json
+          python3 - <<'PY'
+          import re
+          p = 'ios/Runner/Info.plist'
+          s = open(p).read()
+          s = re.sub(r'(<key>CFBundleDisplayName</key>\s*<string>)[^<]*(</string>)', r'\1Agora\2', s)
+          s = re.sub(r'(<key>CFBundleName</key>\s*<string>)[^<]*(</string>)', r'\1Agora\2', s)
+          extra = (
+              "\t<key>NSCameraUsageDescription</key>\n"
+              "\t<string>Agora uses the camera so you can photograph your ID, take a verification selfie and confirm deliveries.</string>\n"
+              "\t<key>NSPhotoLibraryUsageDescription</key>\n"
+              "\t<string>Agora lets you choose photos for your ID, documents, store logo and products.</string>\n"
+              "\t<key>NSMicrophoneUsageDescription</key>\n"
+              "\t<string>Agora does not record audio. iOS asks for this when the camera opens.</string>\n"
+          )
+          i = s.rfind('</dict>')
+          s = s[:i] + extra + s[i:]
+          open(p, 'w').write(s)
+          PY
+          echo "generated=true" >> "$GITHUB_OUTPUT"
+
+      - name: Get packages
+        working-directory: app
+        run: flutter pub get
+
+      - name: App icons and splash screen (first run only)
+        if: steps.gen.outputs.generated == 'true'
+        working-directory: app
+        run: |
+          dart run flutter_launcher_icons
+          dart run flutter_native_splash:create
+
+      - name: Check the code
+        working-directory: app
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run tests
+        working-directory: app
+        run: flutter test
+
+      - name: Save generated folders to the repo
+        id: commit
+        run: |
+          if [ "${{ steps.gen.outputs.generated }}" = "true" ] && [ -n "$(git status --porcelain app)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add app
+            git commit -m "Generate Flutter platform folders, app icons and splash screen"
+            git push
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  android:
+    name: Android APK
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Use the shared signing key (updates install over older versions)
+        run: mkdir -p ~/.android && cp android-signing/debug.keystore ~/.android/debug.keystore
+      - name: Build APK
+        working-directory: app
+        run: flutter build apk --release --build-number=$((200 + ${{ github.run_number }})) --build-name=2.0.${{ github.run_number }}
+      - run: cp app/build/app/outputs/flutter-apk/app-release.apk Agora.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: Agora.apk
+
+  ios:
+    name: iOS build (unsigned)
+    needs: prepare
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Build for iPhone (no signing)
+        working-directory: app
+        run: flutter build ios --release --no-codesign --build-number=$((200 + ${{ github.run_number }})) --build-name=2.0.${{ github.run_number }}
+      - name: Package
+        run: |
+          mkdir -p Payload
+          cp -R app/build/ios/iphoneos/Runner.app Payload/
+          zip -qr Agora-iOS-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios
+          path: Agora-iOS-unsigned.ipa
+
+  web:
+    name: Web build
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Build web app
+        working-directory: app
+        run: flutter build web --release --no-web-resources-cdn || flutter build web --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: app/build/web
+
+  release:
+    name: Publish release
+    needs: [android, ios, web]
+    if: always() && needs.android.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+      - name: Zip web build
+        run: |
+          if [ -d out/web ]; then (cd out/web && zip -qr ../../Agora-web.zip .); fi
+          ls -la out/* || true
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-v2.0.${{ github.run_number }}
+          name: Agora 2.0.${{ github.run_number }} (Flutter)
+          make_latest: true
+          body: |
+            Built with Flutter from one codebase for Android, iOS and web.
+
+            **Android:** download **Agora.apk** below on your phone, open it and tap Install. It installs over earlier versions.
+
+            **iPhone:** **Agora-iOS-unsigned.ipa** proves the app builds for iOS. Installing it on an iPhone needs an Apple Developer account to sign it (TestFlight or the App Store).
+
+            **Web:** **Agora-web.zip** is the same app for browsers.
+
+            Built from ${{ github.sha }}.
+          files: |
+            out/android/Agora.apk
+            out/ios/Agora-iOS-unsigned.ipa
+            Agora-web.zip
